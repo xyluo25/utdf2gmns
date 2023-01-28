@@ -7,14 +7,14 @@ from EnumClass import TimeplanEnum as tpe
 from EnumClass import TimeplanSecondEnum as tpse
 from EnumClass import PhaseEnum as pe
 from EnumClass import PhaseSecondEnum as pse
-from backup.Functions import *
+# from backup.Functions import *
 import pickle
 
 import pandas as pd
 
 # importPath= r"data/Combined_File.csv"
-importPath= r"UTDF.csv"
-settingPath=r"setting.csv"
+importPath= r"C:\Users\roche\Anaconda_workspace\001_Github\utdf2gmns\dataset\UTDF.csv"
+settingPath=r"C:\Users\roche\Anaconda_workspace\001_Github\utdf2gmns\dataset\setting.csv"
 
 exportPath= r"export"
 dataList=[]
@@ -42,7 +42,7 @@ exportColumnList= [["INTID","INTNAME","TYPE","X","Y","Z","NID","SID","EID","WID"
                                                           ["PLANID","INTID","S1","S2","S3","S4","S5","S6","S7","S8","CL","OFF","LD","REF","CLR"],
                                                           ["RECORDNAME","INTID","D1","D2","D3","D4","D5","D6","D7","D8"]]
 exportColumnDic=dict(zip(presetExportFileShortNameList,exportColumnList))
-exportColumnFlattenList = list(flatten(exportColumnList))
+exportColumnFlattenList =  sum(exportColumnList, []) # list(flatten(exportColumnList))
 #output variable,table name,
 # two steps, find first, and obtain variables second. thus, we have a target element and a target key(parameter) with some selections(directions)
 exportVariableFromVariableDic={"INTID":"INTID",
@@ -167,7 +167,7 @@ if __name__ == '__main__':
                     lineArray=lineN.split(",")
                     globalHashDic[tableKey]["null"][lineArray[0]]={"DATA",lineArray[1]}
         else:
-            globalHashDic[tableKey]=exractElementData(tableKey, subSectionDic[tableKey])
+            globalHashDic[tableKey]=extractElementData(tableKey, subSectionDic[tableKey])
 
     df_setting=pd.read_csv(settingPath)
     city_name=df_setting["city_name"].values[0]
@@ -198,9 +198,9 @@ if __name__ == '__main__':
             asequenced_intersection_id+=1
     df.to_csv("intersection_from_synchro.csv",index=False)
 
-    file= open("globalHashDic.pkl","wb")
-    pickle.dump(globalHashDic,file)
-    file.close()
+    # file= open("globalHashDic.pkl","wb")
+    # pickle.dump(globalHashDic,file)
+    # file.close()
     print("export finished")
 
 
