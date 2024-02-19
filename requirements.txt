@@ -1,3 +1,4 @@
 geocoder
 pandas
 sphinx
+pyufunc
