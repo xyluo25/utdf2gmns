@@ -6,16 +6,16 @@
 *.pypirc
 */Tutorial_PyPI*
 Tutorial_PyPI*
-**build/*
-**/dist/*
+*build/*
+*/dist/*
 */Debug/
 x64/
 .vs
 .vscode/
 .DS_Store
-**log.txt
+*log.txt
 *__pycache__*
-**.egg-info/*
+*.egg-info/*
 *.pypirc
-# *setup.py
+*setup.py
 *PKG-INFO*
