@@ -11,6 +11,10 @@ from math import sin, cos, sqrt, atan2, radians
 def calculate_point2point_distance_in_km(point1: tuple, point2: tuple) -> float:
     """ point1 and point2: a tuple of (longitude, latitude) """
 
+    # TDD: Test-Driven Development
+    assert isinstance(point1, tuple), "point1 should be a tuple"
+    assert isinstance(point2, tuple), "point2 should be a tuple"
+
     # approximate radius of earth in km
     R = 6373.0
 
