@@ -6,7 +6,7 @@
 ##############################################################
 
 # **** Package Info **** #
-pkg_version = "0.2.7"
+pkg_version = "0.2.8"
 pkg_name = "utdf2gmns"
 pkg_author = "Mr. Xiangyong Luo, Dr. Xuesong Simon Zhou"
 pkg_email = "luoxiangyong01@gmail.com, xzhou74@asu.edu"
