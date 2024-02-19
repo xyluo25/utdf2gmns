@@ -7,6 +7,7 @@
 
 
 import setuptools
+import utdf2gmns as ug
 
 with open("Readme.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -19,10 +20,10 @@ except Exception:
     modules_needed = []
 
 setuptools.setup(
-    name="utdf2gmns",  # Replace with your own username
-    version="0.2.6",
-    author="Xiangyong Luo, Dr.Xuesong (Simon) Zhou",
-    author_email="luoxiangyong01@gmail.com",
+    name=ug.pkg_name,
+    version=ug.pkg_version,
+    author=ug.pkg_author,
+    author_email=ug.pkg_email,
     description="This open-source package is a tool to convert utdf file to GMNS format.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -43,7 +44,7 @@ setuptools.setup(
     project_urls={
         'Homepage': 'https://github.com/xyluo25/utdf2gmns',
         'Documentation': 'https://utdf2gmns.readthedocs.io/en/latest/',
-        # 'Bug Tracker': '',
+        'Bug Tracker': 'https://github.com/asu-trans-ai-lab/utdf2gmns/issues',
         # 'Source Code': '',
         # 'Download': '',
         # 'Publication': '',

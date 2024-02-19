@@ -18,13 +18,15 @@ from utdf2gmns.func_lib.match_node_intersection_movement_utdf import (
     match_movement_utdf_lane, match_movement_utdf_phase_timeplans)
 from utdf2gmns.func_lib.read_utdf import (generate_intersection_data_from_utdf,
                                           read_UTDF_file)
-from utdf2gmns.utils_lib.package_settings import (required_files,
+from utdf2gmns.pkg_settings import (required_files,
                                                   required_files_sub,
                                                   utdf_city_name)
-from utdf2gmns.utils_lib.utility_lib import (check_required_files_exist,
-                                             func_running_time,
-                                             get_filenames_from_folder_by_type,
-                                             path2linux, validate_filename)
+# import utility functions from pyufunc
+from pyufunc import (func_running_time,
+                     path2linux,
+                     check_files_existence,
+                     generate_unique_filename)
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -100,11 +102,11 @@ def generate_movement_utdf(input_dir: str = "",
     input_dir = input_dir or os.getcwd()
 
     # check if required files exist in the input directory
-    files_from_directory = get_filenames_from_folder_by_type(input_dir, file_type="csv")
+    # files_from_directory = get_filenames_by_ext(input_dir, file_ext="csv")
 
     # if not required, raise an exception
-    isRequired = check_required_files_exist(required_files, files_from_directory)
-    isRequired_sub = check_required_files_exist(required_files_sub, files_from_directory)
+    isRequired = check_files_existence(required_files, input_dir)
+    isRequired_sub = check_files_existence(required_files_sub, input_dir)
 
     # required files are not found, raise an exception
     if not isRequired:
@@ -225,10 +227,10 @@ def generate_movement_utdf(input_dir: str = "",
     if isSave2csv:
         if not output_dir:
             output_dir = input_dir
-        output_file_name_1 = validate_filename(os.path.join(output_dir, "movement_utdf.csv"))
+        output_file_name_1 = generate_unique_filename(os.path.join(output_dir, "movement_utdf.csv"))
         df_movement_utdf_phase.to_csv(output_file_name_1, index=False)
 
-        output_file_name_2 = validate_filename(os.path.join(output_dir, "utdf_intersection.csv"))
+        output_file_name_2 = generate_unique_filename(os.path.join(output_dir, "utdf_intersection.csv"))
         utdf_dict_data.get("utdf_geo").to_csv(output_file_name_2, index=False)
 
         # with open(path2linux(os.path.join(output_dir, "utdf2gmns.pickle")), 'wb') as f:

@@ -15,9 +15,8 @@ from multiprocessing import Pool
 
 import geocoder
 import pandas as pd
-
-from utdf2gmns.utils_lib.utility_lib import (
-    calculate_point2point_distance_in_km, func_running_time)
+from utdf2gmns.pkg_utils import calculate_point2point_distance_in_km
+from pyufunc import func_running_time
 
 # def googlemaps_geocoding_from_address(address, api_key) -> tuple:
 #

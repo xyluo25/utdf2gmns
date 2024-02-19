@@ -7,7 +7,8 @@
 
 
 import pandas as pd
-from utdf2gmns.utils_lib.utility_lib import func_running_time, calculate_point2point_distance_in_km
+from utdf2gmns.pkg_utils import calculate_point2point_distance_in_km
+from pyufunc import func_running_time
 
 
 def find_shortest_distance_node(point: tuple,
@@ -148,7 +149,7 @@ def match_movement_utdf_lane(df_movement_intersection: pd.DataFrame, utdf_dict_d
 
     # Add Synchro/utdf data to movement_intersection_node
     df_utdf_lanes = utdf_dict_data.get("Lanes")
-    print(f"  : There are {len(df_utdf_lanes["INTID"].unique().to_list())} utdf lanes")
+    print(f"  : There are {len(df_utdf_lanes["INTID"].unique().tolist())} utdf lanes")
 
     intersection_id_list = [value for value in list(
         df_movement_intersection["synchro_INTID"].unique()) if value is not None]

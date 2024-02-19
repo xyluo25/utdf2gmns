@@ -11,11 +11,10 @@ import pandas as pd
 import os
 from pathlib import Path
 
-from utdf2gmns.utils_lib.package_settings import (utdf_link_column_names,
+from utdf2gmns.pkg_settings import (utdf_link_column_names,
                                                   utdf_categories,
                                                   utdf_city_name)
-from utdf2gmns.utils_lib.utility_lib import func_running_time, path2linux
-
+from pyufunc import func_running_time, path2linux
 
 # aviod the warning of "A value is trying to be set on a copy of a slice from a DataFrame"
 pd.options.mode.chained_assignment = None  # default='warn'

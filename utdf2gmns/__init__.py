@@ -16,7 +16,8 @@ from .utdf2gmns import (generate_utdf_dataframes,
                         read_UTDF_file
                         )
 
-from .utils_lib import package_settings
+from . import pkg_settings
+from .pkg_configs import *
 
 __all__ = ['generate_utdf_dataframes',
            'generate_movement_utdf',
@@ -25,8 +26,6 @@ __all__ = ['generate_utdf_dataframes',
            'match_movement_and_intersection_node',
            'match_movement_utdf_lane',
            'match_movement_utdf_phase_timeplans',
-           'package_settings',
-           'read_UTDF_file'
+           'pkg_settings',
+           'read_UTDF_file',
            ]
-
-print("utdf2gmns version: ", "0.2.6")
