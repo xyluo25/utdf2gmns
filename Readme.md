@@ -9,6 +9,7 @@ A tool to convert utdf file to GMNS format:  **synchro utdf format to gmns signa
 * [X] UTDF.csv
 * [X] node.csv (GMNS format)
 * [X] movement.csv (GMNS format)
+* Future plan: remove node.csv and movement.csv, directly convert utdf.csv file to GMNS format.
 
 ## **Produced outputs**
 
@@ -101,14 +102,14 @@ if__name__=="__main__":
 * [X] Number of lanes of the movements from synchro file.
 * [X] Add function to verify whether geocoded for utdf_geo
 * [X] Print geocoding details (in percentage)
-* [ ] Add three kwargs in function generate_movement_utdf
+* [X] Add three kwargs in function generate_movement_utdf
 * [ ] Print out how many movements being matched or not matched for signalized intersecton nodes.
 * [ ] Check reasonable capacity.
 * [ ] Check each movement is reasonable (like 15s of green time...). other attributes.
 * [ ] Check number of lanes correctness between osm2gmns file and synchro file per movements.
-* [ ] Add signal info to micre-link.cs
+* [ ] Add signal info to micro-link.cs
 * [ ] Add cycle length and green time for each movement.
-* [ ] Add detailed information for user to load geocoded intersection data.
+* [ ] Add detailed information for user to load coordinated intersection data.
 
 ## Call for Contributions
 
@@ -131,3 +132,9 @@ Writing code isn't the only way to contribute to utdf2gmns. You can also:
 * write grant proposals and help with other fundraising efforts
 
 For more information about the ways you can contribute to utdf2gmns, visit [our GitHub](https://github.com/asu-trans-ai-lab/utdf2gmns). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
+
+## **How to Cite**
+
+If you use utdf2gmns in your work or research, please use the following entry:
+
+Luo, X. and Zhou, X. (2022, December 17). UTDF2GMNS. Retrieved from https://github.com/xyluo25/utdf2gmns
