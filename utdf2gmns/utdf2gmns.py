@@ -28,8 +28,6 @@ from utdf2gmns.pkg_settings import (required_files,
                                     required_files_sub,
                                     utdf_city_name)
 
-
-
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
