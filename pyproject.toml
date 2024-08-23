@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "utdf2gmns"
-version = "0.2.9"
+version = "0.3.0"
 description = "A tool to convert utdf file to GMNS format."
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},

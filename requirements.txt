@@ -1,4 +1,6 @@
-geocoder
-pandas
-sphinx
-pyufunc
+geocoder>=1.38.1
+matplotlib>=3.8.2
+pandas>=2.2.2
+pytest>=8.0.0
+pyufunc>=0.3.4
+Shapely>=2.0.6
