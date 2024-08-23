@@ -9,6 +9,7 @@ from utdf2gmns.func_lib.read_utdf import (
     read_UTDF_file,
     generate_intersection_data_from_utdf,
     reformat_lane_dataframe)
+
 from .utdf2gmns import (generate_utdf_dataframes,
                         generate_movement_utdf,
                         generate_coordinates_from_intersection,
@@ -19,7 +20,6 @@ from .utdf2gmns import (generate_utdf_dataframes,
                         )
 
 from . import pkg_settings
-from .pkg_configs import *
 
 __all__ = ['generate_utdf_dataframes',
            'generate_movement_utdf',
