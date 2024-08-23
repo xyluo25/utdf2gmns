@@ -71,7 +71,8 @@ def generate_coordinates_from_intersection(df_intersection: pd.DataFrame, distan
 
     :param df_intersection: the dataframe of intersections
     :type df_intersection: pd.DataFrame
-    :param distance_threshold: maximum distance threshold to find closest node from intersection, defaults to 0.01, unit: km
+    :param distance_threshold: maximum distance threshold to find closest node from intersection,
+        defaults to 0.01, unit: km
     :type distance_threshold: float, optional
     :raises Exception: intersection_name and city_name must included in the dataframe
     :raises Exception: geocoding intersections failed
@@ -125,11 +126,11 @@ def generate_coordinates_from_intersection(df_intersection: pd.DataFrame, distan
         # lnglat_values_full_name = p.map(geocoder_geocoding_from_address, intersection_full_name_list)
 
         # p1 = Pool()
-        # lnglat_values_full_name_reversed = p1.map(geocoder_geocoding_from_address, intersection_full_name_reversed_list)
+        # lnglat_values_full_name_reversed = p1.map(geocoder_geocoding_from_address,
+        # intersection_full_name_reversed_list)
 
     except Exception as e:
         raise Exception("   :geocoding intersections failed, try again...") from e
-
 
     # create new column named distance_from_full_name
     print("   :cross validating...")
@@ -164,7 +165,8 @@ def generate_coordinates_from_intersection(df_intersection: pd.DataFrame, distan
 if __name__ == "__main__":
     """
     We provided three geocoding methods: googlemaps, geopy and geocoder
-    The example using geocoder and you don't need to install googlemaps and geopy as well(comment out the code if you want to use them)
+    The example using geocoder and you don't need to install googlemaps
+    and geopy as well(comment out the code if you want to use them)
     """
 
     # Step 1: input data path

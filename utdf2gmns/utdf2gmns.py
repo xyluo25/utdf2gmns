@@ -10,6 +10,12 @@ import pickle
 
 import pandas as pd
 
+# import utility functions from pyufunc
+from pyufunc import (func_running_time,
+                     path2linux,
+                     check_files_in_dir,
+                     generate_unique_filename)
+
 # For deployment
 from utdf2gmns.func_lib.geocoding_intersection import \
     generate_coordinates_from_intersection
@@ -19,13 +25,9 @@ from utdf2gmns.func_lib.match_node_intersection_movement_utdf import (
 from utdf2gmns.func_lib.read_utdf import (generate_intersection_data_from_utdf,
                                           read_UTDF_file)
 from utdf2gmns.pkg_settings import (required_files,
-                                                  required_files_sub,
-                                                  utdf_city_name)
-# import utility functions from pyufunc
-from pyufunc import (func_running_time,
-                     path2linux,
-                     check_files_existence,
-                     generate_unique_filename)
+                                    required_files_sub,
+                                    utdf_city_name)
+
 
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -50,7 +52,8 @@ def generate_utdf_dataframes(utdf_filename: str, city_name: str) -> dict:
 
     # read UTDF file and create dataframes of utdf_geo and utdf_lane
     utdf_dict_data = read_UTDF_file(utdf_filename)
-    df_utdf_intersection = generate_intersection_data_from_utdf(utdf_dict_data, city_name)
+    df_utdf_intersection = generate_intersection_data_from_utdf(
+        utdf_dict_data, city_name)
     utdf_dict_data["utdf_intersection"] = df_utdf_intersection
 
     # geocoding utdf_intersection
@@ -105,8 +108,8 @@ def generate_movement_utdf(input_dir: str = "",
     # files_from_directory = get_filenames_by_ext(input_dir, file_ext="csv")
 
     # if not required, raise an exception
-    isRequired = check_files_existence(required_files, input_dir)
-    isRequired_sub = check_files_existence(required_files_sub, input_dir)
+    isRequired = check_files_in_dir(required_files, input_dir)
+    isRequired_sub = check_files_in_dir(required_files_sub, input_dir)
 
     # required files are not found, raise an exception
     if not isRequired:
@@ -133,7 +136,8 @@ def generate_movement_utdf(input_dir: str = "",
     if path_utdf_intersection:
         # read user manually added utdf_geo.csv file from the input directory
         # and store it into utdf_dict_data
-        print("     : read user manually added utdf_geo.csv file from the input directory...")
+        print(
+            "     : read user manually added utdf_geo.csv file from the input directory...")
         utdf_dict_data["utdf_geo"] = pd.read_csv(path_utdf_intersection)
 
         # check if user manually added coord_x and coord_y to in utdf_geo.csv file
@@ -198,7 +202,8 @@ def generate_movement_utdf(input_dir: str = "",
     print(f"    : {len(df_movement)} movements loaded.\n")
 
     # match utdf_intersection_geo with node
-    print("Step 3: Performing data merging from GMNS nodes to UTDF intersections based on distance threshold(default 0.1km)...")
+    print("Step 3: Performing data merging from GMNS nodes"
+          "to UTDF intersections based on distance threshold(default 0.1km)...")
     df_intersection_node = match_intersection_node(utdf_dict_data.get("utdf_geo"),
                                                    df_node)
 
@@ -227,10 +232,12 @@ def generate_movement_utdf(input_dir: str = "",
     if isSave2csv:
         if not output_dir:
             output_dir = input_dir
-        output_file_name_1 = generate_unique_filename(os.path.join(output_dir, "movement_utdf.csv"))
+        output_file_name_1 = generate_unique_filename(
+            os.path.join(output_dir, "movement_utdf.csv"))
         df_movement_utdf_phase.to_csv(output_file_name_1, index=False)
 
-        output_file_name_2 = generate_unique_filename(os.path.join(output_dir, "utdf_intersection.csv"))
+        output_file_name_2 = generate_unique_filename(
+            os.path.join(output_dir, "utdf_intersection.csv"))
         utdf_dict_data.get("utdf_geo").to_csv(output_file_name_2, index=False)
 
         # with open(path2linux(os.path.join(output_dir, "utdf2gmns.pickle")), 'wb') as f:
@@ -248,7 +255,8 @@ if __name__ == '__main__':
 
     # NOTE : the following code is for generating movement_utdf.csv file
     input_dir = r"C:\Users\roche\Anaconda_workspace\001_Github\utdf2gmns\datasets\data_bullhead_seg4_1"
-    df_movement_utdf_phase, utdf_dict_data = generate_movement_utdf(input_dir, city_name, isSave2csv=False)
+    df_movement_utdf_phase, utdf_dict_data = generate_movement_utdf(
+        input_dir, city_name, isSave2csv=False)
     # df_movement_utdf_phase.to_csv(path2linux(os.path.join(input_dir, "movement_utdf.csv")), index=False)
 
     # # NOTE : the following code is for testing purpose only: read utdf.csv file and generate utdf_dict_data

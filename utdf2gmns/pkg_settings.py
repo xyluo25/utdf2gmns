@@ -38,14 +38,19 @@ utdf_metadata = {
         TWLTL: 1 indicates a TWLTL for link;
         Crosswalk Width: Width of crosswalk at end of link;
         Mandatory and Positioning Distances: For lane change start points;
-        Curve Pt X, Pt Y, Pt Z: Used to define a curve point; The other curve point is defined in the reverse link. Blank indicates a straight link;
+        Curve Pt X, Pt Y, Pt Z: Used to define a curve point;
+            The other curve point is defined in the reverse link. Blank indicates a straight link;
         """,
     "Lanes": """
         INTID: Intersection ID;
         UPID: Upstream node ID;
         Dest Node: Destination node number for this movement;
-        Lanes: For each lane group, enter the number of lanes. Shared lanes count as through lanes, unless there is no through movement, in which case LR lanes count as left lanes.
-        Shared: Enter code for sharing of this lane with adjacent movements. This field specified which movements the through lanes are shared with. Enter 0, 1, 2, 3 for No-sharing , shared-with-left, shared-with-right, shared-with-both; This field is normally 0 for turning lane groups. if a left shares with left2 or u-turns. the sharing is coded as 1.
+        Lanes: For each lane group, enter the number of lanes. Shared lanes count as through lanes,
+            unless there is no through movement, in which case LR lanes count as left lanes.
+        Shared: Enter code for sharing of this lane with adjacent movements.
+            This field specified which movements the through lanes are shared with. Enter 0, 1, 2, 3 for No-sharing ,
+            shared-with-left, shared-with-right, shared-with-both; This field is normally 0 for turning lane groups.
+            if a left shares with left2 or u-turns. the sharing is coded as 1.
 
     """
 

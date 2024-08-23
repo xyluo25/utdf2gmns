@@ -33,7 +33,9 @@ def find_shortest_distance_node(point: tuple,
     node_location_list = [(node_df.loc[i, "x_coord"], node_df.loc[i, "y_coord"]) for i in range(node_df.shape[0])]
 
     # calculate the distance between point and each node
-    point_to_node_distance_list = [calculate_point2point_distance_in_km(point, node_location) for node_location in node_location_list]
+    point_to_node_distance_list = [
+        calculate_point2point_distance_in_km(point,
+                                             node_location) for node_location in node_location_list]
 
     # find the minimum distance
     min_distance = min(point_to_node_distance_list)
@@ -41,7 +43,9 @@ def find_shortest_distance_node(point: tuple,
 
     # if the minimum distance is larger than the threshold, then return None
     if min_distance > max_distance_threshold:
-        print(f"  :Intersection id {intersection_id} cannot find a GMNS node within a threshold of {max_distance_threshold}km")
+        print(
+            f"  :Intersection id {intersection_id} cannot"
+            f"find a GMNS node within a threshold of {max_distance_threshold}km")
         return [""] * len(node_df.columns)
 
     # find the index of the minimum distance
@@ -202,7 +206,9 @@ def match_movement_utdf_lane(df_movement_intersection: pd.DataFrame, utdf_dict_d
                          key=lambda x: len(x.columns))[-1].columns
 
     # add missing columns to movement_synchro_list
-    movement_utdf_list = [df.reindex(columns=col_longest, fill_value=None) for df in movement_utdf_list_removed_duplicated]
+    movement_utdf_list = [
+        df.reindex(columns=col_longest,
+                   fill_value=None) for df in movement_utdf_list_removed_duplicated]
 
     df_movement_utdf_lane = pd.concat(movement_utdf_list, sort=False)
 
@@ -226,4 +232,8 @@ def match_movement_utdf_phase_timeplans(df_movement_utdf_lane: pd.DataFrame, utd
     df_movement_utdf_lane["synchro_INTID"] = df_movement_utdf_lane["synchro_INTID"].astype(str)
     df_utdf_phase_timeplans["INTID"] = df_utdf_phase_timeplans["INTID"].astype(str)
 
-    return pd.merge(df_movement_utdf_lane, df_utdf_phase_timeplans, left_on="synchro_INTID", right_on="INTID", how="left")
+    return pd.merge(df_movement_utdf_lane,
+                    df_utdf_phase_timeplans,
+                    left_on="synchro_INTID",
+                    right_on="INTID",
+                    how="left")
