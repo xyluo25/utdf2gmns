@@ -201,7 +201,14 @@ def parse_signalized_intersection(df_phase: pd.DataFrame, df_lane: pd.DataFrame,
         int_id (int): Intersection ID
 
     Returns:
-        dict: {'D1': {'protected': ['SBL']}, 'D2': {'protected': ['NBT'], 'permitted': ['NBR']}, 'D3': {'protected': ['EBL']}, 'D4': {'protected': ['WBT'], 'permitted': ['WBR']}, 'D5': {'protected': ['NBL']}, 'D6': {'protected': ['SBT'], 'permitted': ['SBR']}, 'D7': {'protected': ['WBL']}, 'D8': {'protected': ['EBT'], 'permitted': ['EBR']}}
+        dict: {'D1': {'protected': ['SBL']},
+        'D2': {'protected': ['NBT'], 'permitted': ['NBR']},
+        'D3': {'protected': ['EBL']},
+        'D4': {'protected': ['WBT'], 'permitted': ['WBR']},
+        'D5': {'protected': ['NBL']},
+        'D6': {'protected': ['SBT'], 'permitted': ['SBR']},
+        'D7': {'protected': ['WBL']},
+        'D8': {'protected': ['EBT'], 'permitted': ['EBR']}}
     """
 
     signal_int = parse_phase_signal(df_phase, int_id)

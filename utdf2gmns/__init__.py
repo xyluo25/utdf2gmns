@@ -8,7 +8,7 @@
 from utdf2gmns.func_lib.read_utdf import read_UTDF_file, generate_intersection_from_Links
 from utdf2gmns.func_lib.plot_net import plot_net
 
-from utdf2gmns.utdf2gmns import (
+from utdf2gmns._utdf2gmns import (
     UTDF2GMNS,
     generate_movement_utdf,
     generate_intersection_coordinates,
