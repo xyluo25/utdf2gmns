@@ -116,7 +116,8 @@ def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
     """
     lane_points = {}
 
-    for i in range(num_lanes):
+    for i in range(num_lanes - 1, -1, -1):
+        # reverse order as index 0 is the rightmost lane
         # calculate four corners of the lane
         corner_coords = create_line_polygon_points(lon1, lat1, lon2, lat2, width, unit)
 
