@@ -22,4 +22,4 @@ def test_calculate_point2point_distance_in_km():
     point2 = (0, 1)
     expected_distance = 111.19492664455873  # Approximate distance in km
     calculated_distance = calculate_point2point_distance_in_km(point1, point2)
-    assert pytest.approx(calculated_distance, 0.1) == expected_distance
+    assert calculated_distance == pytest.approx(expected_distance, 0.1)
