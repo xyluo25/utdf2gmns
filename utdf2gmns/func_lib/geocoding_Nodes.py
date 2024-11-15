@@ -47,7 +47,8 @@ def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, u
     Update node coordinates from a single intersection data.
 
     Args:
-        single_int (dict): a dictionary of a single intersection data
+        single_int (dict): a dictionary of a single intersection data,
+            eg. {"INTID": 1, "x_coord": 0, "y_coord": 0}
         df_node (pd.DataFrame): a dataframe of node data
         unit: the unit of the coordinates, e.g., "feet" or "meter"
 

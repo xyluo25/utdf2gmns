@@ -20,12 +20,12 @@ proj_utm = Transformer.from_crs(
     "EPSG:4326", "EPSG:32633", always_xy=True)  # WGS84 to UTM (zone 33N)
 
 
-def project_to_utm(lon, lat):
+def cvt_lonlat_to_utm(lon: float, lat: float):
     """Convert latitude and longitude to UTM coordinates."""
     return proj_utm.transform(lon, lat)
 
 
-def project_to_latlon(x, y):
+def cvt_utm_to_lonlat(x: float, y: float):
     """Convert UTM coordinates back to latitude and longitude."""
     return proj_wgs84.transform(x, y)
 
@@ -60,8 +60,8 @@ def create_line_polygon_points(lon1: float, lat1: float, lon2: float, lat2: floa
         raise Exception("unit must be either feet or meters.")
 
     # Project the coordinates to UTM
-    utm_coord1 = project_to_utm(*[lon1, lat1])
-    utm_coord2 = project_to_utm(*[lon2, lat2])
+    utm_coord1 = cvt_lonlat_to_utm(*[lon1, lat1])
+    utm_coord2 = cvt_lonlat_to_utm(*[lon2, lat2])
 
     # Convert width to meters if needed
     if unit == "feet":
@@ -88,10 +88,10 @@ def create_line_polygon_points(lon1: float, lat1: float, lon2: float, lat2: floa
     corner4 = (x1 + offset[0], y1 + offset[1])
 
     # Project the UTM coordinates back to lat/lon
-    corner1_latlon = project_to_latlon(*corner1)
-    corner2_latlon = project_to_latlon(*corner2)
-    corner3_latlon = project_to_latlon(*corner3)
-    corner4_latlon = project_to_latlon(*corner4)
+    corner1_latlon = cvt_utm_to_lonlat(*corner1)
+    corner2_latlon = cvt_utm_to_lonlat(*corner2)
+    corner3_latlon = cvt_utm_to_lonlat(*corner3)
+    corner4_latlon = cvt_utm_to_lonlat(*corner4)
 
     # directional from start to end
     return [corner1_latlon, corner2_latlon, corner3_latlon, corner4_latlon]
