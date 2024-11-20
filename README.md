@@ -99,6 +99,9 @@ if __name__ == "__main__":
 * [ ] Add detailed information for user to load coordinated intersection data.
 * [ ] geocoding Lanes
 * [ ] Cvt gmns to SUMO
+* [ ] update plot function to visuzalize gmns node and links
+* [ ] create .rou.xml for sumo
+* [ ] create more xml files for sumo
 
 ## Call for Contributions
 
