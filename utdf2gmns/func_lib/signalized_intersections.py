@@ -89,48 +89,44 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
     need_lookup = []
     for traffic_movement in df_lane_id.columns:
 
+        # skip the columns that are not traffic movements
         if traffic_movement in ['RECORDNAME', 'INTID', 'PED', 'HOLD']:
             continue
 
-        if "Up Node" not in df_lane_id[traffic_movement]:
+        # skip the traffic movements that do not have an up node
+        if not df_lane_id[traffic_movement].loc['Up Node']:
             continue
 
-        val = df_lane_id[traffic_movement][['Up Node']]
-        if not val.iloc[0]:
-            continue
-
-        up_node = int(df_lane_id[traffic_movement]['Up Node'])
-        dest_node = int(df_lane_id[traffic_movement]['Dest Node'])
-
-        traffic_movement_data[traffic_movement] = {
-            "UpNode": up_node,
-            "DestNode": dest_node,
-            "Lanes": df_lane_id[traffic_movement]['Lanes'],
-            "Protected": [],
-            "Permitted": []
-        }
+        # collect the traffic movement data for the intersection
+        traffic_movement_data[traffic_movement] = df_lane_id[traffic_movement].to_dict()
+        traffic_movement_data[traffic_movement]["Protected"] = []
+        traffic_movement_data[traffic_movement]["Permitted"] = []
 
         # Synchro may support up to 4 phases
         for i in range(1, 5):
 
             key = f'Phase{i}'
             if key in df_lane_id.index:
-                val = df_lane_id[traffic_movement][[key]].iloc[0]
-                if val and int(df_lane_id[traffic_movement][key]) > 0:
+                phase_val = df_lane_id[traffic_movement].loc[key]
+                if phase_val:
                     traffic_movement_data[traffic_movement]["Protected"].append(
-                        f"D{int(df_lane_id[traffic_movement][key])}")
+                        f"D{phase_val}")
 
             key = f'PermPhase{i}'
             if key in df_lane_id.index:
-                val = df_lane_id[traffic_movement][[key]].iloc[0]
-                if val and int(df_lane_id[traffic_movement][key]) > 0:
+                perm_phase_val = df_lane_id[traffic_movement].loc[key]
+                if perm_phase_val:
                     traffic_movement_data[traffic_movement]["Permitted"].append(
-                        f"D{int(df_lane_id[traffic_movement][key])}")
+                        f"D{perm_phase_val}")
 
         len_protected = len(traffic_movement_data[traffic_movement]['Protected'])
         len_permitted = len(traffic_movement_data[traffic_movement]['Permitted'])
+
+        up_node = traffic_movement_data[traffic_movement]['Up Node']
+        dest_node = traffic_movement_data[traffic_movement]['Dest Node']
         if len_permitted + len_protected == 0:
             need_lookup.append([up_node, dest_node, traffic_movement])
+
         elif up_node in inbound_nodes:
             inbound_nodes[up_node].append(traffic_movement)
 
@@ -147,13 +143,14 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
         else:
             total_lanes_per_bound[bound] += int(value["Lanes"])
 
-    phases = {}
+    # Look up the traffic movement data for the traffic movements that do not have an up node
     for pair in need_lookup:
-        up_node = pair[0]
-        dest_node = pair[1]
-        movement = pair[2]
+        up_node, dest_node, movement = pair
+
+        # skip if the movement is not in the traffic movement data
         if total_lanes_per_bound[movement[:2]] == 0:
             continue
+
         if (up_node in inbound_nodes):
             possible_list = inbound_nodes[up_node]
         elif (dest_node in inbound_nodes):
@@ -174,6 +171,7 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
                 traffic_movement_data[movement][type_] = traffic_movement_data[through_movement]['Protected']
             else:
                 traffic_movement_data[movement][type_] = traffic_movement_data[possible_list[0]]['Protected']
+
     phases = {}
     for bound, movement_data in traffic_movement_data.items():
         for phase in movement_data['Protected']:
@@ -189,7 +187,23 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
             elif "permitted" not in phases[phase]:
                 phases[phase]["permitted"] = []
             phases[phase]["permitted"].append(bound)
-    return phases
+
+    traffic_movement_data['phases'] = phases
+
+    return traffic_movement_data
+
+
+def parse_timeplans(df_timeplans: pd.DataFrame, int_id: int) -> dict:
+
+    # prepare single dataframe for the intersection
+    df_timeplans = df_timeplans[~df_timeplans['INTID'].isnull()]
+    df_timeplans_id = df_timeplans[df_timeplans['INTID'] == str(int_id)]
+
+    # prepare single timeplans for the intersection
+    int_timeplans = {}
+    for i in range(len(df_timeplans_id)):
+        int_timeplans[df_timeplans_id.loc[i, "RECORDNAME"]] = df_timeplans_id.loc[i, "DATA"]
+    return int_timeplans
 
 
 def parse_signalized_intersection(df_phase: pd.DataFrame, df_lane: pd.DataFrame, int_id: int) -> dict:
@@ -211,13 +225,14 @@ def parse_signalized_intersection(df_phase: pd.DataFrame, df_lane: pd.DataFrame,
         'D8': {'protected': ['EBT'], 'permitted': ['EBR']}}
     """
 
-    signal_int = parse_phase_signal(df_phase, int_id)
-    phase_info = parse_lane(df_lane, int_id)
+    int_phase = parse_phase_signal(df_phase, int_id)
+    int_lane = parse_lane(df_lane, int_id)
+    int_lane_phase = int_lane['phases']
 
-    phase_key = list(phase_info.keys())
+    phase_key = list(int_lane_phase.keys())
 
     for phs in phase_key:
-        for pro_per in list(phase_info[phs].keys()):
-            signal_int[phs][pro_per] = phase_info[phs][pro_per]
+        for pro_per in list(int_lane_phase[phs].keys()):
+            int_phase[phs][pro_per] = int_lane_phase[phs][pro_per]
 
-    return signal_int
+    return int_phase

@@ -7,6 +7,8 @@
 
 import os
 import pickle
+from pathlib import Path
+import subprocess
 
 import pandas as pd
 
@@ -25,7 +27,11 @@ from utdf2gmns.func_lib.read_utdf import (generate_intersection_from_Links,
                                           read_UTDF_file)
 from utdf2gmns.func_lib.geocoding_Nodes import update_node_from_one_intersection
 from utdf2gmns.func_lib.signalized_intersections import parse_signalized_intersection
-from utdf2gmns.func_lib.geocoding_Links import generate_links
+from utdf2gmns.func_lib.geocoding_Links import generate_links, reformat_link_dataframe_to_dict
+
+# SUMO related functions
+from utdf2gmns.func_lib.gmns2sumo import generate_nod_xml, generate_edg_xml
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -210,13 +216,19 @@ def generate_movement_utdf(input_dir: str = "",
 
 
 class UTDF2GMNS:
-    def __init__(self, utdf_filename: str, city_name: str):
+    def __init__(self, utdf_filename: str, region_name: str = ""):
         self._utdf_filename = utdf_filename
-        self._city_name = city_name
+        self._utdf_region_name = region_name
 
-        self._is_geocoding_intersections = False
+        # check if city_name is provided
+        if not region_name:
+            print("  :region_name not provided, "
+                  "specify the region name the UTDF.csv file represents recommended.")
 
-    def load_utdf(self) -> None:
+        # load UTDF data from the file in the initialization
+        self.__load_utdf()
+
+    def __load_utdf(self) -> None:
         """Load UTDF file and generate dataframes for Networks, Nodes, Links, Lanes, Timeplans, and Phases
         """
 
@@ -233,22 +245,26 @@ class UTDF2GMNS:
             .loc[i, "RECORDNAME"]: utdf_dict_data.get("Network")
             .loc[i, "DATA"]
             for i in range(len(utdf_dict_data.get("Network")))}
+
         self.network_unit = "feet, mph" if str(self.network_settings.get("Metric")) == "0" else "meters, km/h"
 
-        # save to instance variable
-        self.utdf_dict = utdf_dict_data
+        # assign to instance variable
+        self._utdf_dict = utdf_dict_data
+
+        # initialize the instance variables
+        self._is_geocoding_intersections = False
         return None
 
-    def geocoding_intersections(self, dist_threshold: float = 0.01, single_coord: dict = {}) -> None:
-        """Geocoding intersections
+    def geocode_intersections(self, dist_threshold: float = 0.01, single_coord: dict = {}) -> None:
+        """Geocode intersections
         Firstly, geocoding one intersection from address
         Then, according to the Nodes information, calculate all intersections based on relative distance.
 
         Args:
-            dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01.
+            dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
             single_coord (dict): a single intersection coordinate data, defaults to {}.
                 If not provided, geocoding one intersection from address.
-                sample data: {"INTID": 1, "x_coord": -114.568, "y_coord": 35.155}
+                sample data: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
 
         Raises:
             ValueError: Single coordinate should have INTID, x_coord, and y_coord keys!
@@ -265,39 +281,52 @@ class UTDF2GMNS:
         if single_coord:
             if not {"INTID", "x_coord", "y_coord"}.issubset(set(single_coord.keys())):
                 raise ValueError("Single coordinate should have INTID, x_coord, and y_coord keys!")
-            if not isinstance(single_coord.get("INTID"), int):
-                raise ValueError("INTID should be an integer!")
+            if not isinstance(single_coord.get("INTID"), str):
+                raise ValueError("INTID should be a string!")
             if not isinstance(single_coord.get("x_coord"), float):
                 raise ValueError("x_coord should be a float!")
             if not isinstance(single_coord.get("y_coord"), float):
                 raise ValueError("y_coord should be a float!")
 
             # check if id is in the Nodes
-            if single_coord.get("INTID") not in self.utdf_dict.get("Nodes")["INTID"].tolist():
+            int_id = int(single_coord.get("INTID"))
+            if int_id not in self._utdf_dict.get("Nodes")["INTID"].tolist():
                 raise ValueError("INTID is not in the Nodes!")
 
             single_intersection = single_coord
 
         else:
-            # generate intersections with name for coordinations
-            df_utdf_intersection = generate_intersection_from_Links(self.utdf_dict.get("Links"),
-                                                                    self._city_name)
+            if self._utdf_region_name:
+                # generate intersections with name for coordinations
+                df_utdf_intersection = generate_intersection_from_Links(
+                    self._utdf_dict.get("Links"),
+                    self._utdf_region_name)
 
-            # geocoding one intersection from address, with threshold 0.01 km
-            single_intersection = generate_intersection_coordinates(
-                df_utdf_intersection,
-                dist_threshold=dist_threshold,
-                geocode_one=True)
+                # geocoding one intersection from address, with threshold 0.01 km
+                single_intersection = generate_intersection_coordinates(
+                    df_utdf_intersection,
+                    dist_threshold=dist_threshold,
+                    geocode_one=True)
 
-            # check if the single_intersection is empty
-            if single_intersection["INTID"] is None:
-                raise Exception("No valid intersection is geo-coded!"
-                                " Please change dist_threshold or provide single_coord manually.")
+                # check if the single_intersection is empty
+                if single_intersection["INTID"] is None:
+                    raise Exception(
+                        "\n  No valid intersection is geo-coded!"
+                        "  Please change dist_threshold or provide single_coord manually.")
+            else:
+                raise Exception(
+                    "\nCould not geocode intersections, two ways to solve this issue: \n"
+                    "  1. provide city_name when initializing UTDF2GMNS class; \n"
+                    "  2. provide single_coord manually while running geocoding_intersections()."
+                )
 
         # update Nodes from single_intersection
-        node_df = update_node_from_one_intersection(single_intersection, self.utdf_dict.get("Nodes"), self.network_unit)
+        node_df = update_node_from_one_intersection(single_intersection,
+                                                    self._utdf_dict.get("Nodes"),
+                                                    self.network_unit)
 
-        self.utdf_dict["Nodes"] = node_df
+        # self._utdf_dict["Nodes"] = node_df
+        self.network_nodes = node_df
         self._is_geocoding_intersections = True
         return None
 
@@ -306,8 +335,8 @@ class UTDF2GMNS:
         """
 
         # get signal intersection id from phase
-        df_phase = self.utdf_dict.get("Phases")
-        df_lane = self.utdf_dict.get("Lanes")
+        df_phase = self._utdf_dict.get("Phases")
+        df_lane = self._utdf_dict.get("Lanes")
         signal_int_id = df_phase["INTID"].unique()
 
         signal_intersections = {
@@ -317,51 +346,109 @@ class UTDF2GMNS:
         self.network_signal_intersections = signal_intersections
         return None
 
-    def create_network(self, default_width: float = 0.0) -> None:
+    def create_network(self, default_width: float = 12) -> None:
         """Create network from UTDF data by combining Nodes, Links, Lanes, and Phases
         """
-        width = default_width or self.network_settings.get("DefWidth", 12)
+        width = self.network_settings.get("DefWidth", default_width)
         unit = self.network_unit
 
-        links_dict = generate_links(self.utdf_dict.get("Links"), self.utdf_dict.get("Nodes"), width, unit)
+        links_dict = generate_links(self._utdf_dict.get("Links"), self.network_nodes, width, unit)
         self.network_links = links_dict
 
         return None
 
-    def save_results_to_csv(self, out_dir: str, *, intersections: bool = True, links: bool = True, UTDF: bool = False):
-        """Save results to csv files
+    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = False) -> None:
+        """Convert UTDF data to GMNS data and save to the output directory
 
         Args:
-            out_dir (str): output directory to save the results
-            intersections (bool): whether to save coordinated intersections to csv.
-                Defaults to True.
-            links (bool): whether to save link geometry to csv. Defaults to True.
-            UTDF (bool): Whether to save categorized UTDF data to csv. Defaults to True.
-                Categories include Nodes, Networks, Timeplans, Links, Lanes, and Phases.
+            out_dir (str): output directory to save the GMNS data, defaults to the same directory as the UTDF file.
+            incl_utdf (bool): whether to save the UTDF data to the output directory, defaults to True.
+
+        Note:
+            the UTDF data includes Nodes, Networks, Timeplans, Links, Lanes, and Phases.
+            the GMNS data includes node.csv and link.csv.
+
+        Raises:
+            FileNotFoundError: Output directory not found!
+
+        Returns:
+            None
         """
 
         # check if the output directory exists
-        if not os.path.exists(out_dir):
-            raise FileNotFoundError(f"Output directory {out_dir} not found!")
+        utdf_dir = Path(self._utdf_filename).parent.absolute()
+        gmns_out_dir = out_dir or os.path.join(utdf_dir, "utdf_to_gmns")
+        if not os.path.exists(gmns_out_dir):
+            os.makedirs(gmns_out_dir)
 
-        if UTDF:
-            if hasattr(self, "utdf_dict"):
-                for category in self.utdf_dict.keys():
-                    self.utdf_dict[category].to_csv(os.path.join(out_dir, f"UTDF_{category}.csv"), index=False)
+        # save the GMNS data to the output directory
+        if not hasattr(self, "network_nodes"):
+            self.create_network()
 
-        if intersections:
-            if self._is_geocoding_intersections:
-                self.utdf_dict.get("Nodes").to_csv(os.path.join(out_dir, "intersections.csv"), index=False)
-            else:
-                print("  :No intersection geometry generated!, please geocode intersections first!")
+        if not hasattr(self, "network_links"):
+            self.create_network()
 
-        if links:
-            if hasattr(self, "network_links"):
-                df_lst = []
-                for int_id, value in self.network_links.items():
-                    df_value = pd.DataFrame([value])
-                    df_value["LinkID"] = int_id
-                    df_lst.append(df_value)
-                pd.concat(df_lst).to_csv(os.path.join(out_dir, "links.csv"), index=False)
-            else:
-                print("  :No link geometry generated!, please create network first!")
+        pd.DataFrame(self.network_nodes.values()).to_csv(os.path.join(gmns_out_dir, "node.csv"), index=False)
+        pd.DataFrame(self.network_links.values()).to_csv(os.path.join(gmns_out_dir, "link.csv"), index=False)
+
+        # save the UTDF data to the output directory
+        if incl_utdf:
+            self._utdf_dict.get("Nodes").to_csv(os.path.join(gmns_out_dir,
+                                                             "utdf_nodes.csv"),
+                                                index=False)
+            self._utdf_dict.get("Network").to_csv(os.path.join(gmns_out_dir,
+                                                               "utdf_network.csv"),
+                                                  index=False)
+            self._utdf_dict.get("Timeplans").to_csv(os.path.join(gmns_out_dir,
+                                                                 "utdf_timeplans.csv"),
+                                                    index=False)
+            self._utdf_dict.get("Links").to_csv(os.path.join(gmns_out_dir,
+                                                             "utdf_links.csv"),
+                                                index=False)
+            self._utdf_dict.get("Lanes").to_csv(os.path.join(gmns_out_dir,
+                                                             "utdf_lanes.csv"),
+                                                index=False)
+            self._utdf_dict.get("Phases").to_csv(os.path.join(gmns_out_dir,
+                                                              "utdf_phases.csv"),
+                                                 index=False)
+        print(f"  :Successfully saved GMNS data to {gmns_out_dir}.")
+        return None
+
+    def utdf_to_sumo(self, out_dir: str = "", sumo_name: str = "") -> None:
+
+        # check if the output directory exists
+        utdf_dir = Path(self._utdf_filename).parent.absolute()
+        sumo_out_dir = out_dir or os.path.join(utdf_dir, "utdf_to_sumo")
+        if not os.path.exists(sumo_out_dir):
+            os.makedirs(sumo_out_dir)
+
+        # save the SUMO data to the output directory
+        if not hasattr(self, "network_nodes"):
+            self.create_network()
+
+        if not hasattr(self, "network_links"):
+            self.create_network()
+
+        # extract link data from df_link
+        int_links = reformat_link_dataframe_to_dict(self._utdf_dict.get("Links"))
+        xml_name = sumo_name or "utdf_to_sumo"
+
+        # create SUMO .nod.xml file
+        output_nod_file = os.path.join(sumo_out_dir, f"{xml_name}.nod.xml")
+        generate_nod_xml(self.network_nodes, output_nod_file)
+
+        # create SUMO .edg.xml file
+        output_nod_file = os.path.join(sumo_out_dir, f"{xml_name}.edg.xml")
+        generate_edg_xml(int_links, output_nod_file)
+
+        # convert the .nod.xml and .edg.xml files to .net.xml file
+        # using sumo-netconvert
+        # sumo-netconvert -n network.nod.xml -e network.edg.xml -o network.net.xml
+        subprocess.run(["netconvert",
+                        f"--node-files={xml_name}.nod.xml",
+                        f"--edge-files={xml_name}.edg.xml",
+                        f"--output-file={xml_name}.net.xml",
+                        "--proj.utm",],
+                       cwd=sumo_out_dir)
+        return None
+

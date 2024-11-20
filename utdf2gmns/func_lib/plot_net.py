@@ -20,11 +20,10 @@ def plot_net(net: object, *, save_fig: bool = False,
     fig, ax = plt.subplots(figsize=fig_size)
 
     # plot intersections
-    if net._is_geocoding_intersections:
-        df_node = net.utdf_dict["Nodes"]
-        for i in range(len(df_node)):
-            x = df_node.loc[i, "x_coord"]
-            y = df_node.loc[i, "y_coord"]
+    if hasattr(net, 'network_nodes'):
+        for node in net.network_nodes:
+            x = net.network_nodes[node]['x_coord']
+            y = net.network_nodes[node]['y_coord']
             ax.plot(x, y, 'ro')
         is_plot = True
 
@@ -38,7 +37,7 @@ def plot_net(net: object, *, save_fig: bool = False,
     if is_plot:
 
         # Set equal scaling
-        ax.set_aspect('equal')
+        # ax.set_aspect('equal')
 
         # Add labels and title
         ax.set_xlabel('Longitude')

@@ -7,42 +7,61 @@
 '''
 
 import pandas as pd
-import math
+from geopy import distance
 
 
-def calculate_new_coordinates_from_offsets(initial_longitude: float, initial_latitude: float,
-                                           x_offset: float, y_offset: float, unit: str) -> tuple:
+def calculate_new_coordinates_from_offsets(base_lon: float,
+                                           base_lat: float,
+                                           x_offset: float,
+                                           y_offset: float,
+                                           unit: str) -> tuple:
+    """
+    Calculate the new point's coordinates given offsets in unit.
 
-    EARTH_RADIUS = 6371.0088  # in kilometers
+    Args:
+        base_lon (float): the base longitude
+        base_lat (float): the base latitude
+        x_offset (float): the offset in x direction
+        y_offset (float): the offset in y direction
+        unit (str): the unit of the offsets, e.g., "feet" or "meter"
+    """
 
-    # covert ft to km, 1 ft = 0.3048 m = 0.0003048 km
+    # Convert offsets to meters (1 foot = 0.3048 meters)
     if "feet" in unit:
-        x_distance_km = x_offset * 0.0003048
-        y_distance_km = y_offset * 0.0003048
+        x_m = x_offset * 0.3048
+        y_m = y_offset * 0.3048
     elif "meter" in unit:
-        x_distance_km = x_offset * 0.001
-        y_distance_km = y_offset * 0.001
+        x_m = x_offset
+        y_m = y_offset
     else:
         raise Exception("unit must be either feet or meter.")
 
-    # covert lat and lng degree to km
-    lat_rad = math.radians(initial_latitude)
-    lat_km_per_degree = (2 * math.pi * EARTH_RADIUS) * math.cos(lat_rad) / 360
-    lng_km_per_degree = (2 * math.pi * EARTH_RADIUS) * \
-        math.cos(math.radians(initial_latitude)) / 360
+    # Calculate the distance and bearing for y_offset (North/South)
+    if y_m != 0:
+        bearing_y = 0 if y_m > 0 else 180
+        distance_y = abs(y_m)
+        origin = (base_lat, base_lon)
+        new_point_y = distance.distance(
+            meters=distance_y).destination(origin, bearing_y)
+    else:
+        new_point_y = (base_lat, base_lon)
 
-    # calculate the lat and lng degree change with distance
-    lat_change = y_distance_km / lat_km_per_degree
-    lng_change = x_distance_km / lng_km_per_degree
+    # Calculate the distance and bearing for x_offset (East/West)
+    if x_m != 0:
+        bearing_x = 90 if x_m > 0 else 270
+        distance_x = abs(x_m)
+        new_point = distance.distance(
+            meters=distance_x).destination(new_point_y, bearing_x)
+    else:
+        new_point = new_point_y
 
-    # calculate the new lat and lng
-    new_lat = initial_latitude + lat_change
-    new_lng = initial_longitude + lng_change
+    if isinstance(new_point, tuple):
+        return (new_point[1], new_point[0])
 
-    return (new_lng, new_lat)
+    return (new_point.longitude, new_point.latitude)
 
 
-def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, unit: str) -> pd.DataFrame:
+def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, unit: str) -> dict:
     """
     Update node coordinates from a single intersection data.
 
@@ -106,4 +125,7 @@ def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, u
             df_node.loc[i, "TYPE_DESC"] = node_type[int(df_node.loc[i, "TYPE"])]
         except Exception:
             continue
-    return df_node
+
+    df_node.set_index("INTID", inplace=True, drop=False)
+
+    return df_node.to_dict("index")

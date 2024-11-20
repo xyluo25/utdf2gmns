@@ -109,7 +109,7 @@ utdf_metadata = {
         DetectExtend1, DetectExtend2, DetectExtend3, DetectExtend4, DetectExtend5: Extend time for detector in seconds.
         DetectDelay1: Delay time, detector 1 only.""",
     "Timeplans": """
-        Control Type: 0=pretimed,1=actd uncoord, 2=semiact uncoord, 3=acted coordinated.
+        Control Type: 0=pretimed, 1=actd uncoord, 2=semiact uncoord, 3=acted coordinated.
         Cycle Length: Cycle length in seconds.
         Lock Timings: 0=unlocked, 1=locked. Timings will still be read from Time Plan and Phasings section when locked.
         Referenced To: the part of phase to which offsets are referenced.
