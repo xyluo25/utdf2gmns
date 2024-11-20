@@ -50,7 +50,7 @@ def generate_sumo_edges(network_edges: dict, filename="network.edg.xml") -> list
 
         for edge in edges:
             sumo_edge = sumolib.net.edge.Edge(
-                id=f"{start_node}_{edges[edge]["Up ID"]}",
+                id=f"{start_node}_{edges[edge]['Up ID']}",
                 fromN=start_node,
                 toN=edges[edge]["Up ID"],
                 numLanes=edges[edge]["Lanes"],
