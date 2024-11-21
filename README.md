@@ -26,7 +26,6 @@ A AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different 
 
 ```python
 import utdf2gmns as ug
-import pandas as pd
 
 if __name__ == "__main__":
 

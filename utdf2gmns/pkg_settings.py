@@ -133,6 +133,7 @@ utdf_metadata = {
             A zero value indicates no more nodes.
             There will be no time plan and phasing records for node 102, they are defined by node 101. """,
     "Phases": """
+        A phase is a timing unit that controls the operation of one or more movements.
         RECORDNAME: Name of the phase;
         INTID: Intersection ID;
         D1, D2, D3, D4, D5, D6, D7, D8: The phase number for each ring;
