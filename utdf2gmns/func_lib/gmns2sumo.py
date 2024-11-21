@@ -108,7 +108,16 @@ def generate_edg_xml(network_links: dict, filename="network.edg.xml") -> None:
             edge_elem.set("from", str(start_node))
             edge_elem.set("to", str(end_node))
 
-            edge_elem.set("numLanes", str(link.get("Lanes", 2)))  # Default lanes
+            # define number of lanes for the edge
+            num_lanes = link.get("Lanes", "2")  # Default lanes
+            if num_lanes == "0":
+                num_lanes = "2"
+            if len(num_lanes) > 1:
+                num_lanes = num_lanes[-1]
+
+            edge_elem.set("numLanes", str(num_lanes))  # Default lanes
+
+            # check if speed is provided
             if link.get("Speed", None):
                 edge_elem.set("speed", str(link.get("Speed")))
 

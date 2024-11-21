@@ -7,7 +7,7 @@
 '''
 
 import math
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString, Point
 from pyproj import Transformer
 import pandas as pd
 
@@ -198,8 +198,10 @@ def reformat_link_dataframe_to_dict(df_link: pd.DataFrame) -> dict:
     return link_dict
 
 
-def generate_links(df_link: pd.DataFrame, net_node: dict,
-                   default_link_width: float, unit: str = "feet") -> dict:
+def generate_links_polygon(df_link: pd.DataFrame,
+                           net_node: dict,
+                           default_link_width: float,
+                           unit: str = "feet") -> dict:
     """Generate links from UTDF link data
 
     Args:
@@ -251,4 +253,60 @@ def generate_links(df_link: pd.DataFrame, net_node: dict,
                 dest_int_dict["Link_ID"] = link_id
 
                 links[link_id] = dest_int_dict
+    return links
+
+
+def generate_links(df_link: pd.DataFrame,
+                   net_node: dict,
+                   default_link_width: float,
+                   unit: str = "feet") -> dict:
+    """Generate links from UTDF link data with default width and unit"""
+
+    # extract intersection coordinates from df_node
+    int_coords = {}
+    for int_id in net_node:
+        int_coords[int_id] = [net_node[int_id]["x_coord"], net_node[int_id]["y_coord"]]
+
+    # extract link data from df_link
+    int_links = reformat_link_dataframe_to_dict(df_link)
+
+    # generate links
+    links = {}
+
+    for int_id in int_links:
+        # get start intersection coordinates
+        start_int = int_id
+        start_x, start_y = int_coords[start_int]
+
+        # get the connections from the start intersection
+        start_connections = int_links[int_id]
+
+        # iterate through each direction, such as "NB", "SB"
+        for each_dir in start_connections:
+            dest_int_dict = start_connections[each_dir]
+
+            # get the destination intersection coordinates
+            dest_int = dest_int_dict["Up ID"]
+            dest_x, dest_y = int_coords[dest_int]
+
+            # check if the link id already exists
+            link_id = f"{start_int}_{dest_int}"
+            link_id_rev = f"{dest_int}_{start_int}"
+            if link_id in links or link_id_rev in links:
+                continue
+
+            # remove keys "Up ID" and "Lanes"
+            dest_int_dict.pop("Up ID")
+
+            # create a link between the start and destination intersections
+            start_dest_link = LineString([Point(start_x, start_y), Point(dest_x, dest_y)])
+
+            # add the link to the links dictionary,,,
+            dest_int_dict["geometry"] = start_dest_link
+            link_id = f"{start_int}_{dest_int}"
+            dest_int_dict["Link_ID"] = link_id
+
+            # add the link to the links dictionary
+            links[link_id] = dest_int_dict
+
     return links

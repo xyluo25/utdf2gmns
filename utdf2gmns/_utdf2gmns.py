@@ -21,13 +21,17 @@ from pyufunc import (func_running_time,
 # For deployment
 from utdf2gmns.func_lib.geocoding_intersection import generate_intersection_coordinates
 from utdf2gmns.func_lib.match_node_intersection_movement_utdf import (
-    match_intersection_node, match_movement_and_intersection_node,
-    match_movement_utdf_lane, match_movement_utdf_phase_timeplans)
+    match_intersection_node,
+    match_movement_and_intersection_node,
+    match_movement_utdf_lane,
+    match_movement_utdf_phase_timeplans)
 from utdf2gmns.func_lib.read_utdf import (generate_intersection_from_Links,
                                           read_UTDF_file)
 from utdf2gmns.func_lib.geocoding_Nodes import update_node_from_one_intersection
-from utdf2gmns.func_lib.signalized_intersections import parse_signalized_intersection
-from utdf2gmns.func_lib.geocoding_Links import generate_links, reformat_link_dataframe_to_dict
+from utdf2gmns.func_lib.signalized_intersections import parse_signal_control
+from utdf2gmns.func_lib.geocoding_Links import (generate_links,
+                                                generate_links_polygon,
+                                                reformat_link_dataframe_to_dict)
 
 # SUMO related functions
 from utdf2gmns.func_lib.gmns2sumo import generate_nod_xml, generate_edg_xml
@@ -255,16 +259,16 @@ class UTDF2GMNS:
         self._is_geocoding_intersections = False
         return None
 
-    def geocode_intersections(self, dist_threshold: float = 0.01, single_coord: dict = {}) -> None:
+    def geocode_intersections(self, single_coord: dict = {}, dist_threshold: float = 0.01) -> None:
         """Geocode intersections
-        Firstly, geocoding one intersection from address
+        Firstly, geocode one intersection from given single intersection coordinate.
         Then, according to the Nodes information, calculate all intersections based on relative distance.
 
         Args:
-            dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
             single_coord (dict): a single intersection coordinate data, defaults to {}.
                 If not provided, geocoding one intersection from address.
                 sample data: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
+            dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
 
         Raises:
             ValueError: Single coordinate should have INTID, x_coord, and y_coord keys!
@@ -330,7 +334,7 @@ class UTDF2GMNS:
         self._is_geocoding_intersections = True
         return None
 
-    def signalize_intersections(self) -> None:
+    def create_signal_control(self) -> None:
         """Signalize intersections
         """
 
@@ -340,24 +344,29 @@ class UTDF2GMNS:
         signal_int_id = df_phase["INTID"].unique()
 
         signal_intersections = {
-            int_id: parse_signalized_intersection(df_phase, df_lane, int_id)
+            int_id: parse_signal_control(df_phase, df_lane, int_id)
             for int_id in signal_int_id
         }
-        self.network_signal_intersections = signal_intersections
+        self.network_signal_control = signal_intersections
         return None
 
-    def create_network(self, default_width: float = 12) -> None:
+    def create_network(self, default_width: float = 12, is_link_polygon: bool = False) -> None:
         """Create network from UTDF data by combining Nodes, Links, Lanes, and Phases
         """
         width = self.network_settings.get("DefWidth", default_width)
         unit = self.network_unit
 
-        links_dict = generate_links(self._utdf_dict.get("Links"), self.network_nodes, width, unit)
-        self.network_links = links_dict
+        # whether to use link polygon
+        if is_link_polygon:
+            links_dict = generate_links_polygon(self._utdf_dict.get("Links"), self.network_nodes, width, unit)
 
+        else:
+            links_dict = generate_links(self._utdf_dict.get("Links"), self.network_nodes, width, unit)
+
+        self.network_links = links_dict
         return None
 
-    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = False) -> None:
+    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = False, is_link_polygon: bool = False) -> None:
         """Convert UTDF data to GMNS data and save to the output directory
 
         Args:
@@ -383,10 +392,10 @@ class UTDF2GMNS:
 
         # save the GMNS data to the output directory
         if not hasattr(self, "network_nodes"):
-            self.create_network()
+            self.create_network(is_link_polygon=is_link_polygon)
 
         if not hasattr(self, "network_links"):
-            self.create_network()
+            self.create_network(is_link_polygon=is_link_polygon)
 
         pd.DataFrame(self.network_nodes.values()).to_csv(os.path.join(gmns_out_dir, "node.csv"), index=False)
         pd.DataFrame(self.network_links.values()).to_csv(os.path.join(gmns_out_dir, "link.csv"), index=False)
@@ -411,10 +420,11 @@ class UTDF2GMNS:
             self._utdf_dict.get("Phases").to_csv(os.path.join(gmns_out_dir,
                                                               "utdf_phases.csv"),
                                                  index=False)
-        print(f"  :Successfully saved GMNS data to {gmns_out_dir}.")
+        print(f"  :Successfully saved GMNS(csv) data to {gmns_out_dir}.")
         return None
 
-    def utdf_to_sumo(self, out_dir: str = "", sumo_name: str = "") -> None:
+    def utdf_to_sumo(self, out_dir: str = "", sumo_name: str = "", *,
+                     show_warning_message: bool = False) -> None:
 
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
@@ -429,26 +439,34 @@ class UTDF2GMNS:
         if not hasattr(self, "network_links"):
             self.create_network()
 
-        # extract link data from df_link
-        int_links = reformat_link_dataframe_to_dict(self._utdf_dict.get("Links"))
         xml_name = sumo_name or "utdf_to_sumo"
 
         # create SUMO .nod.xml file
-        output_nod_file = os.path.join(sumo_out_dir, f"{xml_name}.nod.xml")
-        generate_nod_xml(self.network_nodes, output_nod_file)
+        output_node_file = os.path.join(sumo_out_dir, f"{xml_name}.nod.xml")
+        generate_nod_xml(self.network_nodes, output_node_file)
 
         # create SUMO .edg.xml file
-        output_nod_file = os.path.join(sumo_out_dir, f"{xml_name}.edg.xml")
-        generate_edg_xml(int_links, output_nod_file)
+        # extract link data from df_link
+        int_links = reformat_link_dataframe_to_dict(self._utdf_dict.get("Links"))
+        output_edge_file = os.path.join(sumo_out_dir, f"{xml_name}.edg.xml")
+        generate_edg_xml(int_links, output_edge_file)
 
         # convert the .nod.xml and .edg.xml files to .net.xml file
-        # using sumo-netconvert
         # sumo-netconvert -n network.nod.xml -e network.edg.xml -o network.net.xml
-        subprocess.run(["netconvert",
-                        f"--node-files={xml_name}.nod.xml",
-                        f"--edge-files={xml_name}.edg.xml",
-                        f"--output-file={xml_name}.net.xml",
-                        "--proj.utm",],
-                       cwd=sumo_out_dir)
-        return None
+        result = subprocess.run(["netconvert",
+                                 f"--node-files={output_node_file}",
+                                 f"--edge-files={output_edge_file}",
+                                 f"--output-file={xml_name}.net.xml"],
+                                cwd=sumo_out_dir,
+                                capture_output=True,
+                                text=True)
+        if "Success" not in result.stdout:
+            print("  :SUMO netconvert from nod.xml, edg.xml to net.xml failed!")
+            print(f" :{result.stderr}")
+            return None
 
+        print(f"  :Successfully generated SUMO network to {sumo_out_dir}.")
+        if show_warning_message:
+            print("Warning message in generating SUMO network:")
+            print(f"{result.stderr}")
+        return None

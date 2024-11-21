@@ -11,8 +11,8 @@ import pandas as pd
 from collections import OrderedDict
 
 
-def parse_phase_signal(df_phase: pd.DataFrame, int_id: int) -> dict:
-    """Extract signal data from the UTDF Phase data by intersection ID
+def parse_phase(df_phase: pd.DataFrame, int_id: int) -> dict:
+    """Extract signal Phase data by intersection ID
 
     Args:
         df_Phase (pd.DataFrame): UTDF Phase data
@@ -67,8 +67,8 @@ def parse_phase_signal(df_phase: pd.DataFrame, int_id: int) -> dict:
     return result
 
 
-def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
-    """Extract lane data from the UTDF Lane data by intersection ID
+def parse_lane(df_lane: pd.DataFrame, int_id: int, verbose: bool = False) -> dict:
+    """Extract single lane data by intersection ID
 
     Args:
         df_lane (pd.DataFrame): UTDF Lane data
@@ -108,14 +108,14 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
             key = f'Phase{i}'
             if key in df_lane_id.index:
                 phase_val = df_lane_id[traffic_movement].loc[key]
-                if phase_val:
+                if phase_val and phase_val != '-1':
                     traffic_movement_data[traffic_movement]["Protected"].append(
                         f"D{phase_val}")
 
             key = f'PermPhase{i}'
             if key in df_lane_id.index:
                 perm_phase_val = df_lane_id[traffic_movement].loc[key]
-                if perm_phase_val:
+                if perm_phase_val and perm_phase_val != '-1':
                     traffic_movement_data[traffic_movement]["Permitted"].append(
                         f"D{perm_phase_val}")
 
@@ -156,10 +156,12 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
         elif (dest_node in inbound_nodes):
             possible_list = inbound_nodes[dest_node]
         else:
-            print(f"did not found possible list for movement {movement} at node {int_id}")
+            if verbose:
+                print(f"  :Info: did not found possible list for movement {movement} at node {int_id}")
             continue
         if len(possible_list) == 0:
-            print(f"did not found possible list for movement {movement} at node {int_id}")
+            if verbose:
+                print(f"  :Info: did not found possible list for movement {movement} at node {int_id}")
             continue
 
         type_ = 'Protected' if movement[-1] == 'T' else 'Permitted'
@@ -194,6 +196,15 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int) -> dict:
 
 
 def parse_timeplans(df_timeplans: pd.DataFrame, int_id: int) -> dict:
+    """Extract signal Time plan data by intersection ID
+
+    Args:
+        df_timeplans (pd.DataFrame): UTDF Time plan data
+        int_id (int): Intersection ID
+
+    Returns:
+        dict: the time plan data for the intersection
+    """
 
     # prepare single dataframe for the intersection
     df_timeplans = df_timeplans[~df_timeplans['INTID'].isnull()]
@@ -206,7 +217,7 @@ def parse_timeplans(df_timeplans: pd.DataFrame, int_id: int) -> dict:
     return int_timeplans
 
 
-def parse_signalized_intersection(df_phase: pd.DataFrame, df_lane: pd.DataFrame, int_id: int) -> dict:
+def parse_signal_control(df_phase: pd.DataFrame, df_lane: pd.DataFrame, int_id: int) -> dict:
     """Extract signalized intersection data from the UTDF Phase and Lane data by intersection ID
 
     Args:
@@ -225,14 +236,17 @@ def parse_signalized_intersection(df_phase: pd.DataFrame, df_lane: pd.DataFrame,
         'D8': {'protected': ['EBT'], 'permitted': ['EBR']}}
     """
 
-    int_phase = parse_phase_signal(df_phase, int_id)
+    int_phase = parse_phase(df_phase, int_id)
     int_lane = parse_lane(df_lane, int_id)
     int_lane_phase = int_lane['phases']
 
     phase_key = list(int_lane_phase.keys())
-
     for phs in phase_key:
         for pro_per in list(int_lane_phase[phs].keys()):
-            int_phase[phs][pro_per] = int_lane_phase[phs][pro_per]
+            try:
+                int_phase[phs][pro_per] = int_lane_phase[phs][pro_per]
+            except KeyError as e:
+                print("  :Error: Intersection ID: ", int_id)
+                print(e)
 
     return int_phase
