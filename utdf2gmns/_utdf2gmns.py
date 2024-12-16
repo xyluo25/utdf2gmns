@@ -9,6 +9,7 @@ import os
 import pickle
 from pathlib import Path
 import subprocess
+import warnings
 
 import pandas as pd
 
@@ -220,14 +221,24 @@ def generate_movement_utdf(input_dir: str = "",
 
 
 class UTDF2GMNS:
-    def __init__(self, utdf_filename: str, region_name: str = ""):
+    """UTDF2GMNS performs the data conversion from UTDF to other formats.
+    The class includes functions such as:
+        - read_UTDF_file (default): read UTDF file and generate dataframes for Networks, Nodes, Links, Lanes, Timeplans, and Phases
+        - geocode_intersections: geocode intersections
+        - create_signal_control: signalize intersections
+        - create_network: create network from UTDF data by combining Nodes, Links, Lanes, and Phases
+        - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory
+        - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory
+    """
+    def __init__(self, utdf_filename: str, region_name: str = "", *, verbose: bool = False):
         self._utdf_filename = utdf_filename
         self._utdf_region_name = region_name
+        self._verbose = verbose  # whether to print the verbose message
 
         # check if city_name is provided
         if not region_name:
             print("  :region_name not provided, "
-                  "specify the region name the UTDF.csv file represents recommended.")
+                  "it is recommended to specify the region name that the UTDF.csv file represents.")
 
         # load UTDF data from the file in the initialization
         self.__load_utdf()
@@ -265,7 +276,7 @@ class UTDF2GMNS:
         Then, according to the Nodes information, calculate all intersections based on relative distance.
 
         Args:
-            single_coord (dict): a single intersection coordinate data, defaults to {}.
+            single_coord (dict): a single intersection coordinates, defaults to {}.
                 If not provided, geocoding one intersection from address.
                 sample data: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
             dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
@@ -275,6 +286,7 @@ class UTDF2GMNS:
             ValueError: INTID should be an integer!
             ValueError: x_coord should be a float!
             ValueError: y_coord should be a float!
+            ValueError: single_coord: {int_id} is not in the Nodes!
             Exception: No valid intersection is geo-coded!
 
         Returns:
@@ -295,7 +307,7 @@ class UTDF2GMNS:
             # check if id is in the Nodes
             int_id = int(single_coord.get("INTID"))
             if int_id not in self._utdf_dict.get("Nodes")["INTID"].tolist():
-                raise ValueError("INTID is not in the Nodes!")
+                raise ValueError(f"single_coord: {int_id} is not in the Nodes!")
 
             single_intersection = single_coord
 
@@ -352,6 +364,14 @@ class UTDF2GMNS:
 
     def create_network(self, default_width: float = 12, is_link_polygon: bool = False) -> None:
         """Create network from UTDF data by combining Nodes, Links, Lanes, and Phases
+
+        Args:
+            default_width (float): default width of the link, defaults to 12.
+            is_link_polygon (bool): whether to create link polygon, defaults to False.
+
+        Returns:
+            None
+
         """
         width = self.network_settings.get("DefWidth", default_width)
         unit = self.network_unit
@@ -366,16 +386,17 @@ class UTDF2GMNS:
         self.network_links = links_dict
         return None
 
-    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = False, is_link_polygon: bool = False) -> None:
+    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = True, is_link_polygon: bool = False) -> None:
         """Convert UTDF data to GMNS data and save to the output directory
 
         Args:
             out_dir (str): output directory to save the GMNS data, defaults to the same directory as the UTDF file.
             incl_utdf (bool): whether to save the UTDF data to the output directory, defaults to True.
+            is_link_polygon (bool): whether to create link polygon, defaults to False.
 
         Note:
-            the UTDF data includes Nodes, Networks, Timeplans, Links, Lanes, and Phases.
-            the GMNS data includes node.csv and link.csv.
+            - the UTDF data includes Nodes, Networks, Timeplans, Links, Lanes, and Phases.
+            - the GMNS data includes node.csv and link.csv.
 
         Raises:
             FileNotFoundError: Output directory not found!
@@ -425,6 +446,19 @@ class UTDF2GMNS:
 
     def utdf_to_sumo(self, out_dir: str = "", sumo_name: str = "", *,
                      show_warning_message: bool = False) -> None:
+        """Convert UTDF data to SUMO data and save to the output directory
+
+        Args:
+            out_dir (str): the output directory for the generated sumo files.
+                Defaults to "". If not provided, the output directory is the same as the UTDF file.
+            sumo_name (str): name the generated sumo files. Defaults to "".
+                If not provided, the name is "utdf_to_sumo".
+            show_warning_message (bool): whether to show warning message during the net processing.
+                Defaults to False.
+
+        Returns:
+            None
+        """
 
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
@@ -460,7 +494,24 @@ class UTDF2GMNS:
                                 cwd=sumo_out_dir,
                                 capture_output=True,
                                 text=True)
-        if "Success" not in result.stdout:
+        if result.returncode != 0:
+            # the return code is 0, which means the command executed failed
+            # One of the reason is that the running environment is not set up correctly
+            # Such as SUMO_HOME is not set up correctly or
+            # SUMO is not installed
+
+            # We will run netconvert from the package build-in file
+            # get the path of the netconvert file under the engine directory
+            netconvert_file = Path(__file__).parent / "engine" / "netconvert.exe"
+            result = subprocess.run([netconvert_file,
+                                     f"--node-files={output_node_file}",
+                                     f"--edge-files={output_edge_file}",
+                                     f"--output-file={xml_name}.net.xml"],
+                                    cwd=sumo_out_dir,
+                                    capture_output=True,
+                                    text=True)
+
+        if result.returncode != 0:
             print("  :SUMO netconvert from nod.xml, edg.xml to net.xml failed!")
             print(f" :{result.stderr}")
             return None
