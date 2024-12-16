@@ -22,14 +22,14 @@ if __name__ == "__main__":
     #   Intersections will geocoded base on this point (Recommended Method)
     net.geocode_intersections(single_coord={}, dist_threshold=0.01)
 
-    # Step 3: create network links: user can genrate polygon-link or line-link
+    # Step 3: create network links: user can generate polygon-link or line-link
     net.create_network(is_link_polygon=False)
 
-    # Step 4: create signal intesection control
+    # Step 4: create signal intersection control
     net.create_signal_control()
 
     # Step 5: convert UTDF network to GMNS format (csv)
     net.utdf_to_gmns(incl_utdf=True)
 
-    # Step 6 (optional): convert UTDF netowrk to SUMO
+    # Step 6 (optional): convert UTDF network to SUMO
     net.utdf_to_sumo(sumo_name="", show_warning_message=False)
