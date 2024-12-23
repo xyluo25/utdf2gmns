@@ -18,7 +18,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 @func_running_time
-def read_UTDF_file(path_utdf: str) -> dict:
+def read_UTDF(path_utdf: str) -> dict:
     """read the utdf.csv file and return a dictionary of dataframes
 
     Args:

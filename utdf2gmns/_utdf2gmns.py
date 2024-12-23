@@ -9,7 +9,6 @@ import os
 import pickle
 from pathlib import Path
 import subprocess
-import warnings
 
 import pandas as pd
 
@@ -21,15 +20,10 @@ from pyufunc import (func_running_time,
 
 # For deployment
 from utdf2gmns.func_lib.geocoding_intersection import generate_intersection_coordinates
-from utdf2gmns.func_lib.match_node_intersection_movement_utdf import (
-    match_intersection_node,
-    match_movement_and_intersection_node,
-    match_movement_utdf_lane,
-    match_movement_utdf_phase_timeplans)
 from utdf2gmns.func_lib.read_utdf import (generate_intersection_from_Links,
-                                          read_UTDF_file)
+                                          read_UTDF)
 from utdf2gmns.func_lib.geocoding_Nodes import update_node_from_one_intersection
-from utdf2gmns.func_lib.signalized_intersections import parse_signal_control
+from utdf2gmns.func_lib.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.geocoding_Links import (generate_links,
                                                 generate_links_polygon,
                                                 reformat_link_dataframe_to_dict)
@@ -41,189 +35,11 @@ from utdf2gmns.func_lib.gmns2sumo import generate_nod_xml, generate_edg_xml
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-@func_running_time
-def generate_movement_utdf(input_dir: str = "",
-                           city_name: str = "",
-                           output_dir: str = "",
-                           path_utdf_intersection: str = "",
-                           isSave2csv: bool = True) -> list:
-    """generate movement_utdf.csv file from merging UTDF file to GMNS movement.csv file
-
-    Parameters
-    ----------
-    input_dir : str, optional
-        the path of input directory, by default "", which means current working directory
-    city_name : str, optional
-        the name of the city where the UTDF file is located, by default ""
-    UTDF_file : str, optional
-        the name of UTDF file, by default None
-    node_file : str, optional
-        the name of node.csv file, by default None
-    movement_file : str, optional
-        the name of movement.csv file, by default None
-    output_dir : str, optional
-        the path of output directory, by default "", which means the same as input directory
-    isSave2csv : bool, optional
-        whether to save the movement_utdf.csv file, by default True
-
-    Returns
-    -------
-    list
-        a list of movement_utdf.csv file
-
-    """
-
-    # if not specified input_dir, use current working directory
-    input_dir = input_dir or os.getcwd()
-
-    # check if required files exist in the input directory
-    # files_from_directory = get_filenames_by_ext(input_dir, file_ext="csv")
-
-    # if not required, raise an exception
-    isRequired = check_files_in_dir(["UTDF.csv"], input_dir)
-    isRequired_sub = check_files_in_dir(["node.csv", "movement.csv"], input_dir)
-
-    # required files are not found, raise an exception
-    if not isRequired:
-        raise Exception("Required file UTDF.csv are not found!")
-
-    # read UTDF file and create dataframes of utdf_intersection and utdf_lane
-    path_utdf = path2linux(os.path.join(input_dir, "UTDF.csv"))
-
-    if not city_name:
-        raise Exception("City name is not provided, please provide the city name!")
-
-    print("\nStep 1: read UTDF file...")
-    utdf_dict_data = read_UTDF_file(path_utdf)
-    utdf_dict_data["utdf_intersection"] = generate_intersection_from_Links(utdf_dict_data.get("Links"), city_name)
-
-    # geocoding the utdf_intersection and store it into utdf_dict_data
-    # If not automatically geocode, save the utdf_geo.csv file in the input directory
-    # And user manually add coord_x and coord_y to in utdf_geo.csv file
-    # And re-run the function to generate the final movement_utdf.csv file
-
-    print("Step 1.1: geocoding UTDF intersections from address...")
-    # check utdf_geo.csv file existence
-    if path_utdf_intersection:
-        # read user manually added utdf_geo.csv file from the input directory
-        # and store it into utdf_dict_data
-        print(
-            "     : read user manually added utdf_geo.csv file from the input directory...")
-        utdf_dict_data["utdf_geo"] = pd.read_csv(path_utdf_intersection)
-
-        # check if user manually added coord_x and coord_y to in utdf_geo.csv file
-        if not {"coord_x", "coord_y"}.issubset(set(utdf_dict_data.get("utdf_geo").columns)):
-            raise Exception(
-                "coord_x or coord_y not found in the utdf_geo.csv file!, please add coord_x and coord_y manually \
-                 and re-run the code afterwards."
-            )
-
-#     if os.path.exists(path2linux(os.path.join(input_dir, "utdf_geo.csv"))):
-#         # read utdf_geo.csv file from the input directory
-#         utdf_dict_data["utdf_geo"] = pd.read_csv(path2linux(
-#             os.path.join(input_dir, "utdf_geo.csv")))
-#
-#         # check if user manually added coord_x and coord_y to in utdf_geo.csv file
-#         if not {"coord_x", "coord_y"}.issubset(set(utdf_dict_data.get("utdf_geo").columns)):
-#             raise Exception(
-#                 "coord_x or coord_y not found in the utdf_geo.csv file!, please add coord_x and coord_y manually \
-#                  and re-run the code afterwards."
-#             )
-
-    # check utdf_geo in utdf_dict_data or not
-    # if not generate utdf_geo automatically
-    if "utdf_geo" not in utdf_dict_data.keys():
-        try:
-            # geocoding utdf_intersection automatically
-            utdf_dict_data["utdf_geo"] = generate_intersection_coordinates(
-                utdf_dict_data.get("utdf_intersection"))
-        except Exception as e:
-            # #  Save the utdf_geo.csv file in the input directory
-            utdf_dict_data.get("utdf_intersection").to_csv(
-                path2linux(os.path.join(input_dir, "utdf_geo.csv")), index=False)
-
-            raise Exception(
-                "We can not geocoding intersections automatically, \
-                 We save utdf_geo.csv file in your input dir,   \
-                please manually add coord_x and coord_y to the utdf_geo.csv file \
-                in your input directory and re-run the code afterwards."
-            ) from e
-
-    # required_sub files are not found, will return utdf_intersection and utdf_lane
-    if not isRequired_sub:
-        print("Because node.csv and movement.csv are not found, \
-            the function will return data from utdf in a dictionary, \
-            keys are: Lanes, Nodes, Networks, Timeplans, Links and utdf_geo.\n")
-
-        # store object into pickle file
-        with open(path2linux(os.path.join(input_dir, "utdf2gmns.pickle")), 'wb') as f:
-            pickle.dump(utdf_dict_data, f, pickle.HIGHEST_PROTOCOL)
-        return utdf_dict_data
-
-    # get the path of each file,
-    # since the input directory and files are checked, no need to validate the filename
-    print("Step 2: read node.csv and movement.csv (GMNS format)...")
-    path_node = path2linux(os.path.join(input_dir, "node.csv"))
-    path_movement = path2linux(os.path.join(input_dir, "movement.csv"))
-
-    # read node and movement files
-    df_node = pd.read_csv(path_node)
-    df_movement = pd.read_csv(path_movement)
-    print(f"    : {len(df_node)} nodes loaded.")
-    print(f"    : {len(df_movement)} movements loaded.\n")
-
-    # match utdf_intersection_geo with node
-    print("Step 3: Performing data merging from GMNS nodes"
-          "to UTDF intersections based on distance threshold(default 0.1km)...")
-    df_intersection_node = match_intersection_node(utdf_dict_data.get("utdf_geo"),
-                                                   df_node)
-
-    # match movement with intersection_node
-    print("Step 4: Performing data merging from UTDF intersections(geocoded) to GMNS movements based on OSM id...")
-    df_movement_intersection = match_movement_and_intersection_node(df_movement,
-                                                                    df_intersection_node)
-
-    # match movement with utdf_lane
-    print("Step 5: Performing data merging from UTDF Lanes to GMNS movements based on UTDF id...")
-    df_movement_utdf_lane = match_movement_utdf_lane(
-        df_movement_intersection, utdf_dict_data)
-
-    # match movement with utdf_phase_timeplans
-    print("Step 6: Performing data merging from UTDF phases and timeplans to GMNS movements based on UTDF id...")
-    df_movement_utdf_phase = match_movement_utdf_phase_timeplans(
-        df_movement_utdf_lane, utdf_dict_data)
-
-    # store utdf_intersection_geo and movement_utdf to utdf_dict_data
-    utdf_dict_data["movement_utdf_phase"] = df_movement_utdf_phase
-    utdf_dict_data["utdf_geo_GMNS_node"] = df_intersection_node
-
-    # save the output file, the default isSave2csv is True
-    # if not specified, output path is input directory,
-    # output file name = movement_utdf.csv
-    if isSave2csv:
-        if not output_dir:
-            output_dir = input_dir
-        output_file_name_1 = generate_unique_filename(
-            os.path.join(output_dir, "movement_utdf.csv"))
-        df_movement_utdf_phase.to_csv(output_file_name_1, index=False)
-
-        output_file_name_2 = generate_unique_filename(
-            os.path.join(output_dir, "utdf_intersection.csv"))
-        utdf_dict_data.get("utdf_geo").to_csv(output_file_name_2, index=False)
-
-        # with open(path2linux(os.path.join(output_dir, "utdf2gmns.pickle")), 'wb') as f:
-        #     pickle.dump(utdf_dict_data, f, pickle.HIGHEST_PROTOCOL)
-
-        print(f" : Successfully saved movement_utdf.csv to: {output_file_name_1}.")
-        print(f" : Successfully saved utdf_intersection.csv to: {output_file_name_2}.")
-
-    return [df_movement_utdf_phase, utdf_dict_data]
-
-
 class UTDF2GMNS:
-    """UTDF2GMNS performs the data conversion from UTDF to other formats.
+    """UTDF2GMNS performs the data conversion from UTDF to different formats.
     The class includes functions such as:
-        - read_UTDF_file (default): read UTDF file and generate dataframes for Networks, Nodes, Links, Lanes, Timeplans, and Phases
+        - read_UTDF_file (default): read UTDF file and generate dataframes for Networks,
+            Nodes, Links, Lanes, Timeplans, and Phases
         - geocode_intersections: geocode intersections
         - create_signal_control: signalize intersections
         - create_network: create network from UTDF data by combining Nodes, Links, Lanes, and Phases
@@ -252,7 +68,7 @@ class UTDF2GMNS:
             raise FileNotFoundError(f"UTDF file {self._utdf_filename} not found!")
 
         # read UTDF file and create dataframes
-        utdf_dict_data = read_UTDF_file(self._utdf_filename)
+        utdf_dict_data = read_UTDF(self._utdf_filename)
 
         # Extract network settings from utdf_dict_data
         self.network_settings = {
@@ -280,6 +96,10 @@ class UTDF2GMNS:
                 If not provided, geocoding one intersection from address.
                 sample data: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
             dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
+
+        Note:
+            - single_coord should follow the format: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
+            - if single_coord is not provided, geocode intersections from address (region_name must be assigned).
 
         Raises:
             ValueError: Single coordinate should have INTID, x_coord, and y_coord keys!
@@ -362,12 +182,12 @@ class UTDF2GMNS:
         self.network_signal_control = signal_intersections
         return None
 
-    def create_network(self, default_width: float = 12, is_link_polygon: bool = False) -> None:
+    def create_network(self, *, default_width: float = 12, is_link_polygon: bool = False) -> None:
         """Create network from UTDF data by combining Nodes, Links, Lanes, and Phases
 
         Args:
             default_width (float): default width of the link, defaults to 12.
-            is_link_polygon (bool): whether to create link polygon, defaults to False.
+            is_link_polygon (bool): whether to create link polygon (bbox), defaults to False.
 
         Returns:
             None
@@ -386,7 +206,7 @@ class UTDF2GMNS:
         self.network_links = links_dict
         return None
 
-    def utdf_to_gmns(self, out_dir: str = "", *, incl_utdf: bool = True, is_link_polygon: bool = False) -> None:
+    def utdf_to_gmns(self, *, output_dir: str = "", incl_utdf: bool = True, is_link_polygon: bool = False) -> None:
         """Convert UTDF data to GMNS data and save to the output directory
 
         Args:
@@ -407,9 +227,9 @@ class UTDF2GMNS:
 
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
-        gmns_out_dir = out_dir or os.path.join(utdf_dir, "utdf_to_gmns")
-        if not os.path.exists(gmns_out_dir):
-            os.makedirs(gmns_out_dir)
+        gmns_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_gmns")
+        if not os.path.exists(gmns_output_dir):
+            os.makedirs(gmns_output_dir)
 
         # save the GMNS data to the output directory
         if not hasattr(self, "network_nodes"):
@@ -418,34 +238,35 @@ class UTDF2GMNS:
         if not hasattr(self, "network_links"):
             self.create_network(is_link_polygon=is_link_polygon)
 
-        pd.DataFrame(self.network_nodes.values()).to_csv(os.path.join(gmns_out_dir, "node.csv"), index=False)
-        pd.DataFrame(self.network_links.values()).to_csv(os.path.join(gmns_out_dir, "link.csv"), index=False)
+        pd.DataFrame(self.network_nodes.values()).to_csv(
+            os.path.join(gmns_output_dir, "node.csv"), index=False)
+        pd.DataFrame(self.network_links.values()).to_csv(
+            os.path.join(gmns_output_dir, "link.csv"), index=False)
 
         # save the UTDF data to the output directory
         if incl_utdf:
-            self._utdf_dict.get("Nodes").to_csv(os.path.join(gmns_out_dir,
-                                                             "utdf_nodes.csv"),
-                                                index=False)
-            self._utdf_dict.get("Network").to_csv(os.path.join(gmns_out_dir,
-                                                               "utdf_network.csv"),
-                                                  index=False)
-            self._utdf_dict.get("Timeplans").to_csv(os.path.join(gmns_out_dir,
-                                                                 "utdf_timeplans.csv"),
-                                                    index=False)
-            self._utdf_dict.get("Links").to_csv(os.path.join(gmns_out_dir,
-                                                             "utdf_links.csv"),
-                                                index=False)
-            self._utdf_dict.get("Lanes").to_csv(os.path.join(gmns_out_dir,
-                                                             "utdf_lanes.csv"),
-                                                index=False)
-            self._utdf_dict.get("Phases").to_csv(os.path.join(gmns_out_dir,
-                                                              "utdf_phases.csv"),
-                                                 index=False)
-        print(f"  :Successfully saved GMNS(csv) data to {gmns_out_dir}.")
+            self._utdf_dict.get("Nodes").to_csv(
+                os.path.join(gmns_output_dir, "utdf_nodes.csv"),
+                index=False)
+            self._utdf_dict.get("Network").to_csv(
+                os.path.join(gmns_output_dir, "utdf_network.csv"),
+                index=False)
+            self._utdf_dict.get("Timeplans").to_csv(
+                os.path.join(gmns_output_dir, "utdf_timeplans.csv"),
+                index=False)
+            self._utdf_dict.get("Links").to_csv(
+                os.path.join(gmns_output_dir, "utdf_links.csv"),
+                index=False)
+            self._utdf_dict.get("Lanes").to_csv(
+                os.path.join(gmns_output_dir, "utdf_lanes.csv"),
+                index=False)
+            self._utdf_dict.get("Phases").to_csv(
+                os.path.join(gmns_output_dir, "utdf_phases.csv"),
+                index=False)
+        print(f"  :Successfully saved GMNS(csv) data to {gmns_output_dir}.")
         return None
 
-    def utdf_to_sumo(self, out_dir: str = "", sumo_name: str = "", *,
-                     show_warning_message: bool = False) -> None:
+    def utdf_to_sumo(self, *, output_dir: str = "", sumo_name: str = "", show_warning_message: bool = False) -> None:
         """Convert UTDF data to SUMO data and save to the output directory
 
         Args:
@@ -462,9 +283,9 @@ class UTDF2GMNS:
 
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
-        sumo_out_dir = out_dir or os.path.join(utdf_dir, "utdf_to_sumo")
-        if not os.path.exists(sumo_out_dir):
-            os.makedirs(sumo_out_dir)
+        sumo_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_sumo")
+        if not os.path.exists(sumo_output_dir):
+            os.makedirs(sumo_output_dir)
 
         # save the SUMO data to the output directory
         if not hasattr(self, "network_nodes"):
@@ -476,13 +297,12 @@ class UTDF2GMNS:
         xml_name = sumo_name or "utdf_to_sumo"
 
         # create SUMO .nod.xml file
-        output_node_file = os.path.join(sumo_out_dir, f"{xml_name}.nod.xml")
+        output_node_file = os.path.join(sumo_output_dir, f"{xml_name}.nod.xml")
         generate_nod_xml(self.network_nodes, output_node_file)
 
         # create SUMO .edg.xml file
-        # extract link data from df_link
         int_links = reformat_link_dataframe_to_dict(self._utdf_dict.get("Links"))
-        output_edge_file = os.path.join(sumo_out_dir, f"{xml_name}.edg.xml")
+        output_edge_file = os.path.join(sumo_output_dir, f"{xml_name}.edg.xml")
         generate_edg_xml(int_links, output_edge_file)
 
         # convert the .nod.xml and .edg.xml files to .net.xml file
@@ -491,7 +311,7 @@ class UTDF2GMNS:
                                  f"--node-files={output_node_file}",
                                  f"--edge-files={output_edge_file}",
                                  f"--output-file={xml_name}.net.xml"],
-                                cwd=sumo_out_dir,
+                                cwd=sumo_output_dir,
                                 capture_output=True,
                                 text=True)
         if result.returncode != 0:
@@ -500,14 +320,14 @@ class UTDF2GMNS:
             # Such as SUMO_HOME is not set up correctly or
             # SUMO is not installed
 
-            # We will run netconvert from the package build-in file
-            # get the path of the netconvert file under the engine directory
-            netconvert_file = Path(__file__).parent / "engine" / "netconvert.exe"
-            result = subprocess.run([netconvert_file,
+            # We will run netconvert (nc) from the package build-in file
+            # get the path of the netconvert(nc) file under the engine directory
+            nc_filename = Path(__file__).parent / "engine" / "netconvert.exe"
+            result = subprocess.run([nc_filename,
                                      f"--node-files={output_node_file}",
                                      f"--edge-files={output_edge_file}",
                                      f"--output-file={xml_name}.net.xml"],
-                                    cwd=sumo_out_dir,
+                                    cwd=sumo_output_dir,
                                     capture_output=True,
                                     text=True)
 
@@ -516,7 +336,7 @@ class UTDF2GMNS:
             print(f" :{result.stderr}")
             return None
 
-        print(f"  :Successfully generated SUMO network to {sumo_out_dir}.")
+        print(f"  :Successfully generated SUMO network to {sumo_output_dir}.")
         if show_warning_message:
             print("Warning message in generating SUMO network:")
             print(f"{result.stderr}")
