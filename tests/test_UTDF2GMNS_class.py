@@ -19,7 +19,7 @@ except Exception:
 
 
 # TODO test the UTDF2GMNS class
-class TestUTDF2GMNSClass:
+class TestUTDF2GMNS:
     """Test the UTDF2GMNS class including raises, warnings, and exceptions."""
 
     def setup_class(self):
