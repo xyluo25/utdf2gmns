@@ -10,11 +10,11 @@ import pytest
 from pathlib import Path
 
 try:
-    from utdf2gmns.pkg_utils import calculate_point2point_distance_in_km
+    from utdf2gmns.util_lib.pkg_utils import calculate_point2point_distance_in_km
 except Exception:
     import sys
     sys.path.append(str(Path(__file__).resolve().parents[1]))
-    from utdf2gmns.pkg_utils import calculate_point2point_distance_in_km
+    from utdf2gmns.util_lib.pkg_utils import calculate_point2point_distance_in_km
 
 
 def test_calculate_point2point_distance_in_km():
