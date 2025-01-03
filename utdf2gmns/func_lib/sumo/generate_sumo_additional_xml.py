@@ -42,17 +42,17 @@ def gene_sumo_add_xml(sumo_net_xml: str, utdf_dict: dict, output_filename: str, 
     sumo_net = ReadSUMO(sumo_net_xml)
 
     # parse signal intersection information
-    signal_info = {}
+    utdf_signal = {}
 
     for int_id in signalized_int_ids:
 
         # in this case sumo id equal to UTDF signal intersection id
         int_id = str(int_id)
 
-        signal_info[int_id] = parse_signal_control(df_phase=utdf_dict.get("Phases"),
+        utdf_signal[int_id] = parse_signal_control(df_phase=utdf_dict.get("Phases"),
                                                    df_lane=utdf_dict.get("Lanes"),
                                                    int_id=int_id)
-        UTDF_DIRS = set(extract_dir_info(signal_info[int_id]))
+        UTDF_DIRS = set(extract_dir_info(utdf_signal[int_id]))
         traffic_directions = set(map(lambda s: s[0:2], UTDF_DIRS))
 
         if verbose:
@@ -99,8 +99,12 @@ def gene_sumo_add_xml(sumo_net_xml: str, utdf_dict: dict, output_filename: str, 
         for int_id in signalized_int_ids:
             print(f"  :processing signal @ id: {int_id}")
 
-            ret = create_SignalTimingPlan(signal_info[int_id], sumo_net.sumo_signal_info[int_id])
-            linkDur = build_linkDuration(signal_info[int_id], sumo_net.sumo_signal_info[int_id])
+            ret = create_SignalTimingPlan(
+                utdf_signal[int_id],
+                sumo_net.sumo_signal_info[int_id])
+            linkDur = build_linkDuration(
+                utdf_signal[int_id],
+                sumo_net.sumo_signal_info[int_id])
 
             if ret:
                 for i in sumo_net.sumo_signal_info[int_id]:

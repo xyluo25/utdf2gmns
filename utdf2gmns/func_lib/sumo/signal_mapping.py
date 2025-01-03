@@ -162,7 +162,7 @@ def direction_mapping(sumo_data,
                 assigned_bounds.add(candidate_pick)
         # print(inbound_direction_mapping)
 
-    return len(candidate_mapping) == 0, inbound_direction_mapping
+    return (len(candidate_mapping) == 0, inbound_direction_mapping)
 
 
 def getCombinationForBarrier(barrier, rings, ringIndex, currentComb, result):
@@ -279,7 +279,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
     return duration
 
 
-def get_PhaseTiming(synchro_signal, sumo_signal, all_directions, phaseInfo, pedExclusive=False):
+def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExclusive=False):
     currentPhases = phaseInfo["phases"]
     # result = []
     # Generate Green Phase
@@ -289,18 +289,18 @@ def get_PhaseTiming(synchro_signal, sumo_signal, all_directions, phaseInfo, pedE
     permitted_directions = set()
 
     for phase in currentPhases:
-        timings = synchro_signal[phase]
+        timings = utdf_signal[phase]
         minDur = min(minDur, float(timings["MinGreen"]))
         maxDur = min(maxDur, float(timings["MaxGreen"]))
         yellow = timings["Yellow"]
         allRed = timings["AllRed"]
-        if "protected" in synchro_signal[phase]:
+        if "protected" in utdf_signal[phase]:
             protected_directions = protected_directions.union(
-                synchro_signal[phase]["protected"]
+                utdf_signal[phase]["protected"]
             )
-        if "permitted" in synchro_signal[phase]:
+        if "permitted" in utdf_signal[phase]:
             permitted_directions = permitted_directions.union(
-                synchro_signal[phase]["permitted"]
+                utdf_signal[phase]["permitted"]
             )
     permitted_directions = permitted_directions.difference(protected_directions)
     # print("\t", phaseInfo, protected_directions, permitted_directions)
@@ -395,9 +395,9 @@ def build_TransitionPhase(synchro_signal, greens, phases):
     return finalPhases
 
 
-def build_linkDuration(synchro_signal, sumo_signal):
+def build_linkDuration(utdf_signal, sumo_signal):
     linkDuration = {}
-    for phase in synchro_signal:
+    for phase in utdf_signal:
         if phase == 'brp_info':
             continue
 
@@ -406,42 +406,42 @@ def build_linkDuration(synchro_signal, sumo_signal):
             sumo_lane = sumo_signal[i]
             # print('sumo_lane', sumo_lane)
 
-            mask_protected = "protected" in synchro_signal[phase]
-            mask_lane = "dir" in sumo_lane
-            # print("protected", synchro_signal[phase])
-            make_signal = sumo_lane["dir"] in synchro_signal[phase].get("protected", [])
+            mask_protected = "protected" in utdf_signal[phase]
+            mask_lane = "synchro_dir" in sumo_lane
+            # print("protected", utdf_signal[phase])
+            make_signal = sumo_lane.get("synchro_dir", None) in utdf_signal[phase].get("protected", [])
 
             if all([mask_protected, mask_lane, make_signal]):
                 if index in linkDuration:
                     linkDuration[index]['linkMaxDur'] = max(
                         float(linkDuration[index]['linkMaxDur']),
-                        float(synchro_signal[phase]['MaxGreen']))
+                        float(utdf_signal[phase]['MaxGreen']))
 
                     linkDuration[index]['linkMinDur'] = min(
                         float(linkDuration[index]['linkMinDur']),
-                        float(synchro_signal[phase]['MinGreen']))
+                        float(utdf_signal[phase]['MinGreen']))
                 else:
                     linkDuration[index] = {}
-                    linkDuration[index]['linkMaxDur'] = synchro_signal[phase]['MaxGreen']
-                    linkDuration[index]['linkMinDur'] = synchro_signal[phase]['MinGreen']
-                    linkDuration[index]['dir'] = sumo_lane['dir']
+                    linkDuration[index]['linkMaxDur'] = utdf_signal[phase]['MaxGreen']
+                    linkDuration[index]['linkMinDur'] = utdf_signal[phase]['MinGreen']
+                    linkDuration[index]['dir'] = sumo_lane['synchro_dir']
                     break
             index += 1
     return linkDuration
 
 
-def extract_dir_info(synchro_signal):
+def extract_dir_info(utdf_signal):
     synchro_dir = []
     exclude_dir = ['PED', 'HOLD']
     # print('99999', synchro_signal)
-    for phase in synchro_signal:
-        if 'protected' in synchro_signal[phase]:
-            direct = synchro_signal[phase]['protected']
+    for phase in utdf_signal:
+        if 'protected' in utdf_signal[phase]:
+            direct = utdf_signal[phase]['protected']
             for i in direct:
                 if i not in synchro_dir and i not in exclude_dir:
                     synchro_dir.append(i)
-        if 'permitted' in synchro_signal[phase]:
-            direct = synchro_signal[phase]['permitted']
+        if 'permitted' in utdf_signal[phase]:
+            direct = utdf_signal[phase]['permitted']
             for i in direct:
                 if i not in synchro_dir and i not in exclude_dir:
                     synchro_dir.append(i)
@@ -449,14 +449,14 @@ def extract_dir_info(synchro_signal):
     return synchro_dir
 
 
-def create_SignalTimingPlan(synchro_signal, sumo_signal):
-    # print('create timing:', synchro_signal)
-    all_directions = extract_dir_info(synchro_signal)
+def create_SignalTimingPlan(utdf_signal, sumo_signal):
+    # print('create timing:', utdf_signal)
+    all_directions = extract_dir_info(utdf_signal)
     phaseIndex = 0
     phaseQueue = []
 
-    for barrierIndex in synchro_signal['brp_info']:
-        barrierRings = synchro_signal['brp_info'][barrierIndex]
+    for barrierIndex in utdf_signal['brp_info']:
+        barrierRings = utdf_signal['brp_info'][barrierIndex]
         offset = len(phaseQueue)
         position = 0
         combPos = []
@@ -501,14 +501,14 @@ def create_SignalTimingPlan(synchro_signal, sumo_signal):
 
             readIndex += 1
             if len(nextPhase) == 0:
-                # print (barrierIndex, len(synchro_signal['brp_info']))
-                if barrierIndex == max(synchro_signal['brp_info'].keys()):
+                # print (barrierIndex, len(utdf_signal['brp_info']))
+                if barrierIndex == max(utdf_signal['brp_info'].keys()):
                     nextPhase.append(0)
-                    # getPhaseTiming(synchro_signal, sumo_signal, all_directions,
+                    # getPhaseTiming(utdf_signal, sumo_signal, all_directions,
                     # currentPhaseName, phaseQueue[0], allRed = False)
                 else:
                     nextPhase.append(phaseIndex)
-                    # getPhaseTiming(synchro_signal, sumo_signal, all_directions,
+                    # getPhaseTiming(utdf_signal, sumo_signal, all_directions,
                     # currentPhaseName, phaseQueue[phaseIndex], allRed = False)
 
             currentName = []
@@ -519,20 +519,20 @@ def create_SignalTimingPlan(synchro_signal, sumo_signal):
                 currentName.append(name)
             phaseQueue.append({'phases': currentName, 'next': nextPhase})
             # print ('phase and next', currentName, nextPhase)
-    # print (synchro_signal['brp_info'])
+    # print (utdf_signal['brp_info'])
 
     # Check if PED exclusive phase exists
     pedExclusive = False
     for phase in phaseQueue:
         try:
-            if len(phase['phases']) == 1 and synchro_signal[phase['phases'][0]]['protected'][0] == 'PED':
+            if len(phase['phases']) == 1 and utdf_signal[phase['phases'][0]]['protected'][0] == 'PED':
                 pedExclusive = True
         except KeyError:
             pass
 
     greenPhases = []
     for phase in phaseQueue:
-        ret = get_PhaseTiming(synchro_signal, sumo_signal,
+        ret = get_PhaseTiming(utdf_signal, sumo_signal,
                               all_directions, phase, pedExclusive)
         print("ret:", ret)
         if not ret:
@@ -543,7 +543,7 @@ def create_SignalTimingPlan(synchro_signal, sumo_signal):
 
     print('green', greenPhases)
     print('phaseQueue', phaseQueue)
-    return build_TransitionPhase(synchro_signal, greenPhases, phaseQueue)
+    return build_TransitionPhase(utdf_signal, greenPhases, phaseQueue)
 
 
 def combine_bound_dir(bound, direction, allDirs):
@@ -721,15 +721,15 @@ def process_pedestrian_crossing(sumo_id, sumo_data, ped_edge, all_directions, er
     for crossed_edge in crossed_edges:
         for j in sumo_signal_info[junction_id]:
             if all([sumo_signal_info[junction_id][j]['fromEdge'] == crossed_edge,
-                    'dir' in sumo_signal_info[junction_id][j]]):
-                conflicts.add(sumo_signal_info[junction_id][j]['dir'])
+                    'synchro_dir' in sumo_signal_info[junction_id][j]]):
+                conflicts.add(sumo_signal_info[junction_id][j]['synchro_dir'])
                 conflict_from.add(j)
             if all([sumo_signal_info[junction_id][j]['toEdge'] == crossed_edge,
-                    'dir' in sumo_signal_info[junction_id][j]]):
-                conflicts.add(sumo_signal_info[junction_id][j]['dir'])
+                    'synchro_dir' in sumo_signal_info[junction_id][j]]):
+                conflicts.add(sumo_signal_info[junction_id][j]['synchro_dir'])
                 conflict_to.add(j)
             # print('\t', crossed_edge, sumo_signal_info[junction_id][j])
     ped_edge['ped_allowed'] = all_directions - conflicts
     ped_edge['ped_conflicts'] = (conflict_from, conflict_to)
-    ped_edge['dir'] = 'PED'
+    ped_edge['synchro_dir'] = 'PED'
     # print('\n\t', conflicts, '\n')

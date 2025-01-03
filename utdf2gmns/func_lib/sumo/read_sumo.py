@@ -13,8 +13,8 @@ import numpy as np
 class ReadSUMO:
     def __init__(self, net_filename: str):
         self._net_filename = net_filename
-        self.tree = ET.parse(net_filename)
-        self.root = self.tree.getroot()
+        self._root = ET.parse(net_filename)
+        self._root = self._root.getroot()
 
         # parse the xml file
         self.__parse_sumo_xml()
@@ -26,7 +26,7 @@ class ReadSUMO:
         sumo_signal_info = {}
         inbound_edges = {}
 
-        for connection in self.root.findall("connection"):
+        for connection in self._root.findall("connection"):
             # get the tlLogic_ids
             tlLogic_ids = connection.get("tl")
 
@@ -56,7 +56,7 @@ class ReadSUMO:
     def __parse_edges(self):
         self.sumo_nbsw = {}
         self.crossing_dict = {}
-        for edge in self.root.findall('edge'):
+        for edge in self._root.findall('edge'):
             edge_ids = edge.get('id')
             if edge_ids in self.inbound_edges.keys():
                 for lane in edge.findall('lane'):
@@ -89,6 +89,7 @@ class ReadSUMO:
             f.write('\t\t<param key="passing-time" value="2.0"/>\n')
             f.write('\t\t<param key="show-detectors" value="false"/>\n')
             f.write('\t\t<param key="vTypes" value=""/>\n')
+
         if ret:
             for r in ret:
                 name = r.get("name", "")
@@ -111,5 +112,6 @@ class ReadSUMO:
             for link in linkDur:
                 f.write(
                     f'\t\t<param key=linkMinDur:{link} value={float(linkDur[link]["linkMaxDur"]):.1f}/>\n')
-                f.write(f'\t\t<param key=linkMinDur:{link} value={linkDur[link]["linkMinDur"]}/>\n')
+                f.write(
+                    f'\t\t<param key=linkMinDur:{link} value={float(linkDur[link]["linkMinDur"]):.1f}/>\n')
         f.write('\t</tlLogic>\n')

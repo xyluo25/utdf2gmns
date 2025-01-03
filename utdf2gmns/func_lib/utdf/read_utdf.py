@@ -29,7 +29,7 @@ def read_UTDF(path_utdf: str) -> dict:
     """
 
     # read the utdf.csv file
-    with open(path_utdf, encoding='utf-8') as f:
+    with open(path_utdf, "r", encoding='utf-8') as f:
         lines = f.readlines()
 
     # find the start index of each category, the index is the row contain column names
