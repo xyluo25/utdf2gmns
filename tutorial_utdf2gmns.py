@@ -20,10 +20,10 @@ if __name__ == "__main__":
     #   if user manually provide single intersection coordinate, such as:
     #   single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
     #   Intersections will geocoded base on this point (Recommended Method)
-    net.geocode_intersections(single_coord={}, dist_threshold=0.01)
+    net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
 
     # Step 3: create network links: user can generate polygon-link or line-link
-    net.create_network(is_link_polygon=False)
+    net.create_gmns_links(is_link_polygon=False)
 
     # Step 4: create signal intersection control
     net.create_signal_control()
