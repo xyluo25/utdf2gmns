@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "utdf2gmns"
-version = "1.0.0a1"
-description = "A tool to convert utdf file to GMNS format."
+version = "1.0.1"
+description = "Convert Synchro UTDF data format to other formats, such as GMNS, SUMO, etc..."
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
     {name = "Xuesong Simon Zhou", email = "xzhou74@asu.edu"},

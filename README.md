@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different formats, including GMNS, SUMO etc
+An AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different formats, including GMNS, SUMO etc
 
 ## Required Input Data
 
@@ -10,13 +10,18 @@ A AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different 
 
 ## **Package dependencies**:
 
-* [X] geocoder==1.38.1
-* [X] pandas==2.2.3
-* [X] xlml >=5.3.0
-* [X] pyufunc == 0.3.7
-* [X] shapely == 2.0.6
-* [X] matplotlib >=3.9.2
-* [X] pyproj == 3.7.0
+* [X] geocoder>=1.38.1
+* [X] geopandas>=1.0.1
+* [X] geopy>=2.4.1
+* [X] keplergl>=0.3.6
+* [X] matplotlib>=3.10.0
+* [X] numpy>=2.2.2
+* [X] pandas>=2.2.3
+* [X] pyproj>=3.7.0
+* [X] pytest>=8.3.4
+* [X] pyufunc>=0.3.7
+* [X] Shapely>=2.0.7
+* [X] sumolib>=1.21.0
 
 ## Installation
 
@@ -39,10 +44,10 @@ if __name__ == "__main__":
 	# if user manually provide single intersection coordinate, such as:
 	# single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
 	# Intersections will geocoded base on this point (Recommended Method)
-    net.geocode_intersections(single_coord={}, dist_threshold=0.01)
+    net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
 
     # Step 3: create network links: user can genrate polygon-link or line-link
-    net.create_network(is_link_polygon=False)
+    net.create_gmns_links(is_link_polygon=False)
 
     # Step 4: create signal intesection control
     net.create_signal_control()
@@ -52,6 +57,13 @@ if __name__ == "__main__":
 
     # Step 6 (optional): convert UTDF netowrk to SUMO
     net.utdf_to_sumo(sumo_name="", show_warning_message=False)
+
+    # Step 7 (optional): visualize the network
+    # create matplotlib png
+    # ug.plot_net_mpl(net)
+
+    # create keplergl interactive map
+    # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
 
 ```
 
@@ -63,11 +75,11 @@ if __name__ == "__main__":
 * [X] Print geocoding details (in percentage)
 * [ ] Generate sumo Net use sumolib
 * [ ] Add cycle length and green time for each movement.
-* [ ] Add detailed information for user to load coordinated intersection data.
+* [X] Add detailed information for user to load coordinated intersection data.
 * [X] geocoding Lanes
-* [ ] Cvt gmns to SUMO
-* [ ] update plot function to visuzalize gmns node and links
-* [ ] create .rou.xml for sumo
+* [X] Cvt gmns to SUMO
+* [X] update plot function to visuzalize gmns node and links
+* [X] create .rou.xml for sumo
 * [ ] create more xml files for sumo
 
 ## Call for Contributions
