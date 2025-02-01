@@ -109,8 +109,8 @@ class ReadSUMO:
                     f.write(f'\t\t<phase name="{name}" duration="{duration:.1f}" maxDur="{r["maxDur"]:.1f}"'
                             f' minDur="{r["minDur"]:.1f}" next="{next_str}" state="{r["state"]}"/>\n')
                 else:
-                    f.write(f'\t\t<phase name="{name}" duration="{float(r['duration']):.1f}"'
-                            f' next="{next_str}" state="{r['state']}"/>\n')
+                    f.write(f'\t\t<phase name="{name}" duration="{float(r["duration"]):.1f}"'
+                            f' next="{next_str}" state="{r["state"]}"/>\n')
 
             for link in linkDur:
                 f.write(
