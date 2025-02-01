@@ -2,6 +2,7 @@
 ##############################################################
 # Created Date: Monday, December 30th 2024
 # Contact Info: luoxiangyong01@gmail.com
+# Author/Copyright: Ms. Yiran Zhang
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 '''
@@ -28,8 +29,8 @@ from utdf2gmns.func_lib.sumo.signal_mapping import (opposite_ped,
                                                     process_pedestrian_crossing)
 
 
-def gene_sumo_add_xml(sumo_net_xml: str, utdf_dict: dict, output_filename: str, verbose: bool = False) -> bool:
-    """generate sumo additional xml file from UTDF signal and SUMO network
+def update_sumo_signal_xml(sumo_net_xml: str, utdf_dict: dict, verbose: bool = False) -> bool:
+    """update sumo signal xml file from UTDF signal and SUMO network
 
     Returns:
         bool: whether the generation is successful
@@ -94,31 +95,32 @@ def gene_sumo_add_xml(sumo_net_xml: str, utdf_dict: dict, output_filename: str, 
     valid = 0
     count_flag = 0
 
-    with open(output_filename, "w") as f:
-        f.writelines("<additional>\n")
-        for int_id in signalized_int_ids:
-            print(f"  :processing signal @ id: {int_id}")
+    for int_id in signalized_int_ids:
+        print(f"  :processing signal @ id: {int_id}")
 
-            ret = create_SignalTimingPlan(
-                utdf_signal[int_id],
-                sumo_net.sumo_signal_info[int_id])
-            linkDur = build_linkDuration(
-                utdf_signal[int_id],
-                sumo_net.sumo_signal_info[int_id])
+        ret = create_SignalTimingPlan(
+            utdf_signal[int_id],
+            sumo_net.sumo_signal_info[int_id])
+        linkDur = build_linkDuration(
+            utdf_signal[int_id],
+            sumo_net.sumo_signal_info[int_id])
 
-            if ret:
-                for i in sumo_net.sumo_signal_info[int_id]:
-                    print(f"    :{i} {sumo_net.sumo_signal_info[int_id][i]}")
-                timeplans = utdf_dict.get("Timeplans")
-                types = str(control_type[list(timeplans['DATA'][(timeplans['INTID'] == str(int_id)) & (
-                    timeplans['RECORDNAME'] == 'Control Type')])[0]])
-                offsets = str(list(timeplans['DATA'][(timeplans['INTID'] == str(int_id)) & (
-                    timeplans['RECORDNAME'] == 'Offset')])[0])
+        if ret:
+            for i in sumo_net.sumo_signal_info[int_id]:
+                print(f"    :{i} {sumo_net.sumo_signal_info[int_id][i]}")
+            timeplans = utdf_dict.get("Timeplans")
+            types = str(control_type[list(timeplans['DATA'][(timeplans['INTID'] == str(int_id)) & (
+                timeplans['RECORDNAME'] == 'Control Type')])[0]])
+            offsets = str(list(timeplans['DATA'][(timeplans['INTID'] == str(int_id)) & (
+                timeplans['RECORDNAME'] == 'Offset')])[0])
 
-                sumo_net.generate_xml(f, int_id, ret, linkDur, types, int(float(offsets)))
-                valid_ids[int_id] = int_id
-                valid += 1
-            count_flag += 1
-        print(f"  :Total signal intersections: {len(signalized_int_ids)} {count_flag} Valid intersections: {valid}")
-        f.writelines("</additional>\n")
+            sumo_net.replace_tl_logic_xml(int_id, ret, linkDur, types, int(float(offsets)))
+            valid_ids[int_id] = int_id
+            valid += 1
+        count_flag += 1
+    print(f"  :Total signal intersections: {len(signalized_int_ids)} {count_flag} Valid intersections: {valid}")
+
+    # update sumo.net.xml
+    sumo_net.write_xml()
+
     return True

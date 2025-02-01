@@ -2,6 +2,7 @@
 ##############################################################
 # Created Date: Sunday, December 22nd 2024
 # Contact Info: luoxiangyong01@gmail.com
+# Author/Copyright: Ms. Yiran Zhang
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 """
@@ -188,6 +189,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
 
     for j in sumo_signal:
         sumo_lane = sumo_signal[j]
+        sumo_lane['synchro_dir'] = sumo_lane['dir']
         if "synchro_dir" not in sumo_lane:
             sumo_lane["signal_dir"] = "N/A"
             # print(sumo_lane)
@@ -536,8 +538,8 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal):
                               all_directions, phase, pedExclusive)
         print("ret:", ret)
         if not ret:
+            print('Error in phase', phase)
             return False
-            # print('Error in phase', phase)
         else:
             greenPhases.append(ret)
 
