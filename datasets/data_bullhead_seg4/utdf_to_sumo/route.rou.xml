@@ -1,0 +1,17 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <!-- Define vehicle types -->
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" maxSpeed="13.9" color="1,0,0"/>
+    <vType id="bus" accel="1.5" decel="3.0" sigma="0.5" length="12" maxSpeed="10.0" color="0,1,0"/>
+
+    <!-- Define routes -->
+    <route id="route1" edges="106_39 39_75 75_78 78_80 80_82 82_84 84_98"/>
+    <route id="route2" edges="31_87 87_98 98_84 84_82 82_80 80_78 78_75 75_39 39_106"/>
+    <route id="route3" edges="75_78 78_80 80_82 82_84 84_85 85_84 84_82 82_80 80_78 78_75"/>
+
+
+    <flow id="f1" begin="0" end="33100" number="5000" route="route1"/>
+    <flow id="f2" begin="0" end="33100" number="50" route="route2"/>
+    <flow id="f3" begin="0" end="33100" number="50" route="route3"/>
+
+</routes>
