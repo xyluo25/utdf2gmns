@@ -5,12 +5,18 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 '''
+import os
+from pathlib import Path
+import pyufunc as pf
+import keplergl
+import pandas as pd
+import geopandas as gpd
 import matplotlib.pyplot as plt
 
 
-def plot_net(net: object, *, save_fig: bool = False,
-             fig_name: str = "utdf_network.png",
-             fig_size: tuple = (12, 12), dpi: int = 600) -> plt.figure:
+def plot_net_mpl(net: object, *, save_fig: bool = False,
+                 fig_name: str = "utdf_network.png",
+                 fig_size: tuple = (12, 12), dpi: int = 600) -> plt.figure:
     """
     Plot network
     """
@@ -30,7 +36,10 @@ def plot_net(net: object, *, save_fig: bool = False,
     # plot links
     if hasattr(net, 'network_links'):
         for link in net.network_links:
-            x, y = net.network_links[link]['geometry'].exterior.xy
+            try:
+                x, y = net.network_links[link]['geometry']["exterior"].xy
+            except Exception:
+                x, y = net.network_links[link]['geometry'].coords.xy
             ax.fill(x, y, color='gray')
         is_plot = True
 
@@ -50,3 +59,35 @@ def plot_net(net: object, *, save_fig: bool = False,
         plt.show()
 
         return fig
+
+
+def plot_net_keplergl(net: object, *, save_fig: bool = False,
+                      fig_name: str = "utdf_network.html") -> keplergl.KeplerGl:
+    """
+    Plot network in keplergl
+    """
+
+    # check the extension of the fig_name
+    if not fig_name.endswith('.html'):
+        fig_name = fig_name + '.html'
+
+    # get node and link data
+    df_nodes = pd.DataFrame(net.network_nodes.values())
+    df_links = pd.DataFrame(net.network_links.values())
+    gdf_links = gpd.GeoDataFrame(df_links, geometry='geometry')
+
+    # create a keplergl map
+    map_1 = keplergl.KeplerGl(height=800)
+    map_1.add_data(data=df_nodes, name='network_nodes')
+    map_1.add_data(data=gdf_links, name='network_links')
+
+    # save the map
+    if save_fig:
+        path_output = Path(net._utdf_filename).parent
+        path_output_fig = pf.path2linux(os.path.join(path_output, fig_name))
+
+        map_1.save_to_html(file_name=path_output_fig)
+        # print(f"  :Successfully save the network to {path_output_fig}")
+
+    # map_1.show()
+    return map_1

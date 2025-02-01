@@ -12,26 +12,21 @@
 # SUMO-GUI Specification: https://sumo.dlr.de/docs/sumo-gui.html#interaction_with_the_view
 # SUMO netedit specification: https://sumo.dlr.de/docs/Netedit/index.html#processing_menu_options
 
+
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
 import sumolib
-from sumolib.net import Net, TLS, TLSProgram, Phase, EdgeType
-from sumolib.net.node import Node
-from sumolib.net.edge import Edge
-from sumolib.net.lane import Lane
-from sumolib.net.roundabout import Roundabout
-from sumolib.net.connection import Connection
-from sumolib.net.netshiftadaptor import NetShiftAdaptor
+from sumolib.net import Net
 
-from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_utm_to_lonlat, cvt_lonlat_to_utm
+from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_lonlat_to_utm
 
 
 def generate_sumo_network() -> Net:
     pass
 
 
-def gene_sumo_nodes(network_nodes: dict, filename="network.nod.xml") -> list:
+def generate_sumo_nodes(network_nodes: dict, filename: str = "network.nod.xml") -> list:
     """Create SUMO node XML file."""
     nodes = []
     for node_id, node in network_nodes.items():
@@ -42,7 +37,7 @@ def gene_sumo_nodes(network_nodes: dict, filename="network.nod.xml") -> list:
     return nodes
 
 
-def gene_sumo_edges(network_edges: dict, filename="network.edg.xml") -> list:
+def generate_sumo_edges(network_edges: dict, filename: str = "network.edg.xml") -> list:
     """Create SUMO edge XML file."""
     edges = []
     for int_id, edges in network_edges.items():
@@ -61,14 +56,14 @@ def gene_sumo_edges(network_edges: dict, filename="network.edg.xml") -> list:
     return edges
 
 
-def xml_prettify(element):
+def xml_prettify(element: str) -> str:
     """Return a pretty-printed XML string for the Element."""
     rough_string = ET.tostring(element, 'utf-8')
     re_parsed = minidom.parseString(rough_string)
     return re_parsed.toprettyxml(indent="    ")
 
 
-def gene_sumo_nod_xml(network_nodes: dict, filename="network.nod.xml") -> bool:
+def generate_sumo_nod_xml(network_nodes: dict, filename: str = "network.nod.xml") -> bool:
     """Generate the .nod.xml file."""
 
     root = ET.Element("nodes")
@@ -93,7 +88,7 @@ def gene_sumo_nod_xml(network_nodes: dict, filename="network.nod.xml") -> bool:
     return True
 
 
-def gene_sumo_edg_xml(network_links: dict, filename="network.edg.xml") -> bool:
+def generate_sumo_edg_xml(network_links: dict, filename: str = "network.edg.xml") -> bool:
     """Generate the .edg.xml file."""
 
     root = ET.Element("edges")

@@ -1,9 +1,12 @@
 geocoder>=1.38.1
-matplotlib>=3.8.2
+geopandas>=1.0.1
+geopy>=2.4.1
+keplergl>=0.3.6
+matplotlib>=3.10.0
+numpy>=2.2.2
 pandas>=2.2.3
 pyproj>=3.7.0
+pytest>=8.3.4
 pyufunc>=0.3.7
-Shapely>=2.0.6
-lxml>=5.3.0
-geopy>=2.4.1
-sumolib
+Shapely>=2.0.7
+sumolib>=1.21.0

@@ -21,11 +21,12 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      reformat_link_dataframe_to_dict)
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
-from utdf2gmns.func_lib.sumo.generate_sumo_additional_xml import update_sumo_signal_xml
+from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_xml
 
 
 # SUMO related functions
-from utdf2gmns.func_lib.sumo.gmns2sumo import gene_sumo_nod_xml, gene_sumo_edg_xml
+from utdf2gmns.func_lib.sumo.gmns2sumo import (generate_sumo_nod_xml,
+                                               generate_sumo_edg_xml)
 
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -90,6 +91,8 @@ class UTDF2GMNS:
 
         # initialize the instance variables
         self._is_geocoding_intersections = False
+
+        print(f"  :Total number of intersections in the UTDF file: {len(self.network_int_ids)}")
         return True
 
     def geocode_utdf_intersections(self,
@@ -216,6 +219,7 @@ class UTDF2GMNS:
             links_dict = generate_links(self._utdf_dict.get("Links"), self.network_nodes, width, unit)
 
         self.network_links = links_dict
+        print(f"  :Total number of edges generated: {len(links_dict)}")
 
         return True
 
@@ -280,7 +284,7 @@ class UTDF2GMNS:
             self._utdf_dict.get("Phases").to_csv(
                 os.path.join(gmns_output_dir, "utdf_phases.csv"),
                 index=False)
-        print(f"  :Successfully saved GMNS(csv) data to {gmns_output_dir}.")
+        print(f"  :Successfully saved GMNS(csv) data to \n    {gmns_output_dir}.")
         return True
 
     def utdf_to_sumo(self, *, output_dir: str = "", sumo_name: str = "", show_warning_message: bool = False) -> bool:
@@ -319,13 +323,13 @@ class UTDF2GMNS:
         # create SUMO .nod.xml file
         output_node_file = os.path.join(sumo_output_dir, f"{xml_name}.nod.xml")
         output_node_file = pf.path2linux(output_node_file)
-        gene_sumo_nod_xml(self.network_nodes, output_node_file)
+        generate_sumo_nod_xml(self.network_nodes, output_node_file)
 
         # create SUMO .edg.xml file
         int_links = reformat_link_dataframe_to_dict(self._utdf_dict.get("Links"))
         output_edge_file = os.path.join(sumo_output_dir, f"{xml_name}.edg.xml")
         output_edge_file = pf.path2linux(output_edge_file)
-        gene_sumo_edg_xml(int_links, output_edge_file)
+        generate_sumo_edg_xml(int_links, output_edge_file)
 
         # convert .nod.xml and .edg.xml files to .net.xml file
         try:
@@ -365,7 +369,7 @@ class UTDF2GMNS:
                 print(f" :{result.stderr}")
                 return False
 
-            print(f"  :Successfully generated SUMO network to {sumo_output_dir}.")
+            print(f"  :Successfully generated SUMO network to \n    {sumo_output_dir}.")
             if show_warning_message:
                 print("Warning message in generating SUMO network:")
                 print(f"{result.stderr}")
@@ -373,10 +377,55 @@ class UTDF2GMNS:
             print(f"  :Error in generating SUMO network: {e}")
             return False
 
-        # try:
-        update_sumo_signal_xml(output_net_file, self._utdf_dict)
-        # except Exception as e:
-        #     print(f"  :Error in generating SUMO additional xml: {e}")
-        #     return False
+        # update SUMO signal in .net.xml file
+        update_sumo_signal_xml(output_net_file, self._utdf_dict, verbose=self._verbose)
+        print(f"  :Successfully updated SUMO signal xml to \n    {sumo_output_dir}.")
+
+        # create default .rou.xml file for the network using SUMO randomTrips.py
+        output_rou_file = os.path.join(sumo_output_dir, f"{xml_name}.rou.xml")
+        output_rou_file = pf.path2linux(output_rou_file)
+
+        # get the path of the randomTrips.py file under the func_lib directory
+        path_random_trips = Path(__file__).parent / "func_lib" / "sumo" / "randomTrips.py"
+        path_random_trips = pf.path2linux(path_random_trips)
+
+        # run randomTrips.py to generate .rou.xml file
+        result = subprocess.run(["python",
+                                 path_random_trips,
+                                 "-n", output_net_file,
+                                 "-r", output_rou_file],
+                                cwd=sumo_output_dir,
+                                capture_output=True,
+                                text=True)
+        if result.returncode == 0:
+            print(f"  :Successfully generated default route file to \n    {sumo_output_dir}.")
+
+        # create .sumocfg file for the generated network
+        # will generate default .rou.xml file for the network
+        sumo_cfg_file = os.path.join(sumo_output_dir, f"{xml_name}.sumocfg")
+        sumo_cfg_file = pf.path2linux(sumo_cfg_file)
+
+        cfg_str = (
+            f'<?xml version="1.0" encoding="UTF-8"?>\n'
+            f'\n'
+            f'<configuration>\n'
+            f'    <input>\n'
+            f'        <net-file value="{xml_name}.net.xml"/>\n'
+            f'        <route-files value="{xml_name}.rou.xml"/>\n'
+            f'    </input>\n'
+            f'    <time>\n'
+            f'        <begin value="0"/>\n'
+            f'        <end value="3600"/>\n'
+            f'        <step-length value="0.1"/>\n'
+            f'    </time>\n'
+            f'</configuration>\n'
+        )
+
+        # Parse the XML string
+        # pretty_xml_str = minidom.parseString(cfg_str).toprettyxml(indent="    ")
+        with open(sumo_cfg_file, "w") as f:
+            f.write(cfg_str)
+
+        print(f"  :Successfully generated SUMO configuration file to \n    {sumo_output_dir}.")
 
         return True

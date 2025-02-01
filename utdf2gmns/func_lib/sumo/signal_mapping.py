@@ -19,7 +19,9 @@ opposite_ped = {
 }
 
 
-def findBestMatchDirection(direction, allDirection):
+def findBestMatchDirection(direction: str, allDirection: str) -> str:
+    """ Find the best match direction for the given direction"""
+
     bound = direction[0:2]
     turn = direction[2:]
     if direction in opposite_ped and opposite_ped[direction] in allDirection:
@@ -35,7 +37,9 @@ def findBestMatchDirection(direction, allDirection):
     return "N/A"
 
 
-def find_candidates(slope_info, all_traffic_bounds):
+def find_candidates(slope_info: str, all_traffic_bounds: set) -> set:
+    """Find the candidate traffic bounds for the given slope information"""
+
     direction_candidates = {
         "delta_x_negative": ["SB", "SW", "WB", "NW", "NB"],
         "delta_x_positive": ["NB", "NE", "EB", "SE", "SB"],
@@ -81,7 +85,9 @@ def direction_mapping(sumo_data,
                       sumo_id,
                       unique_inbound_edges,
                       all_traffic_bounds,
-                      errors=[], verbose: bool = False):
+                      errors: list = [], verbose: bool = False) -> tuple:
+    """Map the inbound edges to the traffic bounds"""
+
     if verbose:
         print(f"  :Int id: {sumo_id}\n  :Directions: {all_traffic_bounds}\n"
               f"  :Inbound edges: {unique_inbound_edges}")
@@ -102,10 +108,9 @@ def direction_mapping(sumo_data,
                   f"  :Candidates: {candidates}\n  :All traffic bounds: {all_traffic_bounds}")
 
         if len(candidates) == 0:
-            print(f"  :Intersection id {sumo_id}: match traffic bound failed for {edge_id}")
+            if verbose:
+                print(f"  :Intersection id {sumo_id}: match traffic bound failed for {edge_id}")
 
-            # print(all_traffic_bounds)
-            # print(sumo_data.sumo_signal_info[sumo_id])
             errors.append(f"match traffic bound failed for {edge_id}")
             # exit(0)
             return False, {}
@@ -120,9 +125,6 @@ def direction_mapping(sumo_data,
             inbound_direction_mapping[edge_id] = selected
         else:
             candidate_mapping[edge_id] = candidates
-
-    # print(f"fitted {sumo_id}", inbound_direction_mapping)
-    # print(f"candidates {sumo_id}", candidate_mapping)
 
     updated = True
     while updated and len(candidate_mapping) > 0:
@@ -180,9 +182,8 @@ def getCombinationForBarrier(barrier, rings, ringIndex, currentComb, result):
         currentComb.pop(len(currentComb) - 1)
 
 
-def generateGreen(sumo_signal, protected, permitted, all_directions, duration, pedOnlyPhase):
+def generateGreen(sumo_signal, protected, permitted, all_directions, duration, pedOnlyPhase, verbose: bool = False):
     value = ["r"] * len(sumo_signal)
-    # result = []
     allValid = True
     pedStart = 0
     i = 0
@@ -192,7 +193,6 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
         sumo_lane['synchro_dir'] = sumo_lane['dir']
         if "synchro_dir" not in sumo_lane:
             sumo_lane["signal_dir"] = "N/A"
-            # print(sumo_lane)
             allValid = False
         elif "signal_dir" in sumo_lane and sumo_lane["signal_dir"] == "STOP":
             sumo_lane["signal_dir"] = "STOP"
@@ -200,15 +200,15 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
             sumo_lane["signal_dir"] = sumo_lane["synchro_dir"]
         elif "PED" in sumo_lane["synchro_dir"]:
             if len(sumo_lane["ped_allowed"]) == 0:
-                print("Error For Ped:", sumo_lane)
-        # allValid = False
-        # sumo_lane['signal_dir'] = 'PED'
+                if verbose:
+                    print("Error For Ped:", sumo_lane)
         else:
             sumo_lane["signal_dir"] = findBestMatchDirection(
                 sumo_lane["synchro_dir"], all_directions
             )
             if sumo_lane["signal_dir"] == "N/A":
-                print("Error For signal_dir:", sumo_lane)
+                if verbose:
+                    print("Error For signal_dir:", sumo_lane)
                 allValid = False
         if (
             pedStart == 0
@@ -217,12 +217,8 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
         ):
             pedStart = i
         i += 1
-        # print (j, sumo_signal)
 
     if allValid is False:
-        # print(sumo_signal)
-        # print("Not Valid", sumo_lane, all_directions)
-        # print("\r\n")
         return False
     ii = 0
     for j in sumo_signal:
@@ -271,9 +267,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
             elif sumo_lane["signal_dir"] in permitted:
                 value[int(j)] = "g"
             ii += 1
-            # print (sumo_lane['synchro_dir'], value[int(j)])
         except IndexError:
-            # print(synchro2sumo[i])
             pass
 
     duration["state"] = value
@@ -281,7 +275,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
     return duration
 
 
-def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExclusive=False):
+def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExclusive=False, verbose: bool = False):
     currentPhases = phaseInfo["phases"]
     # result = []
     # Generate Green Phase
@@ -305,11 +299,6 @@ def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExcl
                 utdf_signal[phase]["permitted"]
             )
     permitted_directions = permitted_directions.difference(protected_directions)
-    # print("\t", phaseInfo, protected_directions, permitted_directions)
-    print("sumo_signal", sumo_signal)
-    print("protected_directions", protected_directions)
-    print("permitted_directions", permitted_directions)
-    print("all_directions", all_directions)
 
     return generateGreen(
         sumo_signal,
@@ -324,6 +313,7 @@ def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExcl
             "name": f"({','.join(phaseInfo['phases'])})",
         },
         pedExclusive,
+        verbose=verbose,
     )
 
 
@@ -451,7 +441,7 @@ def extract_dir_info(utdf_signal):
     return synchro_dir
 
 
-def create_SignalTimingPlan(utdf_signal, sumo_signal):
+def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False):
     # print('create timing:', utdf_signal)
     all_directions = extract_dir_info(utdf_signal)
     phaseIndex = 0
@@ -535,16 +525,17 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal):
     greenPhases = []
     for phase in phaseQueue:
         ret = get_PhaseTiming(utdf_signal, sumo_signal,
-                              all_directions, phase, pedExclusive)
-        print("ret:", ret)
+                              all_directions, phase, pedExclusive, verbose=verbose)
         if not ret:
-            print('Error in phase', phase)
+            if verbose:
+                print('Error in phase', phase)
             return False
         else:
             greenPhases.append(ret)
 
-    print('green', greenPhases)
-    print('phaseQueue', phaseQueue)
+    if verbose:
+        print('  :green', greenPhases)
+        print('  :phaseQueue', phaseQueue)
     return build_TransitionPhase(utdf_signal, greenPhases, phaseQueue)
 
 

@@ -17,6 +17,14 @@ from utdf2gmns.util_lib.pkg_utils import calculate_point2point_distance_in_km
 
 
 def geocoder_geocoding_from_address(address: str) -> tuple:
+    """geocoding from address using geocoder
+
+    Args:
+        address (str): the address to be geocoded
+
+    Returns:
+        tuple: the longitude and latitude of the address
+    """
 
     # initialize geocoder arcgis client
     location_instance = geocoder.arcgis(address).geojson
@@ -71,7 +79,7 @@ def generate_intersection_coordinates(df_intersection: pd.DataFrame,
     df["full_name_int_r"] = df["reversed_int_name"] + ", " + df["city_name"]
 
     # Step 4: geocoding
-    print(" :geocoding intersections...")
+    print("  :geocoding intersections...")
     int_full_name_list = df["full_name_int"].tolist()
     int_full_name_r_list = df["full_name_int_r"].tolist()
 

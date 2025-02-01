@@ -5,11 +5,8 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
-import os
-from pathlib import Path
-
 import pandas as pd
-from pyufunc import func_running_time, path2linux
+from pyufunc import func_running_time
 
 from utdf2gmns.util_lib.pkg_settings import utdf_categories, utdf_link_col_names
 
@@ -201,13 +198,13 @@ def generate_intersection_from_Links(df_link: pd.DataFrame, city_name: str) -> p
 def spanning_phase_timeplans_data(utdf_dict_data: dict, isSimpleCol: bool = True) -> pd.DataFrame:
     """spanning_phase_timeplans_data: combine phase and timeplans data into one dataframe (intersection id based)
 
-    :param utdf_dict_data: a dictionary include key of Phases and Timeplans
-    :type utdf_dict_data: dict
-    :param isSimpleCol: defaults to True, if True,
-        keep columns between Start_D and End_D if _D exists in column name, else keep all columns
-    :type isSimpleCol: bool, optional
-    :return: a dataframe of phase and timeplans
-    :rtype: pd.DataFrame
+    Args:
+        utdf_dict_data (dict): a dictionary include key of Phases and Timeplans
+        isSimpleCol (bool, optional): defaults to True, if True,
+            keep columns between Start_D and End_D if _D exists in column name, else keep all columns
+
+    Returns:
+        pd.DataFrame: a dataframe of phase and timeplans
     """
 
     df_phase = utdf_dict_data.get("Phases")
@@ -275,6 +272,14 @@ def spanning_phase_timeplans_data(utdf_dict_data: dict, isSimpleCol: bool = True
 
 
 def reformat_lane_dataframe(utdf_dict_data: dict) -> pd.DataFrame:
+    """reformat the utdf_lane dataframe to a new dataframe
+
+    Args:
+        utdf_dict_data (dict): a dictionary include key of Lanes
+
+    Returns:
+        pd.DataFrame: a dataframe of lanes
+    """
     # get utdf_lane data
     df_lane = utdf_dict_data["Lanes"]
 

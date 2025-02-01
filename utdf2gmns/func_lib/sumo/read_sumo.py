@@ -13,6 +13,8 @@ import io
 
 
 class ReadSUMO:
+    """load sumo network xml file and parse the information
+    """
     def __init__(self, net_filename: str):
         self._net_filename = net_filename
         self._tree = ET.parse(net_filename)
@@ -23,6 +25,7 @@ class ReadSUMO:
         self.__parse_edges()
 
     def __parse_sumo_xml(self, sumo_ids_filter=None):
+        """parse the sumo network xml file"""
 
         # initialize signal info and inbound edges
         sumo_signal_info = {}
@@ -56,6 +59,8 @@ class ReadSUMO:
         self.inbound_edges = inbound_edges
 
     def __parse_edges(self):
+        """parse the edges in the sumo network xml file"""
+
         self.sumo_nbsw = {}
         self.crossing_dict = {}
         for edge in self._root.findall('edge'):
@@ -71,6 +76,8 @@ class ReadSUMO:
                 self.crossing_dict[edge_ids] = edge.get('crossingEdges').split(' ')
 
     def get_slope(self, shape_info):
+        """calculate the slope of the edge"""
+
         x1, y1 = shape_info[0].split(',')
         x2, y2 = shape_info[1].split(',')
         if x1 == x2:
@@ -80,6 +87,8 @@ class ReadSUMO:
         return ([float(x2) - float(x1), float(y2) - float(y1), slope])
 
     def replace_tl_logic_xml(self, signal_id, ret, linkDur, types, offsets, program_id: int = 0):
+        """replace the tlLogic in the sumo network xml file"""
+
         f = io.StringIO()
         f.writelines(
             f'\t<tlLogic id="{signal_id}" type="{types}" programID="{program_id}" offset="{offsets}">\n')
@@ -120,15 +129,17 @@ class ReadSUMO:
         f.write('\t</tlLogic>\n')
 
         new_tlLogic_element = ET.fromstring(f.getvalue())
-        
+
         for tlLogic in self._root.findall('tlLogic'):
             if tlLogic.get('id') == new_tlLogic_element.get('id'):
                 tlLogic.clear()
                 tlLogic.attrib.update(new_tlLogic_element.attrib)
                 for phase in new_tlLogic_element:
                     tlLogic.append(phase)
-        
+
         f.close()
-        
+
     def write_xml(self):
+        """write the xml file"""
+
         self._tree.write(self._net_filename, encoding='utf-8', xml_declaration=True)

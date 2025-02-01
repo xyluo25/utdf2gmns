@@ -74,7 +74,10 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int, verbose: bool = False) -> dic
         int_id (int): Intersection ID
 
     Returns:
-        dict: {'D5': {'protected': ['NBL']}, 'D2': {'protected': ['NBT'], 'permitted': ['NBR']}, 'D1': {'protected': ['SBL']}, 'D6': {'protected': ['SBT'], 'permitted': ['SBR']}, 'D3': {'protected': ['EBL']}, 'D8': {'protected': ['EBT'], 'permitted': ['EBR']}, 'D7': {'protected': ['WBL']}, 'D4': {'protected': ['WBT'], 'permitted': ['WBR']}}
+        dict: {'D5': {'protected': ['NBL']}, 'D2': {'protected': ['NBT'], 'permitted': ['NBR']},
+        'D1': {'protected': ['SBL']}, 'D6': {'protected': ['SBT'], 'permitted': ['SBR']},
+        'D3': {'protected': ['EBL']}, 'D8': {'protected': ['EBT'], 'permitted': ['EBR']},
+        'D7': {'protected': ['WBL']}, 'D4': {'protected': ['WBT'], 'permitted': ['WBR']}}
 
     """
 
