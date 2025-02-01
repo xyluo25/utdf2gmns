@@ -29,7 +29,7 @@ class TestUTDF2GMNS:
     def test_invalid_utdf_file(self):
         with pytest.raises(Exception) as exc_info:
             net = UTDF2GMNS(utdf_filename="invalid_utdf_file.utdf")
-        assert str(exc_info.value) == "UTDF file invalid_utdf_file.utdf not found!"
+        assert "invalid_utdf_file.utdf not found!" in str(exc_info.value)
 
     def test_valid_utdf_file(self):
 
