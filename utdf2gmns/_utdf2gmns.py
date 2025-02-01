@@ -21,7 +21,7 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      reformat_link_dataframe_to_dict)
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
-from utdf2gmns.func_lib.sumo.generate_sumo_additional_xml import gene_sumo_add_xml
+from utdf2gmns.func_lib.sumo.generate_sumo_additional_xml import update_sumo_signal_xml
 
 
 # SUMO related functions
@@ -373,13 +373,8 @@ class UTDF2GMNS:
             print(f"  :Error in generating SUMO network: {e}")
             return False
 
-        # Update the network from original UTDF signal control data and generated SUMO network
-
-        output_add_xml_file = os.path.join(sumo_output_dir, f"{xml_name}_signal.add.xml")
-        output_add_xml_file = pf.path2linux(output_add_xml_file)
-
         # try:
-        gene_sumo_add_xml(output_net_file, self._utdf_dict, output_add_xml_file)
+        update_sumo_signal_xml(output_net_file, self._utdf_dict)
         # except Exception as e:
         #     print(f"  :Error in generating SUMO additional xml: {e}")
         #     return False

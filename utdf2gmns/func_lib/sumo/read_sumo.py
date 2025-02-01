@@ -2,19 +2,21 @@
 ##############################################################
 # Created Date: Sunday, December 22nd 2024
 # Contact Info: luoxiangyong01@gmail.com
+# Author/Copyright: Ms. Yiran Zhang
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 '''
 
 import xml.etree.ElementTree as ET
 import numpy as np
+import io
 
 
 class ReadSUMO:
     def __init__(self, net_filename: str):
         self._net_filename = net_filename
-        self._root = ET.parse(net_filename)
-        self._root = self._root.getroot()
+        self._tree = ET.parse(net_filename)
+        self._root = self._tree.getroot()
 
         # parse the xml file
         self.__parse_sumo_xml()
@@ -77,9 +79,10 @@ class ReadSUMO:
             slope = (float(y2) - float(y1)) / (float(x2) - float(x1))
         return ([float(x2) - float(x1), float(y2) - float(y1), slope])
 
-    def generate_xml(self, f, signal_id, ret, linkDur, types, offsets, program_id: int = 1):
+    def replace_tl_logic_xml(self, signal_id, ret, linkDur, types, offsets, program_id: int = 0):
+        f = io.StringIO()
         f.writelines(
-            f'\t<tlLogic id={signal_id} type={types} programID={program_id} offset={offsets}>\n')
+            f'\t<tlLogic id="{signal_id}" type="{types}" programID="{program_id}" offset="{offsets}">\n')
 
         if types == 'actuated':
             f.write('\t\t<param key="detector-gap" value="2.0"/>\n')
@@ -103,15 +106,29 @@ class ReadSUMO:
                     else:
                         duration = r['maxDur']
 
-                    f.write(f'\t\t<phase name={name} duration={duration:.1f} maxDur={r["maxDur"]:.1f}'
-                            f' minDur={r["minDur"]:.1f} next={next_str} state={r["state"]}/>\n')
+                    f.write(f'\t\t<phase name="{name}" duration="{duration:.1f}" maxDur="{r["maxDur"]:.1f}"'
+                            f' minDur="{r["minDur"]:.1f}" next="{next_str}" state="{r["state"]}"/>\n')
                 else:
-                    f.write(f"\t\t<phase name={name} duration={float(r['duration']):.1f}"
-                            f" next={next_str} state={r['state']}/>\n")
+                    f.write(f'\t\t<phase name="{name}" duration="{float(r['duration']):.1f}"'
+                            f' next="{next_str}" state="{r['state']}"/>\n')
 
             for link in linkDur:
                 f.write(
-                    f'\t\t<param key=linkMinDur:{link} value={float(linkDur[link]["linkMaxDur"]):.1f}/>\n')
+                    f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
                 f.write(
-                    f'\t\t<param key=linkMinDur:{link} value={float(linkDur[link]["linkMinDur"]):.1f}/>\n')
+                    f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMinDur"]):.1f}"/>\n')
         f.write('\t</tlLogic>\n')
+
+        new_tlLogic_element = ET.fromstring(f.getvalue())
+        
+        for tlLogic in self._root.findall('tlLogic'):
+            if tlLogic.get('id') == new_tlLogic_element.get('id'):
+                tlLogic.clear()
+                tlLogic.attrib.update(new_tlLogic_element.attrib)
+                for phase in new_tlLogic_element:
+                    tlLogic.append(phase)
+        
+        f.close()
+        
+    def write_xml(self):
+        self._tree.write(self._net_filename, encoding='utf-8', xml_declaration=True)
