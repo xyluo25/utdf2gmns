@@ -14,14 +14,32 @@ from utdf2gmns.func_lib.sumo.signal_mapping import (direction_mapping,
                                                     extract_dir_info,
                                                     create_SignalTimingPlan,
                                                     process_pedestrian_crossing)
+from utdf2gmns.func_lib.utdf.read_utdf import read_UTDF
 
 
-def update_sumo_signal_xml(sumo_net_xml: str, utdf_dict: dict, verbose: bool = False) -> bool:
-    """update sumo signal xml file from UTDF signal and SUMO network
+def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | str, verbose: bool = False) -> bool:
+    """update sumo signal (.net.xml) from UTDF signal information
+
+    Args:
+        sumo_net_xml (str): the path of sumo network xml file
+        utdf_dict_or_fname (dict | str): the UTDF dictionary or the path of UTDF csv file
+        verbose (bool): whether to print the process. Defaults to False.
 
     Returns:
         bool: whether the generation is successful
     """
+
+    # Check if utdf_dict_or_fname is a dictionary or a file name
+    if isinstance(utdf_dict_or_fname, dict):
+        utdf_dict = utdf_dict_or_fname
+    elif isinstance(utdf_dict_or_fname, str):
+        utdf_dict = read_UTDF(utdf_dict_or_fname)
+    else:
+        raise TypeError("utdf_dict_or_fname must be a dictionary or a file name")
+
+    # check if sumo_net_xml ends with .net.xml
+    if not sumo_net_xml.endswith(".net.xml"):
+        raise ValueError("sumo_net_xml must end with .net.xml")
 
     # get signal intersection ids from UTDF
     signalized_int_ids = list(set(utdf_dict.get("Timeplans")["INTID"].tolist()))

@@ -17,8 +17,18 @@ import matplotlib.pyplot as plt
 def plot_net_mpl(net: object, *, save_fig: bool = False,
                  fig_name: str = "utdf_network.png",
                  fig_size: tuple = (12, 12), dpi: int = 600) -> plt.figure:
-    """
-    Plot network
+    """Plot network
+
+    Args:
+        net (object): the utdf2gmns.UTDF2GMNS object
+        save_fig (bool): whether to save the figure. Defaults to False.
+        fig_name (str): the name of the figure. Defaults to "utdf_network.png".
+        fig_size (tuple): the size of the figure. Defaults to (12, 12).
+        dpi (int): the dpi of the figure. Defaults to 600.
+
+    Returns:
+        plt.figure: the figure object
+
     """
 
     # crate a fix ans axis
@@ -58,13 +68,20 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
 
         plt.show()
 
-        return fig
+    return fig
 
 
 def plot_net_keplergl(net: object, *, save_fig: bool = False,
                       fig_name: str = "utdf_network.html") -> keplergl.KeplerGl:
-    """
-    Plot network in keplergl
+    """Plot network in keplergl
+
+    Args:
+        net (object): the utdf2gmns.UTDF2GMNS object
+        save_fig (bool): whether to save the figure. Defaults to False.
+        fig_name (str): the name of the figure. Defaults to "utdf_network.html".
+
+    Returns:
+        keplergl.KeplerGl: the keplergl map
     """
 
     # check the extension of the fig_name

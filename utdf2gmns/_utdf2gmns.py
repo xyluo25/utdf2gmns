@@ -21,7 +21,7 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      reformat_link_dataframe_to_dict)
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
-from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_xml
+from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
 
 
 # SUMO related functions
@@ -35,13 +35,12 @@ pd.options.mode.chained_assignment = None  # default='warn'
 class UTDF2GMNS:
     """UTDF2GMNS performs the data conversion from UTDF to different formats.
     The class includes functions such as:
-        - read_UTDF_file (default): read UTDF file and generate dataframes for Networks,
-            Nodes, Links, Lanes, Timeplans, and Phases
-        - geocode_intersections: geocode intersections
+        - geocode_utdf_intersections: geocode intersections
         - create_signal_control: signalize intersections
         - create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases
         - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory
         - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory
+        - and more...
     """
     def __init__(self, utdf_filename: str, region_name: str = "", *, verbose: bool = False):
         """Initialize UTDF2GMNS class with UTDF file and region name
@@ -108,12 +107,15 @@ class UTDF2GMNS:
                 If not provided, geocoding one intersection from address.
                 Sample data: {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
             dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km
+                only used when single_intersection_coord is not provided.
 
         Note:
             - single_intersection_coord should follow the format:
                 {"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
             - if single_intersection_coord is not provided,
                 geocode intersections from address (region_name must be provided from input).
+            - dist_threshold is the distance threshold for geocoding intersections. Defaults to 0.01. Unit: km
+                and only used when single_intersection_coord is not provided.
 
         Raises:
             ValueError: Single coordinate should have INTID, x_coord, and y_coord keys!
@@ -184,6 +186,9 @@ class UTDF2GMNS:
 
     def create_signal_control(self) -> bool:
         """Signalize intersections
+        1. get signal intersection id from phase
+        2. parse signal control from UTDF data and create signal control for each intersection
+        3. assign signal control to network_signal_control, a dictionary as internal variable
         """
 
         # get signal intersection id from phase
@@ -378,7 +383,7 @@ class UTDF2GMNS:
             return False
 
         # update SUMO signal in .net.xml file
-        update_sumo_signal_xml(output_net_file, self._utdf_dict, verbose=self._verbose)
+        update_sumo_signal_from_utdf(output_net_file, self._utdf_dict, verbose=self._verbose)
         print(f"  :Successfully updated SUMO signal xml to \n    {sumo_output_dir}.")
 
         # create default .rou.xml file for the network using SUMO randomTrips.py
