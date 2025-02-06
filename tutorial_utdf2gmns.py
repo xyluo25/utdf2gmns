@@ -17,7 +17,7 @@ if __name__ == "__main__":
     path_utdf = r"datasets\data_Tempe_network\UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
-    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
+    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=True)
 
     # Step 2: Geocode intersection
     #   if user manually provide single intersection coordinate, such as:
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     net.utdf_to_gmns(incl_utdf=True)
 
     # Step 5 (optional): convert UTDF network to SUMO
-    net.utdf_to_sumo(sumo_name="", show_warning_message=False)
+    net.utdf_to_sumo(sumo_name="", show_warning_message=True)
 
     # Step 6 (optional): visualize the network
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
+    # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")

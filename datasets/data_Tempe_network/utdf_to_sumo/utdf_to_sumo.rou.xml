@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-02-01 17:21:06.913532 by randomTrips.py v1_21_0+0000-d7b3b481c43
+<!-- generated on 2025-02-03 14:26:44.583015 by randomTrips.py v1_21_0+0000-d7b3b481c43
 <configuration>
-    <net-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.net.xml"/>
-    <route-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.rou.xml"/>
+    <net-file value="c:/Users/xh8/ornl_workspace/github_workspace/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.net.xml"/>
+    <route-file value="c:/Users/xh8/ornl_workspace/github_workspace/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.rou.xml"/>
 </configuration>
 -->
 
-<!-- generated on 2025-02-01 17:21:06 by Eclipse SUMO duarouter Version 1.21.0
+<!-- generated on 2025-02-03 14:26:43 by Eclipse SUMO duarouter Version 1.21.0
 <duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
-        <net-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.net.xml"/>
+        <net-file value="c:/Users/xh8/ornl_workspace/github_workspace/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.net.xml"/>
         <route-files value="trips.trips.xml"/>
     </input>
 
     <output>
-        <output-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.rou.xml"/>
+        <output-file value="c:/Users/xh8/ornl_workspace/github_workspace/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.rou.xml"/>
         <alternatives-output value="NUL"/>
     </output>
 
