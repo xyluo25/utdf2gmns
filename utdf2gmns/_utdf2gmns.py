@@ -22,6 +22,7 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      reformat_link_dataframe_to_dict)
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
+from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
 
 
 # SUMO related functions
@@ -292,7 +293,8 @@ class UTDF2GMNS:
         print(f"  :Successfully saved GMNS(csv) data to \n    {gmns_output_dir}.")
         return True
 
-    def utdf_to_sumo(self, *, output_dir: str = "", sumo_name: str = "", show_warning_message: bool = False) -> bool:
+    def utdf_to_sumo(self, *, output_dir: str = "", sumo_name: str = "",
+                     show_warning_message: bool = False, disable_U_turn: bool = True) -> bool:
         """Convert UTDF to SUMO and save networks to the output directory
 
         Args:
@@ -381,6 +383,10 @@ class UTDF2GMNS:
         except Exception as e:
             print(f"  :Error in generating SUMO network: {e}")
             return False
+
+        # remove U-turns in the SUMO network
+        if disable_U_turn:
+            remove_sumo_U_turn(output_net_file)
 
         # update SUMO signal in .net.xml file
         update_sumo_signal_from_utdf(output_net_file, self._utdf_dict, verbose=self._verbose)

@@ -102,30 +102,48 @@ class ReadSUMO:
             f.write('\t\t<param key="show-detectors" value="false"/>\n')
             f.write('\t\t<param key="vTypes" value=""/>\n')
 
-        if ret:
-            for r in ret:
-                name = r.get("name", "")
-                if isinstance(r['next'], int):
-                    next_str = str(r['next'])
-                else:
-                    next_str = " ".join([str(s) for s in r['next']])
-                if 'minDur' in r:
-                    if types == 'actuated':
-                        duration = r['minDur']
-                    else:
-                        duration = r['maxDur']
+        # if ret:
+        for r in ret:
+            name = r.get("name", "")
+            if isinstance(r['next'], int):
+                next_str = str(r['next'])
+            else:
+                next_str = " ".join([str(s) for s in r['next']])
 
-                    f.write(f'\t\t<phase name="{name}" duration="{duration:.1f}" maxDur="{r["maxDur"]:.1f}"'
-                            f' minDur="{r["minDur"]:.1f}" next="{next_str}" state="{r["state"]}"/>\n')
-                else:
-                    f.write(f'\t\t<phase name="{name}" duration="{float(r["duration"]):.1f}"'
-                            f' next="{next_str}" state="{r["state"]}"/>\n')
+            if 'minDur' in r:
 
-            for link in linkDur:
-                f.write(
-                    f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
-                f.write(
-                    f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMinDur"]):.1f}"/>\n')
+                min_dur = f"{r['minDur']:.1f}"
+                max_dur = f"{r['maxDur']:.1f}"
+
+                # check if minDur is greater than maxDur
+                if float(max_dur) <= float(min_dur):
+                    max_dur = min_dur
+
+                if types == 'actuated':
+                    duration = r['minDur']
+                else:
+                    duration = r['maxDur']
+
+                if float(duration) <= 0:
+                    duration = "2.0"
+
+                # f.write(f'\t\t<phase name="{name}" duration="{duration:.1f}"'
+                #         f' next="{next_str}" state="{r["state"]}"/>\n')
+
+                f.write(f'\t\t<phase name="{name}" duration="{duration:.1f}" maxDur="{max_dur}"'
+                        f' minDur="{min_dur}" next="{next_str}" state="{r["state"]}"/>\n')
+            else:
+                duration = f"{float(r['duration']):.1f}"
+                if float(duration) <= 0:
+                    duration = "2.0"
+                f.write(f'\t\t<phase name="{name}" duration="{float(duration):.1f}"'
+                        f' next="{next_str}" state="{r["state"]}"/>\n')
+
+        for link in linkDur:
+            f.write(
+                f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
+            f.write(
+                f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMinDur"]):.1f}"/>\n')
         f.write('\t</tlLogic>\n')
 
         new_tlLogic_element = ET.fromstring(f.getvalue())
