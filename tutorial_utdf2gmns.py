@@ -17,7 +17,7 @@ if __name__ == "__main__":
     path_utdf = r"datasets\data_Tempe_network\UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
-    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=True)
+    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
 
     # Step 2: Geocode intersection
     #   if user manually provide single intersection coordinate, such as:
