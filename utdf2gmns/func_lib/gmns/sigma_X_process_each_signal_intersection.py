@@ -77,4 +77,4 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
 
 if __name__ == '__main__':
     path_utdf = r"C:\Users\xh8\Desktop\data_bullhead_seg4\my_utdf.csv"
-    sigma_X_process_each_signal_intersection(path_utdf)
+    utdf_to_each_signal_intersection(path_utdf)
