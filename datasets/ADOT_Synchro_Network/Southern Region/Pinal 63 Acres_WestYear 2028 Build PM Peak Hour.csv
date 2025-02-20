@@ -1,0 +1,1024 @@
+[Network]
+Network Settings
+RECORDNAME,DATA
+UTDFVERSION,8
+Metric,0
+yellowTime,3.5
+allRedTime,1.0
+Walk,7.0
+DontWalk,11.0
+HV,0.02
+PHF,0.92
+DefWidth,12
+DefFlow,1900
+vehLength,25
+heavyvehlength,45
+criticalgap,4.5
+followuptime,2.5
+stopthresholdspeed,5.0
+criticalmergegap,3.7
+growth,1.00
+PedSpeed,3.5
+LostTimeAdjust,0.0
+ScenarioDate,05/19/2021
+
+[Nodes]
+Node Data
+INTID,TYPE,X,Y,Z,DESCRIPTION,CBD,Inside Radius,Outside Radius,Roundabout Lanes,Circle Speed
+1,3,2405,-1648,0,,,,,,
+2,3,2398,-2913,0,,,,,,
+3,0,2390,-4253,0,,,,,,
+4,3,4431,-4273,0,,,,,,
+5,3,4910,-4270,0,,,,,,
+6,3,7680,-4267,0,,,,,,
+7,3,2395,-3490,0,,,,,,
+8,3,2387,-3846,0,,,,,,
+9,3,3085,-4256,0,,,,,,
+10,3,3770,-4260,0,,,,,,
+11,1,3431,-2891,0,,,,,,
+12,1,2411,-701,0,,,,,,
+13,1,7681,-3011,0,,,,,,
+14,1,1571,-4251,0,,,,,,
+15,1,4419,-4964,0,,,,,,
+16,1,9421,-4271,0,,,,,,
+17,1,4896,-4948,0,,,,,,
+18,1,7677,-4784,0,,,,,,
+19,1,81,-1641,0,,,,,,
+20,1,2797,-3484,0,,,,,,
+21,1,3451,-1651,0,,,,,,
+22,1,2811,-3839,0,,,,,,
+23,1,4416,-3691,0,,,,,,
+24,1,2381,-5791,0,,,,,,
+25,1,3100,-3778,0,,,,,,
+26,1,81,-2961,0,,,,,,
+27,1,3767,-3815,0,,,,,,
+
+[Links]
+Link Data
+RECORDNAME,INTID,NB,SB,EB,WB
+Up ID,1,2,12,19,21
+Lanes,1,3,4,1,1
+Name,1,State Route 387,State Route 387,Hopi Drive,Hopi Drive
+Distance,1,1265,947,2324,1046
+Speed,1,45,45,25,25
+Time,1,19.2,14.3,63.4,28.5
+Grade,1,0,0,0,0
+Median,1,12,12,0,0
+Offset,1,0,0,0,0
+TWLTL,1,0,0,0,0
+Crosswalk Width,1,16,16,16,16
+Mandatory Distance,1,200,200,200,200
+Mandatory Distance2,1,1980,1980,1101,1101
+Positioning Distance,1,1320,1320,734,734
+Positioning Distance2,1,2640,2640,1468,1468
+Curve Pt X,1,,,,
+Curve Pt Y,1,,,,
+Curve Pt Z,1,,,,
+Link Is Hidden,1,false,false,false,false
+Street Name Is Hidden,1,false,false,false,false
+Up ID,2,7,1,26,11
+Lanes,2,3,3,2,1
+Name,2,State Route 387,State Route 387,Havasupai Drive,Havasupai Drive
+Distance,2,577,1265,2317,1033
+Speed,2,30,30,25,25
+Time,2,13.1,28.8,63.2,28.2
+Grade,2,0,0,0,0
+Median,2,12,12,0,0
+Offset,2,0,0,0,0
+TWLTL,2,0,0,0,0
+Crosswalk Width,2,16,16,16,16
+Mandatory Distance,2,200,200,200,200
+Mandatory Distance2,2,1320,1320,1101,1101
+Positioning Distance,2,880,880,734,734
+Positioning Distance2,2,1760,1760,1468,1468
+Curve Pt X,2,,,,
+Curve Pt Y,2,,,,
+Curve Pt Z,2,,,,
+Link Is Hidden,2,false,false,false,false
+Street Name Is Hidden,2,false,false,false,false
+Up ID,3,24,8,14,9
+Lanes,3,4,4,2,2
+Name,3,State Route 387,State Route 387,Val Vista Boulevard,Val Vista Boulevard
+Distance,3,1538,407,819,695
+Speed,3,45,45,45,45
+Time,3,23.3,6.2,12.4,10.5
+Grade,3,0,0,0,0
+Median,3,12,12,12,12
+Offset,3,0,0,0,0
+TWLTL,3,0,0,0,0
+Crosswalk Width,3,16,16,16,16
+Mandatory Distance,3,458,458,458,458
+Mandatory Distance2,3,1980,1980,1980,1980
+Positioning Distance,3,1320,1320,1320,1320
+Positioning Distance2,3,2640,2640,2640,2640
+Curve Pt X,3,,,,
+Curve Pt Y,3,,,,
+Curve Pt Z,3,,,,
+Link Is Hidden,3,false,false,false,false
+Street Name Is Hidden,3,false,true,false,false
+Up ID,4,15,23,10,5
+Lanes,4,1,1,2,2
+Name,4,West CGPD Driveway,Driveway E,Val Vista Boulevard,Val Vista Boulevard
+Distance,4,691,582,661,479
+Speed,4,25,30,45,45
+Time,4,18.8,13.2,10.0,7.3
+Grade,4,0,0,0,0
+Median,4,0,0,0,0
+Offset,4,0,0,0,0
+TWLTL,4,0,0,0,1
+Crosswalk Width,4,16,16,16,16
+Mandatory Distance,4,200,200,200,200
+Mandatory Distance2,4,1101,1320,1980,1980
+Positioning Distance,4,734,880,1320,1320
+Positioning Distance2,4,1468,1760,2640,2640
+Curve Pt X,4,,,,
+Curve Pt Y,4,,,,
+Curve Pt Z,4,,,,
+Link Is Hidden,4,false,false,false,false
+Street Name Is Hidden,4,false,false,false,true
+Up ID,5,17,,4,6
+Lanes,5,1,,2,1
+Name,5,East CGPD Driveway,,Val Vista Boulevard,Val Vista Boulevard
+Distance,5,678,,479,2770
+Speed,5,25,,45,45
+Time,5,18.5,,7.3,42.0
+Grade,5,0,,0,0
+Median,5,12,,0,0
+Offset,5,0,,0,0
+TWLTL,5,0,,1,0
+Crosswalk Width,5,16,,16,16
+Mandatory Distance,5,200,,200,200
+Mandatory Distance2,5,1101,,1980,1980
+Positioning Distance,5,734,,1320,1320
+Positioning Distance2,5,1468,,2640,2640
+Curve Pt X,5,,,,
+Curve Pt Y,5,,,,
+Curve Pt Z,5,,,,
+Link Is Hidden,5,false,,false,false
+Street Name Is Hidden,5,false,,true,false
+Up ID,6,18,13,5,16
+Lanes,6,1,1,1,1
+Name,6,,Trekell Road,Val Vista Boulevard,Val Vista Boulevard
+Distance,6,517,1256,2770,1741
+Speed,6,30,35,45,45
+Time,6,11.8,24.5,42.0,26.4
+Grade,6,0,0,0,0
+Median,6,0,0,0,0
+Offset,6,0,0,0,0
+TWLTL,6,0,0,0,0
+Crosswalk Width,6,16,16,16,16
+Mandatory Distance,6,200,200,200,200
+Mandatory Distance2,6,1320,1539,1980,1980
+Positioning Distance,6,880,1026,1320,1320
+Positioning Distance2,6,1760,2052,2640,2640
+Curve Pt X,6,,,,
+Curve Pt Y,6,,,,
+Curve Pt Z,6,,,,
+Link Is Hidden,6,false,false,false,false
+Street Name Is Hidden,6,false,false,false,false
+Up ID,7,8,2,,20
+Lanes,7,3,3,,1
+Name,7,State Route 387,State Route 387,,Driveway A
+Distance,7,356,577,,402
+Speed,7,30,45,,30
+Time,7,8.1,8.7,,9.1
+Grade,7,0,0,,0
+Median,7,12,12,,0
+Offset,7,0,0,,0
+TWLTL,7,0,0,,0
+Crosswalk Width,7,16,16,,16
+Mandatory Distance,7,200,200,,200
+Mandatory Distance2,7,1320,1980,,1320
+Positioning Distance,7,880,1320,,880
+Positioning Distance2,7,1760,2640,,1760
+Curve Pt X,7,,,,
+Curve Pt Y,7,,,,
+Curve Pt Z,7,,,,
+Link Is Hidden,7,false,false,,false
+Street Name Is Hidden,7,true,false,,false
+Up ID,8,3,7,,22
+Lanes,8,3,2,,1
+Name,8,State Route 387,State Route 387,,Driveway B
+Distance,8,407,356,,424
+Speed,8,30,45,,30
+Time,8,9.3,5.4,,9.6
+Grade,8,0,0,,0
+Median,8,12,12,,0
+Offset,8,0,0,,0
+TWLTL,8,0,0,,0
+Crosswalk Width,8,16,16,,16
+Mandatory Distance,8,200,200,,200
+Mandatory Distance2,8,1320,1980,,1320
+Positioning Distance,8,880,1320,,880
+Positioning Distance2,8,1760,2640,,1760
+Curve Pt X,8,,,,
+Curve Pt Y,8,,,,
+Curve Pt Z,8,,,,
+Link Is Hidden,8,false,false,,false
+Street Name Is Hidden,8,true,true,,false
+Up ID,9,,25,3,10
+Lanes,9,,1,1,2
+Name,9,,Driveway C,Val Vista Boulevard,Val Vista Boulevard
+Distance,9,,478,695,685
+Speed,9,,30,45,45
+Time,9,,10.9,10.5,10.4
+Grade,9,,0,0,0
+Median,9,,0,12,12
+Offset,9,,0,0,0
+TWLTL,9,,0,0,0
+Crosswalk Width,9,,16,16,16
+Mandatory Distance,9,,200,200,200
+Mandatory Distance2,9,,1320,1980,1980
+Positioning Distance,9,,880,1320,1320
+Positioning Distance2,9,,1760,2640,2640
+Curve Pt X,9,,,,
+Curve Pt Y,9,,,,
+Curve Pt Z,9,,,,
+Link Is Hidden,9,,false,false,false
+Street Name Is Hidden,9,,false,false,false
+Up ID,10,,27,9,4
+Lanes,10,,1,1,2
+Name,10,,Driveway D,Val Vista Boulevard,Val Vista Boulevard
+Distance,10,,445,685,661
+Speed,10,,30,45,45
+Time,10,,10.1,10.4,10.0
+Grade,10,,0,0,0
+Median,10,,12,0,0
+Offset,10,,0,0,0
+TWLTL,10,,0,0,0
+Crosswalk Width,10,,16,16,16
+Mandatory Distance,10,,200,200,200
+Mandatory Distance2,10,,1320,1980,1980
+Positioning Distance,10,,880,1320,1320
+Positioning Distance2,10,,1760,2640,2640
+Curve Pt X,10,,,,
+Curve Pt Y,10,,,,
+Curve Pt Z,10,,,,
+Link Is Hidden,10,,false,false,false
+Street Name Is Hidden,10,,false,false,false
+Up ID,11,,,2,
+Lanes,11,,,1,
+Name,11,,,Havasupai Drive,
+Distance,11,,,1033,
+Speed,11,,,30,
+Time,11,,,23.5,
+Grade,11,,,0,
+Median,11,,,0,
+Offset,11,,,0,
+TWLTL,11,,,0,
+Crosswalk Width,11,,,16,
+Mandatory Distance,11,,,200,
+Mandatory Distance2,11,,,1320,
+Positioning Distance,11,,,880,
+Positioning Distance2,11,,,1760,
+Curve Pt X,11,,,,
+Curve Pt Y,11,,,,
+Curve Pt Z,11,,,,
+Link Is Hidden,11,,,false,
+Street Name Is Hidden,11,,,false,
+Up ID,12,1,,,
+Lanes,12,2,,,
+Name,12,State Route 387,,,
+Distance,12,947,,,
+Speed,12,30,,,
+Time,12,21.5,,,
+Grade,12,0,,,
+Median,12,12,,,
+Offset,12,0,,,
+TWLTL,12,0,,,
+Crosswalk Width,12,16,,,
+Mandatory Distance,12,200,,,
+Mandatory Distance2,12,1320,,,
+Positioning Distance,12,880,,,
+Positioning Distance2,12,1760,,,
+Curve Pt X,12,,,,
+Curve Pt Y,12,,,,
+Curve Pt Z,12,,,,
+Link Is Hidden,12,false,,,
+Street Name Is Hidden,12,false,,,
+Up ID,13,6,,,
+Lanes,13,1,,,
+Name,13,Trekell Road,,,
+Distance,13,1256,,,
+Speed,13,30,,,
+Time,13,28.5,,,
+Grade,13,0,,,
+Median,13,0,,,
+Offset,13,0,,,
+TWLTL,13,0,,,
+Crosswalk Width,13,16,,,
+Mandatory Distance,13,200,,,
+Mandatory Distance2,13,1320,,,
+Positioning Distance,13,880,,,
+Positioning Distance2,13,1760,,,
+Curve Pt X,13,,,,
+Curve Pt Y,13,,,,
+Curve Pt Z,13,,,,
+Link Is Hidden,13,false,,,
+Street Name Is Hidden,13,false,,,
+Up ID,14,,,,3
+Lanes,14,,,,1
+Name,14,,,,Val Vista Boulevard
+Distance,14,,,,819
+Speed,14,,,,30
+Time,14,,,,18.6
+Grade,14,,,,0
+Median,14,,,,12
+Offset,14,,,,0
+TWLTL,14,,,,0
+Crosswalk Width,14,,,,16
+Mandatory Distance,14,,,,200
+Mandatory Distance2,14,,,,1320
+Positioning Distance,14,,,,880
+Positioning Distance2,14,,,,1760
+Curve Pt X,14,,,,
+Curve Pt Y,14,,,,
+Curve Pt Z,14,,,,
+Link Is Hidden,14,,,,false
+Street Name Is Hidden,14,,,,false
+Up ID,15,,4,,
+Lanes,15,,1,,
+Name,15,,West CGPD Driveway,,
+Distance,15,,691,,
+Speed,15,,30,,
+Time,15,,15.7,,
+Grade,15,,0,,
+Median,15,,0,,
+Offset,15,,0,,
+TWLTL,15,,0,,
+Crosswalk Width,15,,16,,
+Mandatory Distance,15,,200,,
+Mandatory Distance2,15,,1320,,
+Positioning Distance,15,,880,,
+Positioning Distance2,15,,1760,,
+Curve Pt X,15,,,,
+Curve Pt Y,15,,,,
+Curve Pt Z,15,,,,
+Link Is Hidden,15,,false,,
+Street Name Is Hidden,15,,false,,
+Up ID,16,,,6,
+Lanes,16,,,1,
+Name,16,,,Val Vista Boulevard,
+Distance,16,,,1741,
+Speed,16,,,30,
+Time,16,,,39.6,
+Grade,16,,,0,
+Median,16,,,0,
+Offset,16,,,0,
+TWLTL,16,,,0,
+Crosswalk Width,16,,,16,
+Mandatory Distance,16,,,200,
+Mandatory Distance2,16,,,1320,
+Positioning Distance,16,,,880,
+Positioning Distance2,16,,,1760,
+Curve Pt X,16,,,,
+Curve Pt Y,16,,,,
+Curve Pt Z,16,,,,
+Link Is Hidden,16,,,false,
+Street Name Is Hidden,16,,,false,
+Up ID,17,,5,,
+Lanes,17,,1,,
+Name,17,,East CGPD Driveway,,
+Distance,17,,678,,
+Speed,17,,30,,
+Time,17,,15.4,,
+Grade,17,,0,,
+Median,17,,0,,
+Offset,17,,0,,
+TWLTL,17,,0,,
+Crosswalk Width,17,,16,,
+Mandatory Distance,17,,200,,
+Mandatory Distance2,17,,1320,,
+Positioning Distance,17,,880,,
+Positioning Distance2,17,,1760,,
+Curve Pt X,17,,,,
+Curve Pt Y,17,,,,
+Curve Pt Z,17,,,,
+Link Is Hidden,17,,false,,
+Street Name Is Hidden,17,,false,,
+Up ID,18,,6,,
+Lanes,18,,1,,
+Name,18,,,,
+Distance,18,,517,,
+Speed,18,,30,,
+Time,18,,11.8,,
+Grade,18,,0,,
+Median,18,,0,,
+Offset,18,,0,,
+TWLTL,18,,0,,
+Crosswalk Width,18,,16,,
+Mandatory Distance,18,,200,,
+Mandatory Distance2,18,,1320,,
+Positioning Distance,18,,880,,
+Positioning Distance2,18,,1760,,
+Curve Pt X,18,,,,
+Curve Pt Y,18,,,,
+Curve Pt Z,18,,,,
+Link Is Hidden,18,,false,,
+Street Name Is Hidden,18,,false,,
+Up ID,19,,,,1
+Lanes,19,,,,1
+Name,19,,,,Hopi Drive
+Distance,19,,,,2324
+Speed,19,,,,30
+Time,19,,,,52.8
+Grade,19,,,,0
+Median,19,,,,0
+Offset,19,,,,0
+TWLTL,19,,,,0
+Crosswalk Width,19,,,,16
+Mandatory Distance,19,,,,200
+Mandatory Distance2,19,,,,1320
+Positioning Distance,19,,,,880
+Positioning Distance2,19,,,,1760
+Curve Pt X,19,,,,
+Curve Pt Y,19,,,,
+Curve Pt Z,19,,,,
+Link Is Hidden,19,,,,false
+Street Name Is Hidden,19,,,,false
+Up ID,20,,,7,
+Lanes,20,,,1,
+Name,20,,,Driveway A,
+Distance,20,,,402,
+Speed,20,,,30,
+Time,20,,,9.1,
+Grade,20,,,0,
+Median,20,,,0,
+Offset,20,,,0,
+TWLTL,20,,,0,
+Crosswalk Width,20,,,16,
+Mandatory Distance,20,,,200,
+Mandatory Distance2,20,,,1320,
+Positioning Distance,20,,,880,
+Positioning Distance2,20,,,1760,
+Curve Pt X,20,,,,
+Curve Pt Y,20,,,,
+Curve Pt Z,20,,,,
+Link Is Hidden,20,,,false,
+Street Name Is Hidden,20,,,false,
+Up ID,21,,,1,
+Lanes,21,,,1,
+Name,21,,,Hopi Drive,
+Distance,21,,,1046,
+Speed,21,,,30,
+Time,21,,,23.8,
+Grade,21,,,0,
+Median,21,,,0,
+Offset,21,,,0,
+TWLTL,21,,,0,
+Crosswalk Width,21,,,16,
+Mandatory Distance,21,,,200,
+Mandatory Distance2,21,,,1320,
+Positioning Distance,21,,,880,
+Positioning Distance2,21,,,1760,
+Curve Pt X,21,,,,
+Curve Pt Y,21,,,,
+Curve Pt Z,21,,,,
+Link Is Hidden,21,,,false,
+Street Name Is Hidden,21,,,false,
+Up ID,22,,,8,
+Lanes,22,,,1,
+Name,22,,,Driveway B,
+Distance,22,,,424,
+Speed,22,,,30,
+Time,22,,,9.6,
+Grade,22,,,0,
+Median,22,,,0,
+Offset,22,,,0,
+TWLTL,22,,,0,
+Crosswalk Width,22,,,16,
+Mandatory Distance,22,,,200,
+Mandatory Distance2,22,,,1320,
+Positioning Distance,22,,,880,
+Positioning Distance2,22,,,1760,
+Curve Pt X,22,,,,
+Curve Pt Y,22,,,,
+Curve Pt Z,22,,,,
+Link Is Hidden,22,,,false,
+Street Name Is Hidden,22,,,false,
+Up ID,23,4,,,
+Lanes,23,1,,,
+Name,23,Driveway E,,,
+Distance,23,582,,,
+Speed,23,30,,,
+Time,23,13.2,,,
+Grade,23,0,,,
+Median,23,0,,,
+Offset,23,0,,,
+TWLTL,23,0,,,
+Crosswalk Width,23,16,,,
+Mandatory Distance,23,200,,,
+Mandatory Distance2,23,1320,,,
+Positioning Distance,23,880,,,
+Positioning Distance2,23,1760,,,
+Curve Pt X,23,,,,
+Curve Pt Y,23,,,,
+Curve Pt Z,23,,,,
+Link Is Hidden,23,false,,,
+Street Name Is Hidden,23,false,,,
+Up ID,24,,3,,
+Lanes,24,,2,,
+Name,24,,State Route 387,,
+Distance,24,,1538,,
+Speed,24,,30,,
+Time,24,,35.0,,
+Grade,24,,0,,
+Median,24,,12,,
+Offset,24,,0,,
+TWLTL,24,,0,,
+Crosswalk Width,24,,16,,
+Mandatory Distance,24,,200,,
+Mandatory Distance2,24,,1320,,
+Positioning Distance,24,,880,,
+Positioning Distance2,24,,1760,,
+Curve Pt X,24,,,,
+Curve Pt Y,24,,,,
+Curve Pt Z,24,,,,
+Link Is Hidden,24,,false,,
+Street Name Is Hidden,24,,false,,
+Up ID,25,9,,,
+Lanes,25,1,,,
+Name,25,Driveway C,,,
+Distance,25,478,,,
+Speed,25,30,,,
+Time,25,10.9,,,
+Grade,25,0,,,
+Median,25,0,,,
+Offset,25,0,,,
+TWLTL,25,0,,,
+Crosswalk Width,25,16,,,
+Mandatory Distance,25,200,,,
+Mandatory Distance2,25,1320,,,
+Positioning Distance,25,880,,,
+Positioning Distance2,25,1760,,,
+Curve Pt X,25,,,,
+Curve Pt Y,25,,,,
+Curve Pt Z,25,,,,
+Link Is Hidden,25,false,,,
+Street Name Is Hidden,25,false,,,
+Up ID,26,,,,2
+Lanes,26,,,,1
+Name,26,,,,Havasupai Drive
+Distance,26,,,,2317
+Speed,26,,,,30
+Time,26,,,,52.7
+Grade,26,,,,0
+Median,26,,,,0
+Offset,26,,,,0
+TWLTL,26,,,,0
+Crosswalk Width,26,,,,16
+Mandatory Distance,26,,,,200
+Mandatory Distance2,26,,,,1320
+Positioning Distance,26,,,,880
+Positioning Distance2,26,,,,1760
+Curve Pt X,26,,,,
+Curve Pt Y,26,,,,
+Curve Pt Z,26,,,,
+Link Is Hidden,26,,,,false
+Street Name Is Hidden,26,,,,false
+Up ID,27,10,,,
+Lanes,27,1,,,
+Name,27,Driveway D,,,
+Distance,27,445,,,
+Speed,27,30,,,
+Time,27,10.1,,,
+Grade,27,0,,,
+Median,27,0,,,
+Offset,27,0,,,
+TWLTL,27,0,,,
+Crosswalk Width,27,16,,,
+Mandatory Distance,27,200,,,
+Mandatory Distance2,27,1320,,,
+Positioning Distance,27,880,,,
+Positioning Distance2,27,1760,,,
+Curve Pt X,27,,,,
+Curve Pt Y,27,,,,
+Curve Pt Z,27,,,,
+Link Is Hidden,27,false,,,
+Street Name Is Hidden,27,false,,,
+
+[Lanes]
+Lane Group Data
+RECORDNAME,INTID,NBL,NBT,NBR,SBL,SBT,SBR,EBL,EBT,EBR,WBL,WBT,WBR,PED,HOLD
+Up Node,1,2,2,2,12,12,12,19,19,19,21,21,21,,
+Dest Node,1,19,12,21,21,2,19,12,21,2,2,19,12,,
+Lanes,1,1,2,0,1,2,1,0,1,0,0,1,0,,
+Shared,1,0,2,,0,0,,0,3,,0,3,,,
+Width,1,12,12,12,12,12,12,12,12,12,12,12,12,,
+Storage,1,300,,,300,,300,,,,,,,,
+Taper,1,25,,,25,,25,,,,,,,,
+StLanes,1,1,,,1,,1,,,,,,,,
+Grade,1,,,,,,,,,,,,,,
+Speed,1,,45,,,45,,,25,,,25,,,
+SignControl,1,,0,,,0,,,1,,,1,,,
+IdealFlow,1,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,,
+SatFlow,1,1770,3536,0,1770,3539,1583,0,1635,0,0,1770,0,,
+SatFlowPerm,1,1770,3536,0,1770,3539,1583,0,1635,0,0,1770,0,,
+Allow RTOR,1,1,1,1,1,1,1,1,1,1,1,1,1,,
+SatFlowRTOR,1,0,0,0,0,0,0,0,0,0,0,0,0,,
+Volume,1,100,1081,9,4,1376,44,12,2,108,7,0,0,,
+Peds,1,0,0,0,0,0,0,0,0,0,0,0,0,,
+Bicycles,1,0,0,0,0,0,0,0,0,0,0,0,0,,
+PHF,1,0.85,0.90,0.80,0.80,0.90,0.80,0.80,0.80,0.85,0.80,0.80,0.80,,
+Growth,1,100,100,100,100,100,100,100,100,100,100,100,100,,
+HeavyVehicles,1,2,2,2,2,2,2,2,2,2,2,2,2,,
+BusStops,1,0,0,0,0,0,0,0,0,0,0,0,0,,
+Midblock,1,,0,,,0,,,0,,,0,,,
+Distance,1,,1265,,,947,,,2324,,,1046,,,
+TravelTime,1,,19.2,,,14.3,,,63.4,,,28.5,,,
+Right Channeled,1,,,0,,,0,,,0,,,0,,
+Alignment,1,0,0,1,0,0,1,0,0,1,0,0,1,,
+Enter Blocked,1,0,0,0,0,0,0,0,0,0,0,0,0,,
+HeadwayFact,1,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,,
+Turning Speed,1,15,60,9,15,60,9,15,60,9,15,60,9,,
+FirstDetect,1,20,100,,20,100,20,20,100,,20,100,,,
+LastDetect,1,0,0,,0,0,0,0,0,,0,0,,,
+Exit Lanes,1,,0,,,0,,,0,,,0,,,
+CBD,1,,0,,,,,,,,,,,,
+Lane Group Flow,1,118,1212,0,5,1529,55,0,145,0,0,9,0,,
+Up Node,2,7,7,7,1,1,1,26,26,26,11,11,11,,
+Dest Node,2,26,1,11,11,7,26,1,11,7,7,26,1,,
+Lanes,2,1,2,0,1,2,0,0,1,1,0,1,0,,
+Shared,2,0,2,,0,2,,0,1,,0,3,,,
+Width,2,12,12,12,12,12,12,12,12,12,12,12,12,,
+Storage,2,300,,,300,,,,,100,,,,,
+Taper,2,25,,,25,,,,,25,,,,,
+StLanes,2,1,,,1,,,,,1,,,,,
+Grade,2,,,,,,,,,,,,,,
+Speed,2,,30,,,30,,,25,,,25,,,
+SignControl,2,,0,,,0,,,1,,,1,,,
+IdealFlow,2,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,,
+SatFlow,2,1770,3539,0,1863,3529,0,0,1770,1583,0,1763,0,,
+SatFlowPerm,2,1770,3539,0,1863,3529,0,0,1770,1583,0,1763,0,,
+Allow RTOR,2,1,1,1,1,1,1,1,1,1,1,1,1,,
+SatFlowRTOR,2,0,0,0,0,0,0,0,0,0,0,0,0,,
+Volume,2,61,1138,2,0,1515,23,5,0,52,4,3,2,,
+Peds,2,0,0,0,0,0,0,0,0,0,0,0,0,,
+Bicycles,2,0,0,0,0,0,0,0,0,0,0,0,0,,
+PHF,2,0.80,0.90,0.80,0.80,0.90,0.80,0.80,0.80,0.80,0.80,0.80,0.80,,
+Growth,2,100,100,100,100,100,100,100,100,100,100,100,100,,
+HeavyVehicles,2,2,2,2,2,2,2,2,2,2,2,2,2,,
+BusStops,2,0,0,0,0,0,0,0,0,0,0,0,0,,
+Midblock,2,,0,,,0,,,0,,,0,,,
+Distance,2,,577,,,1265,,,2317,,,1033,,,
+TravelTime,2,,13.1,,,28.8,,,63.2,,,28.2,,,
+Right Channeled,2,,,0,,,0,,,0,,,0,,
+Alignment,2,0,0,1,0,0,1,0,0,1,0,0,1,,
+Enter Blocked,2,0,0,0,0,0,0,0,0,0,0,0,0,,
+HeadwayFact,2,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,,
+Turning Speed,2,15,60,9,15,60,9,15,60,9,15,60,9,,
+FirstDetect,2,20,100,,20,100,,20,100,20,20,100,,,
+LastDetect,2,0,0,,0,0,,0,0,0,0,0,,,
+Exit Lanes,2,,0,,,0,,,0,,,0,,,
+CBD,2,,0,,,,,,,,,,,,
+Lane Group Flow,2,76,1267,0,0,1712,0,0,6,65,0,12,0,,
+Up Node,3,24,24,24,8,8,8,14,14,14,9,9,9,,
+Dest Node,3,14,8,9,9,24,14,8,9,24,24,14,8,,
+Lanes,3,1,2,1,1,2,1,1,1,0,1,1,0,,
+Shared,3,0,0,,0,0,,0,2,,0,2,,,
+Width,3,12,12,12,12,12,12,12,12,12,12,12,12,,
+Storage,3,560,,290,530,,265,80,,,220,,,,
+Taper,3,25,,25,25,,25,25,,,25,,,,
+StLanes,3,1,,1,1,,1,1,,,1,,,,
+Grade,3,,,,,,,,,,,,,,
+Speed,3,,45,,,45,,,45,,,45,,,
+Phase1,3,3,2,,3,2,,,4,,,4,,,
+PermPhase1,3,2,,2,2,,2,4,,,4,,,,
+LostTime,3,4,6,6,4,6,6,6.8,6.8,4,6.8,6.8,4,,
+Lost Time Adjust,3,0,0,0,0,0,0,0,0,0,0,0,0,,
+IdealFlow,3,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,,
+SatFlow,3,1770,3539,1583,1770,3539,1583,1770,1667,0,1770,1686,0,,
+SatFlowPerm,3,181,3539,1583,181,3539,1583,505,1667,0,717,1686,0,,
+Allow RTOR,3,1,1,1,1,1,1,1,1,1,1,1,1,,
+SatFlowRTOR,3,0,0,508,0,0,107,0,103,0,0,77,0,,
+Volume,3,272,1147,637,217,1138,100,122,80,187,732,120,209,,
+Peds,3,0,0,0,0,0,0,0,0,0,0,0,0,,
+Bicycles,3,0,0,0,0,0,0,0,0,0,0,0,0,,
+PHF,3,0.85,0.90,0.90,0.85,0.90,0.85,0.85,0.85,0.85,0.90,0.85,0.85,,
+Growth,3,100,100,100,100,100,100,100,100,100,100,100,100,,
+HeavyVehicles,3,2,2,2,2,2,2,2,2,2,2,2,2,,
+BusStops,3,0,0,0,0,0,0,0,0,0,0,0,0,,
+Midblock,3,,0,,,0,,,0,,,0,,,
+Distance,3,,1538,,,407,,,819,,,695,,,
+TravelTime,3,,23.3,,,6.2,,,12.4,,,10.5,,,
+Right Channeled,3,,,0,,,0,,,0,,,0,,
+Alignment,3,0,0,1,0,0,1,0,0,1,0,0,1,,
+Enter Blocked,3,0,0,0,0,0,0,0,0,0,0,0,0,,
+HeadwayFact,3,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,,
+Turning Speed,3,15,60,9,15,60,9,15,60,9,15,60,9,,
+FirstDetect,3,20,100,20,20,100,20,20,100,,20,100,,,
+LastDetect,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectPhase1,3,3,2,2,3,2,2,4,4,,4,4,,,
+DetectPhase2,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectPhase3,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectPhase4,3,0,0,0,0,0,0,0,0,,0,0,,,
+SwitchPhase,3,0,0,0,0,0,0,0,0,,0,0,,,
+numDetects,3,1,2,1,1,2,1,1,2,,1,2,,,
+DetectPos1,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectSize1,3,20,6,20,20,6,20,20,6,,20,6,,,
+DetectType1,3,3,3,3,3,3,3,3,3,,3,3,,,
+DetectExtend1,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectQueue1,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectDelay1,3,0,0,0,0,0,0,0,0,,0,0,,,
+DetectPos2,3,,94,,,94,,,94,,,94,,,
+DetectSize2,3,,6,,,6,,,6,,,6,,,
+DetectType2,3,,3,,,3,,,3,,,3,,,
+DetectExtend2,3,,0,,,0,,,0,,,0,,,
+Exit Lanes,3,,0,,,0,,,0,,,0,,,
+CBD,3,,0,,,,,,,,,,,,
+Lane Group Flow,3,320,1274,708,255,1264,118,144,314,0,813,387,0,,
+Up Node,4,15,15,15,23,23,23,10,10,10,5,5,5,,
+Dest Node,4,10,23,5,5,15,10,23,5,15,15,10,23,,
+Lanes,4,0,1,0,0,0,1,0,1,1,0,1,1,,
+Shared,4,0,3,,0,0,,0,0,,0,1,,,
+Width,4,12,12,12,12,12,12,12,12,12,12,12,12,,
+Storage,4,,,,,,,100,,90,100,,100,,
+Taper,4,,,,,,,25,,25,25,,25,,
+StLanes,4,,,,,,,0,,1,0,,1,,
+Grade,4,,,,,,,,,,,,,,
+Speed,4,,25,,,30,,,45,,,45,,,
+SignControl,4,,1,,,1,,,0,,,0,,,
+IdealFlow,4,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,,
+SatFlow,4,0,1770,0,0,0,1611,0,1863,1583,0,1863,1583,,
+SatFlowPerm,4,0,1770,0,0,0,1611,0,1863,1583,0,1863,1583,,
+Allow RTOR,4,1,1,1,1,1,1,1,1,1,1,1,1,,
+SatFlowRTOR,4,0,0,0,0,0,0,0,0,0,0,0,0,,
+Volume,4,15,0,0,0,0,71,0,632,4,0,462,26,,
+Peds,4,0,0,0,0,0,0,0,0,0,0,0,0,,
+Bicycles,4,0,0,0,0,0,0,0,0,0,0,0,0,,
+PHF,4,0.80,0.80,0.80,0.80,0.80,0.80,0.80,0.90,0.80,0.80,0.90,0.80,,
+Growth,4,100,100,100,100,100,100,100,100,100,100,100,100,,
+HeavyVehicles,4,2,2,2,2,2,2,2,2,2,2,2,2,,
+BusStops,4,0,0,0,0,0,0,0,0,0,0,0,0,,
+Midblock,4,,0,,,0,,,0,,,0,,,
+Distance,4,,691,,,582,,,661,,,479,,,
+TravelTime,4,,18.8,,,13.2,,,10.0,,,7.3,,,
+Right Channeled,4,,,0,,,0,,,0,,,0,,
+Alignment,4,0,0,1,0,0,1,0,0,1,0,0,1,,
+Enter Blocked,4,0,0,0,0,0,0,0,0,0,0,0,0,,
+HeadwayFact,4,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,,
+Turning Speed,4,15,60,9,15,60,9,15,60,9,15,60,9,,
+FirstDetect,4,20,100,,,,20,,100,20,20,100,20,,
+LastDetect,4,0,0,,,,0,,0,0,0,0,0,,
+Exit Lanes,4,,0,,,0,,,0,,,0,,,
+CBD,4,,0,,,,,,,,,,,,
+Lane Group Flow,4,0,19,0,0,0,89,0,702,5,0,513,33,,
+Up Node,5,17,,17,,,,,4,4,6,6,,,
+Dest Node,5,4,,6,,,,,6,17,17,4,,,
+Lanes,5,1,,0,,,,,1,1,0,1,,,
+Shared,5,2,,,,,,,0,,0,1,,,
+Width,5,12,,12,,,,,12,12,12,12,,,
+Storage,5,,,,,,,,,,,,,,
+Taper,5,,,,,,,,,,,,,,
+StLanes,5,,,,,,,,,,,,,,
+Grade,5,,,,,,,,,,,,,,
+Speed,5,25,,,,,,,45,,,45,,,
+SignControl,5,1,,,,,,,0,,,0,,,
+IdealFlow,5,1900,,1900,,,,,1900,1900,1900,1900,,,
+SatFlow,5,1733,,0,,,,,1863,1863,0,1863,,,
+SatFlowPerm,5,1733,,0,,,,,1863,1863,0,1863,,,
+Allow RTOR,5,1,,1,,,,,1,1,1,1,,,
+SatFlowRTOR,5,0,,0,,,,,0,0,0,0,,,
+Volume,5,9,,3,,,,,632,0,0,480,,,
+Peds,5,0,,0,,,,,0,0,0,0,,,
+Bicycles,5,0,,0,,,,,0,0,0,0,,,
+PHF,5,0.80,,0.80,,,,,0.90,0.80,0.80,0.90,,,
+Growth,5,100,,100,,,,,100,100,100,100,,,
+HeavyVehicles,5,2,,2,,,,,2,2,2,2,,,
+BusStops,5,0,,0,,,,,0,0,0,0,,,
+Midblock,5,0,,,,,,,0,,,0,,,
+Distance,5,678,,,,,,,479,,,2770,,,
+TravelTime,5,18.5,,,,,,,7.3,,,42.0,,,
+Right Channeled,5,,,0,,,,,,0,,0,,,
+Alignment,5,0,,1,,,,,0,1,0,0,,,
+Enter Blocked,5,0,,0,,,,,0,0,0,0,,,
+HeadwayFact,5,1.00,,1.00,,,,,1.00,1.00,1.00,1.00,,,
+Turning Speed,5,15,,9,,,,,60,9,15,60,,,
+FirstDetect,5,20,,,,,,,100,20,20,100,,,
+LastDetect,5,0,,,,,,,0,0,0,0,,,
+Exit Lanes,5,0,,,,,,,0,,,0,,,
+CBD,5,0,,,,,,,,,,,,,
+Lane Group Flow,5,15,,0,,,,,702,0,0,533,,,
+Up Node,6,18,18,18,13,13,13,5,5,5,16,16,16,,
+Dest Node,6,5,13,16,16,18,5,13,16,18,18,5,13,,
+Lanes,6,0,1,0,0,1,0,0,1,0,0,1,0,,
+Shared,6,0,3,,0,3,,0,3,,0,3,,,
+Width,6,12,12,12,12,12,12,12,12,12,12,12,12,,
+Storage,6,100,,,100,,,100,,,100,,,,
+Taper,6,25,,,25,,,25,,,25,,,,
+StLanes,6,0,,,0,,,0,,,0,,,,
+Grade,6,,,,,,,,,,,,,,
+Speed,6,,30,,,35,,,45,,,45,,,
+SignControl,6,,1,,,1,,,0,,,0,,,
+IdealFlow,6,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,1900,,
+SatFlow,6,0,1770,0,0,1640,0,0,1692,0,0,1835,0,,
+SatFlowPerm,6,0,1770,0,0,1640,0,0,1692,0,0,1835,0,,
+Allow RTOR,6,1,1,1,1,1,1,1,1,1,1,1,1,,
+SatFlowRTOR,6,0,0,0,0,0,0,0,0,0,0,0,0,,
+Volume,6,280,0,9,9,2,61,80,142,403,17,132,10,,
+Peds,6,0,0,0,0,0,0,0,0,0,0,0,0,,
+Bicycles,6,0,0,0,0,0,0,0,0,0,0,0,0,,
+PHF,6,0.85,0.80,0.80,0.80,0.80,0.80,0.85,0.85,0.90,0.80,0.85,0.80,,
+Growth,6,100,100,100,100,100,100,100,100,100,100,100,100,,
+HeavyVehicles,6,2,2,2,2,2,2,2,2,2,2,2,2,,
+BusStops,6,0,0,0,0,0,0,0,0,0,0,0,0,,
+Midblock,6,,0,,,0,,,0,,,0,,,
+Distance,6,,517,,,1256,,,2770,,,1741,,,
+TravelTime,6,,11.8,,,24.5,,,42.0,,,26.4,,,
+Right Channeled,6,,,0,,,0,,,0,,,0,,
+Alignment,6,0,0,1,0,0,1,0,0,1,0,0,1,,
+Enter Blocked,6,0,0,0,0,0,0,0,0,0,0,0,0,,
+HeadwayFact,6,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,,
+Turning Speed,6,15,60,9,15,60,9,15,60,9,15,60,9,,
+FirstDetect,6,20,100,,20,100,,20,100,,20,100,,,
+LastDetect,6,0,0,,0,0,,0,0,,0,0,,,
+Exit Lanes,6,,0,,,0,,,0,,,0,,,
+CBD,6,,0,,,,,,,,,,,,
+Lane Group Flow,6,0,340,0,0,90,0,0,709,0,0,189,0,,
+Up Node,7,,8,8,2,2,,,,,20,,20,,
+Dest Node,7,,2,20,20,8,,,,,8,,2,,
+Lanes,7,,2,1,1,2,,,,,0,,1,,
+Shared,7,,0,,0,0,,,,,0,,,,
+Width,7,,12,12,12,12,,,,,12,,12,,
+Storage,7,,,150,175,,,,,,,,,,
+Taper,7,,,25,25,,,,,,,,,,
+StLanes,7,,,1,1,,,,,,,,,,
+Grade,7,,,,,,,,,,,,,,
+Speed,7,,30,,,45,,,,,30,,,,
+SignControl,7,,0,,,0,,,,,1,,,,
+IdealFlow,7,,1900,1900,1900,1900,,,,,1900,,1900,,
+SatFlow,7,,3539,1583,1770,3539,,,,,0,,1611,,
+SatFlowPerm,7,,3539,1583,1770,3539,,,,,0,,1611,,
+Allow RTOR,7,,1,1,1,1,,,,,1,,1,,
+SatFlowRTOR,7,,0,0,0,0,,,,,0,,0,,
+Volume,7,,1292,109,123,1447,,,,,0,,40,,
+Peds,7,,0,0,0,0,,,,,0,,0,,
+Bicycles,7,,0,0,0,0,,,,,0,,0,,
+PHF,7,,0.90,0.85,0.85,0.90,,,,,0.80,,0.80,,
+Growth,7,,100,100,100,100,,,,,100,,100,,
+HeavyVehicles,7,,2,2,2,2,,,,,2,,2,,
+BusStops,7,,0,0,0,0,,,,,0,,0,,
+Midblock,7,,0,,,0,,,,,0,,,,
+Distance,7,,356,,,577,,,,,402,,,,
+TravelTime,7,,8.1,,,8.7,,,,,9.1,,,,
+Right Channeled,7,,,0,,0,,,,,,,0,,
+Alignment,7,,0,1,0,0,,,,,0,,1,,
+Enter Blocked,7,,0,0,0,0,,,,,0,,0,,
+HeadwayFact,7,,1.00,1.00,1.00,1.00,,,,,1.00,,1.00,,
+Turning Speed,7,,60,9,15,60,,,,,15,,9,,
+FirstDetect,7,,100,20,20,100,,,,,,,20,,
+LastDetect,7,,0,0,0,0,,,,,,,0,,
+Exit Lanes,7,,0,,,0,,,,,0,,,,
+CBD,7,,0,,,,,,,,,,,,
+Lane Group Flow,7,,1436,128,145,1608,,,,,0,,50,,
+Up Node,8,,3,3,7,7,,,,,22,,22,,
+Dest Node,8,,7,22,22,3,,,,,3,,7,,
+Lanes,8,,2,1,0,2,,,,,0,,1,,
+Shared,8,,0,,0,0,,,,,0,,,,
+Width,8,,12,12,12,12,,,,,12,,12,,
+Storage,8,,,175,,,,,,,,,,,
+Taper,8,,,25,,,,,,,,,,,
+StLanes,8,,,1,,,,,,,,,,,
+Grade,8,,,,,,,,,,,,,,
+Speed,8,,30,,,45,,,,,30,,,,
+SignControl,8,,0,,,0,,,,,1,,,,
+IdealFlow,8,,1900,1900,1900,1900,,,,,1900,,1900,,
+SatFlow,8,,3539,1583,0,3539,,,,,0,,1611,,
+SatFlowPerm,8,,3539,1583,0,3539,,,,,0,,1611,,
+Allow RTOR,8,,1,1,1,1,,,,,1,,1,,
+SatFlowRTOR,8,,0,0,0,0,,,,,0,,0,,
+Volume,8,,1361,116,0,1447,,,,,0,,40,,
+Peds,8,,0,0,0,0,,,,,0,,0,,
+Bicycles,8,,0,0,0,0,,,,,0,,0,,
+PHF,8,,0.90,0.85,0.80,0.90,,,,,0.80,,0.80,,
+Growth,8,,100,100,100,100,,,,,100,,100,,
+HeavyVehicles,8,,2,2,2,2,,,,,2,,2,,
+BusStops,8,,0,0,0,0,,,,,0,,0,,
+Midblock,8,,0,,,0,,,,,0,,,,
+Distance,8,,407,,,356,,,,,424,,,,
+TravelTime,8,,9.3,,,5.4,,,,,9.6,,,,
+Right Channeled,8,,,0,,0,,,,,,,0,,
+Alignment,8,,0,1,0,0,,,,,0,,1,,
+Enter Blocked,8,,0,0,0,0,,,,,0,,0,,
+HeadwayFact,8,,1.00,1.00,1.00,1.00,,,,,1.00,,1.00,,
+Turning Speed,8,,60,9,15,60,,,,,15,,9,,
+FirstDetect,8,,100,20,,100,,,,,,,20,,
+LastDetect,8,,0,0,,0,,,,,,,0,,
+Exit Lanes,8,,0,,,0,,,,,0,,,,
+CBD,8,,0,,,,,,,,,,,,
+Lane Group Flow,8,,1512,136,0,1608,,,,,0,,50,,
+Up Node,9,,,,25,,25,3,3,,,10,10,,
+Dest Node,9,,,,10,,3,25,10,,,3,25,,
+Lanes,9,,,,0,,1,0,1,,,1,1,,
+Shared,9,,,,0,,,0,0,,,0,,,
+Width,9,,,,12,,12,12,12,,,12,12,,
+Storage,9,,,,,,,,,,,,100,,
+Taper,9,,,,,,,,,,,,25,,
+StLanes,9,,,,,,,,,,,,1,,
+Grade,9,,,,,,,,,,,,,,
+Speed,9,,,,30,,,,45,,,45,,,
+SignControl,9,,,,1,,,,0,,,0,,,
+IdealFlow,9,,,,1900,,1900,1900,1900,,,1900,1900,,
+SatFlow,9,,,,0,,1611,0,1863,,,1863,1583,,
+SatFlowPerm,9,,,,0,,1611,0,1863,,,1863,1583,,
+Allow RTOR,9,,,,1,,1,1,1,,,1,1,,
+SatFlowRTOR,9,,,,0,,0,0,0,,,0,0,,
+Volume,9,,,,0,,280,0,934,,,759,37,,
+Peds,9,,,,0,,0,0,0,,,0,0,,
+Bicycles,9,,,,0,,0,0,0,,,0,0,,
+PHF,9,,,,0.80,,0.85,0.80,0.90,,,0.90,0.80,,
+Growth,9,,,,100,,100,100,100,,,100,100,,
+HeavyVehicles,9,,,,2,,2,2,2,,,2,2,,
+BusStops,9,,,,0,,0,0,0,,,0,0,,
+Midblock,9,,,,0,,,,0,,,0,,,
+Distance,9,,,,478,,,,695,,,685,,,
+TravelTime,9,,,,10.9,,,,10.5,,,10.4,,,
+Right Channeled,9,,,,,,0,,0,,,,0,,
+Alignment,9,,,,0,,1,0,0,,,0,1,,
+Enter Blocked,9,,,,0,,0,0,0,,,0,0,,
+HeadwayFact,9,,,,1.00,,1.00,1.00,1.00,,,1.00,1.00,,
+Turning Speed,9,,,,15,,9,15,60,,,60,9,,
+FirstDetect,9,,,,,,20,,100,,,100,20,,
+LastDetect,9,,,,,,0,,0,,,0,0,,
+Exit Lanes,9,,,,0,,,,0,,,0,,,
+CBD,9,,,,,,,,0,,,,,,
+Lane Group Flow,9,,,,0,,329,0,1038,,,843,46,,
+Up Node,10,,,,27,,27,9,9,,,4,4,,
+Dest Node,10,,,,4,,9,27,4,,,9,27,,
+Lanes,10,,,,1,,0,0,1,,,1,1,,
+Shared,10,,,,2,,,0,1,,,0,,,
+Width,10,,,,12,,12,12,12,,,12,12,,
+Storage,10,,,,,,,100,,,,,100,,
+Taper,10,,,,,,,25,,,,,25,,
+StLanes,10,,,,,,,0,,,,,1,,
+Grade,10,,,,,,,,,,,,,,
+Speed,10,,,,30,,,,45,,,45,,,
+SignControl,10,,,,1,,,,0,,,0,,,
+IdealFlow,10,,,,1900,,1900,1900,1900,,,1900,1900,,
+SatFlow,10,,,,1670,,0,0,1816,,,1863,1583,,
+SatFlowPerm,10,,,,1670,,0,0,1816,,,1863,1583,,
+Allow RTOR,10,,,,1,,1,1,1,,,1,1,,
+SatFlowRTOR,10,,,,0,,0,0,0,,,0,0,,
+Volume,10,,,,185,,350,488,446,,,446,102,,
+Peds,10,,,,0,,0,0,0,,,0,0,,
+Bicycles,10,,,,0,,0,0,0,,,0,0,,
+PHF,10,,,,0.85,,0.90,0.90,0.90,,,0.90,0.85,,
+Growth,10,,,,100,,100,100,100,,,100,100,,
+HeavyVehicles,10,,,,2,,2,2,2,,,2,2,,
+BusStops,10,,,,0,,0,0,0,,,0,0,,
+Midblock,10,,,,0,,,,0,,,0,,,
+Distance,10,,,,445,,,,685,,,661,,,
+TravelTime,10,,,,10.1,,,,10.4,,,10.0,,,
+Right Channeled,10,,,,,,0,,0,,,,0,,
+Alignment,10,,,,0,,1,0,0,,,0,1,,
+Enter Blocked,10,,,,0,,0,0,0,,,0,0,,
+HeadwayFact,10,,,,1.00,,1.00,1.00,1.00,,,1.00,1.00,,
+Turning Speed,10,,,,15,,9,15,60,,,60,9,,
+FirstDetect,10,,,,20,,,20,100,,,100,20,,
+LastDetect,10,,,,0,,,0,0,,,0,0,,
+Exit Lanes,10,,,,0,,,,0,,,0,,,
+CBD,10,,,,,,,,0,,,,,,
+Lane Group Flow,10,,,,607,,0,0,1038,,,496,120,,
+
+[Timeplans]
+Timing Plan Settings
+RECORDNAME,INTID,DATA
+Control Type,3,1
+Cycle Length,3,110.0
+Lock Timings,3,0
+Referenced To,3,0
+Reference Phase,3,2
+Offset,3,0.0
+Master,3,0
+Yield,3,0
+Node 0,3,3
+Node 1,3,0
+
+[Phases]
+Phasing Data
+RECORDNAME,INTID,D1,D2,D3,D4,D5,D6,D7,D8
+BRP,3,112,111,211,212,122,121,221,222
+MinGreen,3,,29,11,13.2,,,,
+MaxGreen,3,,41,24,28.2,,,,
+VehExt,3,,6.5,1.5,1.5,,,,
+TimeBeforeReduce,3,,0,0,0,,,,
+TimeToReduce,3,,0,0,0,,,,
+MinGap,3,,3,3,3,,,,
+Yellow,3,,5,3,4.7,,,,
+AllRed,3,,1,1,2.1,,,,
+Recall,3,,1,1,1,,,,
+Walk,3,,7,,7,,,,
+DontWalk,3,,15,,36,,,,
+PedCalls,3,,0,,0,,,,
+MinSplit,3,,35,15,20,,,,
+DualEntry,3,,1,0,1,,,,
+InhibitMax,3,,1,1,1,,,,
+Start,3,,0,47,75,,,,
+End,3,,47,75,0,,,,
+Yield,3,,41,71,103.2,,,,
+Yield170,3,,41,71,103.2,,,,
+LocalStart,3,,0,47,75,,,,
+LocalYield,3,,41,71,103.2,,,,
+LocalYield170,3,,41,71,103.2,,,,
+ActGreen,3,,41.1,17.7,28.3,,,,
+
