@@ -21,6 +21,13 @@ def read_UTDF(path_utdf: str) -> dict:
     Args:
         path_utdf (str): path to the utdf.csv file
 
+    Example:
+        >>> import utdf2gmns as ug
+        >>> path_utdf = "your utdf file, in csv format"
+        >>> utdf_dict = ug.read_UTDF(path_utdf)
+        >>> utdf_dict.keys()
+        dict_keys(['Network', 'Nodes', 'Links', 'Lanes', 'Timeplans', 'Phases', 'phase_timeplans'])
+
     Returns:
         dict: a dictionary of dataframes with keys are Network, Nodes, Links, Lanes, Timeplans, Phases
     """

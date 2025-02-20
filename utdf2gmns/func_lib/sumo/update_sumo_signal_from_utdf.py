@@ -25,6 +25,12 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
         utdf_dict_or_fname (dict | str): the UTDF dictionary or the path of UTDF csv file
         verbose (bool): whether to print the process. Defaults to False.
 
+    Example:
+        >>> import utdf2gmns as ug
+        >>> sumo_net_xml = "your sumo network xml file"
+        >>> utdf_dict_or_fname = "your utdf file, in csv format"
+        >>> ug.update_sumo_signal_from_utdf(sumo_net_xml, utdf_dict_or_fname, verbose=True)
+
     Returns:
         bool: whether the generation is successful
     """

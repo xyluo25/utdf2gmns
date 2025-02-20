@@ -21,6 +21,18 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
         output_dir (str): the path of output directory. Defaults to "".
             If not specified, the output directory will be the same as the input directory.
 
+    Example:
+        >>> import utdf2gmns as ug
+        >>> utdf_filename = "your utdf file, in csv format"
+        >>> ug.utdf_to_each_signal_intersection(utdf_filename, output_dir="")
+
+    Location:
+        utdf2gmns/func_lib/gmns/sigma_X_process_each_signal_intersection.utdf_to_each_signal_intersection
+
+    Raises:
+        TypeError: If the input file is not a string or Path
+        FileNotFoundError: If the input file does not exist
+
     Returns:
         bool: True if success, False otherwise
     """
