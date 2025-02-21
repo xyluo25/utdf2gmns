@@ -19,6 +19,9 @@ if __name__ == "__main__":
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
 
+    # (Optional) Sigma-X engine generate each signal intersection with visualization
+    # net.utdf_to_gmns_signal_ints()
+
     # Step 2: Geocode intersection
     #   if user manually provide single intersection coordinate, such as:
     #   single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}

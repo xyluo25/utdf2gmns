@@ -13,6 +13,8 @@ import pandas as pd
 # import utility functions from pyufunc
 import pyufunc as pf
 
+from utdf2gmns.util_lib.pkg_utils import time_unit_converter
+
 # For deployment
 from utdf2gmns.func_lib.utdf.geocoding_intersection import generate_intersection_coordinates
 from utdf2gmns.func_lib.utdf.read_utdf import (generate_intersection_from_Links, read_UTDF)
@@ -20,6 +22,7 @@ from utdf2gmns.func_lib.gmns.geocoding_Nodes import update_node_from_one_interse
 from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      reformat_link_dataframe_to_dict)
+from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import utdf_to_each_signal_intersection
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
 from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
@@ -227,6 +230,18 @@ class UTDF2GMNS:
         self.network_links = links_dict
         print(f"  :Total number of edges generated: {len(links_dict)}")
 
+        return True
+
+    @pf.func_running_time
+    def utdf_to_gmns_signal_ints(self, *, output_dir: str = "") -> bool:
+        """ Empower Sigma-X engine to generate each signal intersection with visualization  """
+
+        # print out approximate time for processing
+        total_seconds = 3.5 * len(self.network_int_ids_signalized)
+        print("  :Processing each signal intersection, please wait...")
+        print(f"  :Total time for {len(self.network_int_ids_signalized)} intersections"
+              f" might be: {time_unit_converter(total_seconds, "s", "m", False)} minutes...")
+        utdf_to_each_signal_intersection(self._utdf_filename, verbose=self._verbose)
         return True
 
     def utdf_to_gmns(self, *, output_dir: str = "", incl_utdf: bool = True, is_link_polygon: bool = False) -> bool:

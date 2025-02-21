@@ -12,7 +12,7 @@ import xlwings as xw
 import pyufunc as pf
 
 
-def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = "") -> bool:
+def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = "", verbose: bool = False) -> bool:
     """Utilize sigma-X engine to process each signal intersection from Synchro UTDF file
     And save each signal intersection into a separate GMNS file.
 
@@ -48,7 +48,7 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
     input_utdf_dir = pf.path2linux(Path(utdf_filename).parent)
 
     # Step2 crate output directory to store the results
-    output_dir = pf.path2linux(Path(input_utdf_dir) / "utdf2gmns_signal_ints")
+    output_dir = pf.path2linux(Path(input_utdf_dir) / "utdf_to_gmns_signal_ints")
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
     os.makedirs(output_dir, exist_ok=True)
@@ -68,22 +68,28 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
 
     # Step5 Run the sigma-X engine
     output_sigma_utdf2gmns = pf.path2linux(Path(output_dir) / "UTDF2GMNS.xlsm")
-    with xw.App(visible=False) as app:
-        try:
+    output_sigma = pf.path2linux(Path(output_dir) / "Sigma-X_UTDF.xlsm")
+
+    # Close all existing open Excel instances
+    for app in xw.apps:
+        app.quit()
+
+    try:
+        print("  :Running Sigma-X engine to generate each signal intersection...")
+        with xw.App(visible=False) as app:
             wb = app.books.open(output_sigma_utdf2gmns)
             # run the macro
             wb.macro("UTDF2GMNS")()
+    except Exception as e:
+        if verbose:
+            print(f"  :Failed to run the macro: {e}")
 
-            # save and close the workbook
-            wb.save()
-            wb.close()
-            app.quit()
-        except Exception as e:
-            app.quit()
-            print(f"  :Error occurred while running the macro: {e}")
+    # Close all existing open Excel instances
+    os.remove(output_sigma_utdf2gmns)
+    os.remove(output_utdf)
+    os.remove(output_sigma)
+
     # Step6 delete the sigma-X engine from output directory
-    shutil.rmtree(output_sigma_utdf2gmns)
-    shutil.rmtree(output_utdf)
     print("  :Successfully processed each signal intersection from Synchro UTDF file")
     print(f"  :Please check the output directory: {output_dir}")
 
