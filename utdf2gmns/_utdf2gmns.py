@@ -240,7 +240,7 @@ class UTDF2GMNS:
         total_seconds = 3.5 * len(self.network_int_ids_signalized)
         print("  :Processing each signal intersection, please wait...")
         print(f"  :Total time for {len(self.network_int_ids_signalized)} intersections"
-              f" might be: {time_unit_converter(total_seconds, 's', 'm', False)} minutes...")
+              f" might be: {time_unit_converter(total_seconds, 's', 'm', False):.2f} minutes...")
         utdf_to_each_signal_intersection(self._utdf_filename, verbose=self._verbose)
         return True
 
