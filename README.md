@@ -69,18 +69,19 @@ if __name__ == "__main__":
 
 ## TODO LIST
 
+* [ ] create more xml files for sumo
+* [ ] convert volume/flow to .rou.xml
+* [ ] Generate sumo Net use sumolib
+* [ ] Add cycle length and green time for each movement.
 * [X] Print out how many intersections being geocoded.
 * [X] Print out check log.
 * [X] Number of lanes of the movements from synchro file.
 * [X] Print geocoding details (in percentage)
-* [ ] Generate sumo Net use sumolib
-* [ ] Add cycle length and green time for each movement.
 * [X] Add detailed information for user to load coordinated intersection data.
 * [X] geocoding Lanes
 * [X] Cvt gmns to SUMO
 * [X] update plot function to visuzalize gmns node and links
-* [X] create .rou.xml for sumo
-* [ ] create more xml files for sumo
+* [X] create .rou.xml for sumo (auto generated)
 
 ## Call for Contributions
 
