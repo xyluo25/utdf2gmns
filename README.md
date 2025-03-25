@@ -8,21 +8,6 @@ An AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different
 
 * [X] UTDF.csv
 
-## **Package dependencies**:
-
-* [X] geocoder>=1.38.1
-* [X] geopandas>=1.0.1
-* [X] geopy>=2.4.1
-* [X] keplergl>=0.3.6
-* [X] matplotlib>=3.10.0
-* [X] numpy>=2.2.2
-* [X] pandas>=2.2.3
-* [X] pyproj>=3.7.0
-* [X] pytest>=8.3.4
-* [X] pyufunc>=0.3.7
-* [X] Shapely>=2.0.7
-* [X] sumolib>=1.21.0
-
 ## Installation
 
 `pip install utdf2gmns`
@@ -109,4 +94,6 @@ For more information about the ways you can contribute to utdf2gmns, visit [our 
 
 If you use utdf2gmns in your work or research, please use the following entry:
 
+```plaintext
 Luo, X. and Zhou, X. (2022, December 17). UTDF2GMNS. Retrieved from https://github.com/xyluo25/utdf2gmns
+```

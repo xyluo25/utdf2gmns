@@ -27,12 +27,12 @@ license = {file = 'LICENSE', content-type='text/plain'}
 # license = {text = "Apache License"}
 
 requires-python = ">=3.10"
-keywords = ["UTDF", "Synchro", "GMNS", "Geojson"]
+keywords = ["UTDF", "Synchro", "GMNS", "SUMO", "Geojson", "Micro Simulation"]
 
 dynamic = ["dependencies"]
 
 [project.urls]
-Homepage = 'https://github.com/xyluo25/utdf2gmn'
+Homepage = 'https://github.com/xyluo25/utdf2gmns'
 # Documentation = 'https://github.com/xyluo25/grid2demand'
 # Bug_Tracker = 'https://github.com/xyluo25/grid2demand/issues'
 # Repository = "https://github.com/xyluo25/grid2demand"
