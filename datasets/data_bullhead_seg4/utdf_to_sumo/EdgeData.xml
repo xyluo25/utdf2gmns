@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-03-27 01:49:52 by Eclipse SUMO GUI Version 1.21.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\xyluo25\anaconda3_workspace\001_GitHub\utdf2gmns\datasets\data_bullhead_seg4\utdf_to_sumo\utdf_to_sumo.net.xml"/>
+        <route-files value="C:\Users\xyluo25\anaconda3_workspace\001_GitHub\utdf2gmns\datasets\data_bullhead_seg4\utdf_to_sumo\utdf_to_sumo.rou.xml"/>
+    </input>
+
+    <output>
+        <edgedata-output value="C:\Users\xyluo25\anaconda3_workspace\001_GitHub\utdf2gmns\datasets\data_bullhead_seg4\utdf_to_sumo\EdgeData.xml"/>
+    </output>
+
+    <time>
+        <begin value="32400.0"/>
+        <end value="36000.0"/>
+        <step-length value="1"/>
+    </time>
+
+</sumoConfiguration>
+-->
+
+<meandata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/meandata_file.xsd">
+</meandata>

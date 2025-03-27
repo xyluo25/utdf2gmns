@@ -18,6 +18,8 @@ import xml.etree.ElementTree as ET
 
 import sumolib
 from sumolib.net import Net
+import pandas as pd
+import pyufunc as pf
 
 from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_lonlat_to_utm
 
@@ -118,5 +120,45 @@ def generate_sumo_edg_xml(network_links: dict, filename: str = "network.edg.xml"
 
     xml_str = xml_prettify(root)
     with open(filename, "w") as f:
+        f.write(xml_str)
+    return True
+
+
+def generate_sumo_flow_xml(network_lanes: dict, fname: str = "network.flow.xml", **kwargs) -> bool:
+    """Generate the .flow.xml file."""
+    root = ET.Element("routes")
+    ET.SubElement(root, "vType", id="car", type="passenger")
+
+    # check if begin and end time is provided
+    begin_time = kwargs.get("begin")
+    end_time = kwargs.get("end")
+
+    for int_id, direction_lanes in network_lanes.items():
+        for direction in direction_lanes:
+
+            # check whether the node have valid Up Node and Dest Node with volume greater than 0
+            up_node = direction_lanes[direction].get("Up Node")
+            dest_node = direction_lanes[direction].get("Dest Node")
+            volume = direction_lanes[direction].get("Volume", None)
+
+            try:
+                volume = int(volume) if volume is not None else None
+            except (ValueError, TypeError):
+                volume = None
+
+            if up_node and dest_node and volume and volume > 0:
+                flow_elem = ET.SubElement(root, "flow")
+                flow_elem.set("id", f"{up_node}_{dest_node}")
+                flow_elem.set("from", f"{up_node}_{int_id}")
+                flow_elem.set("to", f"{int_id}_{dest_node}")
+                flow_elem.set("number", f"{volume}")
+                flow_elem.set("type", "car")
+                if begin_time:
+                    flow_elem.set("begin", f"{int(begin_time)}")
+                if end_time:
+                    flow_elem.set("end", f"{int(end_time)}")
+
+    xml_str = xml_prettify(root)
+    with open(fname, "w") as f:
         f.write(xml_str)
     return True

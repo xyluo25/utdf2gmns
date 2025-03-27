@@ -6,6 +6,8 @@
 ##############################################################
 
 from math import sin, cos, sqrt, atan2, radians
+from datetime import datetime
+import pyufunc as pf
 
 
 def calculate_point2point_distance_in_km(point1: list, point2: list) -> float:
@@ -90,4 +92,81 @@ def time_unit_converter(value: float, from_unit: str, to_unit: str, verbose: boo
     if verbose:
         print(
             f"  :{value} {from_unit_norm} is approximately {result} {to_unit_norm}")
+    return result
+
+
+def time_str_to_seconds(time_str: str, to_unit: str = "seconds", verbose: bool = True) -> int:
+    """Convert a time string to seconds
+
+    Args:
+        time_str (str): A time string, e.g., "12:00AM", "9:00am", "3:00pm"
+        to_unit (str): The desired output unit. e.g. "seconds", "minutes", "hours", "days"
+        verbose (bool): Whether to print the conversion result. Defaults to True.
+
+    Example:
+        >>> from pyufunc import time_str_to_seconds
+        >>> time_str_to_seconds("12:00AM")
+        0
+
+        >>> time_str_to_seconds("9:00am")
+        34200.0
+
+        >>> time_str_to_seconds("3:30pm")
+        55800.0
+
+        >>> time_str_to_seconds("3:30pm", to_unit="minutes")
+        930.0
+
+    Returns:
+        int: The time in the target unit.
+    """
+
+    time_str = pf.str_strip(time_str).lower()
+
+    fmt = [
+        "%I:%M",        # 12-hour, no AM/PM
+        "%I:%M:%S",     # 12-hour with seconds
+        "%I:%M%p",      # 12-hour with AM/PM
+        "%I:%M %p",      # 12-hour with AM/PM
+        "%H:%M",        # 24-hour
+        "%H:%M:%S"      # 24-hour with seconds
+    ]
+
+    dt = None
+    for each_fmt in fmt:
+        try:
+            dt = datetime.strptime(time_str, each_fmt)
+            break
+        except ValueError:
+            continue
+
+    if dt is None:
+        raise ValueError(f"  :Invalid time string: {time_str}")
+
+    total_seconds = dt.hour * 3600 + dt.minute * 60 + dt.second
+
+    unit_aliases = {
+        "s": "seconds", "sec": "seconds", "secs": "seconds", "second": "seconds", "seconds": "seconds",
+        "m": "minutes", "min": "minutes", "mins": "minutes", "minute": "minutes", "minutes": "minutes",
+        "h": "hours", "hr": "hours", "hrs": "hours", "hour": "hours", "hours": "hours",
+        "d": "days", "day": "days", "days": "days",
+        "y": "years", "yr": "years", "yrs": "years", "year": "years", "years": "years",
+    }
+
+    # Conversion factors in seconds.
+    conversion_factors = {
+        "seconds": 1,
+        "minutes": 60,                     # 60 seconds
+        "hours": 3600,                     # 60 minutes * 60 seconds
+        "days": 86400,                     # 24 hours * 3600 seconds
+        "years": 31536000,                 # 365 days * 86400 seconds
+    }
+
+    # Convert from seconds to the target unit.
+    to_unit_norm = unit_aliases.get(to_unit.lower().strip())
+    result = total_seconds / conversion_factors[to_unit_norm]
+
+    if verbose:
+        print(
+            f"  :{time_str} is approximately {result} {to_unit_norm}")
     return result

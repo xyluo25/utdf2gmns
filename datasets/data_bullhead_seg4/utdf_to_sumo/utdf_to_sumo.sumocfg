@@ -5,9 +5,12 @@
         <net-file value="utdf_to_sumo.net.xml"/>
         <route-files value="utdf_to_sumo.rou.xml"/>
     </input>
+    <output>
+        <edgedata-output value="EdgeData.xml"/>
+    </output>
     <time>
-        <begin value="0"/>
-        <end value="3600"/>
-        <step-length value="0.1"/>
+        <begin value="32400.0"/>
+        <end value="36000.0"/>
+        <step-length value="1"/>
     </time>
 </configuration>
