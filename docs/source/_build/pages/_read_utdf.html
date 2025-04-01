@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Read UTDF Format Data &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Geocoding Intersections" href="_geocoding_intersection.html" />
+    <link rel="prev" title="Installation" href="quick_start.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Read UTDF Format Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#load-utdf-data-from-utdf2gmns-class">load utdf data from UTDF2GMNS class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-utdf-data-from-read-utdf-function">Load UTDF data from read_UTDF function</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Read UTDF Format Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/_read_utdf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="read-utdf-format-data">
+<h1>Read UTDF Format Data<a class="headerlink" href="#read-utdf-format-data" title="Link to this heading"></a></h1>
+<p>The <cite>UTDF2GMNS</cite> class is designed to read UTDF format data and convert it into GMNS format. The following example demonstrates how to initialize the class with a UTDF file and read the data from it. This will load the UTDF file into a dictionary format, which can then be used to access various components of the network data.</p>
+<p>The original UTDF format include the following keys:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Network</p></td>
+<td><p>Overall network information, including ScenarioData, ScenarioTime, vehLength, PHF, Metrics, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Nodes</p></td>
+<td><p>Intersections in the network, which includes INTID, x/y coordinates, and other attributes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Links</p></td>
+<td><p>Links between intersections, which can be represented as either polygon or line links in GMNS format. Each link includes attributes such as LinkID, FromNode, ToNode, Length, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lanes</p></td>
+<td><p>Lanes associated with each link, which can be used to define the lane geometry and attributes in GMNS. Each lane includes attributes such as LaneID, LinkID, Width, etc.</p></td>
+</tr>
+<tr class="row-even"><td><p>Timeplans</p></td>
+<td><p>Time-based signal control plans for signalized intersections in the network. This includes the timing of each signal phase and the associated green times.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Phases</p></td>
+<td><p>Signal phases for each signalized intersection, which defines the signal timing and control for each approach at the intersection. Each phase includes attributes such as PhaseID, GreenTime, YellowTime, RedTime, etc.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="load-utdf-data-from-utdf2gmns-class">
+<h2>load utdf data from UTDF2GMNS class<a class="headerlink" href="#load-utdf-data-from-utdf2gmns-class" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">4</span>
+<span class="hll"><span class="linenos">5</span><span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
+</span><span class="linenos">6</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos">7</span>
+<span class="linenos">8</span><span class="n">net</span> <span class="o">=</span> <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then you can get UTDF data in a dictionary format from the initialized object. The keys in the dictionary correspond to the components of the UTDF data, such as <strong>Network</strong>, <strong>Nodes</strong>, <strong>Links</strong>, <strong>Lanes</strong>, <strong>Timeplans</strong>, and <strong>Phases</strong>. The values of these keys will be DataFrame objects (from <a href="#id1"><span class="problematic" id="id2">`pandas`_</span></a>) that contain the corresponding data from the UTDF file. You can access these components as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">net</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="p">[</span><span class="s2">&quot;Network&quot;</span><span class="p">]</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="c1"># or view the node information (intersections)</span>
+<span class="linenos">4</span><span class="n">net</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="p">[</span><span class="s2">&quot;Nodes&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul class="simple">
+<li><p><strong>region_name</strong> is optional.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>region_name</strong> is necessary for <a class="reference internal" href="_geocoding_intersection.html#automatic-geocoding"><span class="std std-ref">Automatic Geocoding</span></a>. It can be any string that represents the region of the UTDF data (e.g., “Bullhead City, AZ”).</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>region_name</strong> is not used for <a class="reference internal" href="_geocoding_intersection.html#manual-geocoding"><span class="std std-ref">Manual Geocoding</span></a>. In the manual mode, you can specify the coordinates directly using the <strong>single_intersection_coord</strong> parameter in the <strong>geocode_utdf_intersections</strong> function.</p></li>
+</ul>
+</div>
+</section>
+<section id="load-utdf-data-from-read-utdf-function">
+<h2>Load UTDF data from read_UTDF function<a class="headerlink" href="#load-utdf-data-from-read-utdf-function" title="Link to this heading"></a></h2>
+<p><strong>If you just want to read the UTDF file without converting it to GMNS format, you can simply run the code</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos">4</span><span class="n">utdf_dict</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">)</span>
+<span class="linenos">5</span>
+<span class="linenos">6</span><span class="c1"># get all available keys in the utdf_dict</span>
+<span class="linenos">7</span><span class="nb">print</span><span class="p">(</span><span class="n">utdf_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quick_start.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_geocoding_intersection.html" class="btn btn-neutral float-right" title="Geocoding Intersections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

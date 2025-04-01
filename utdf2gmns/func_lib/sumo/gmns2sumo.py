@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from sumolib.net import Net
 
 
-def generate_sumo_network() -> Net:
+def generate_sumo_network() -> "Net":
     pass
 
 

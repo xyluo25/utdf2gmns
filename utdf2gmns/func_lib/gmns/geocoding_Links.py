@@ -144,7 +144,7 @@ def create_line_polygon_points(lon1: float, lat1: float, lon2: float, lat2: floa
 
 @pf.requires("shapely", verbose=False)
 def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
-                        num_lanes: int, width: float, unit: str = "meters") -> Polygon:
+                        num_lanes: int, width: float, unit: str = "meters") -> "Polygon":
     """Create a line polygons based on the width of the line and number of lanes.
     The polygon is to the right of the directional line, each lane is exactly next to the previous one.
 

@@ -6,6 +6,7 @@
 ##############################################################
 
 import os
+import json
 from pathlib import Path
 import subprocess
 import pandas as pd
@@ -281,11 +282,17 @@ class UTDF2GMNS:
         if not hasattr(self, "network_links"):
             self.create_gmns_links(is_link_polygon=is_link_polygon)
 
+        if not hasattr(self, "network_signal_control"):
+            self.create_signal_control()
+
         # Save the GMNS data to the output directory
         pd.DataFrame(self.network_nodes.values()).to_csv(
             os.path.join(gmns_output_dir, "node.csv"), index=False)
         pd.DataFrame(self.network_links.values()).to_csv(
             os.path.join(gmns_output_dir, "link.csv"), index=False)
+
+        with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
+            json.dump(self.network_signal_control, f)
 
         # save the UTDF data to the output directory
         if incl_utdf:

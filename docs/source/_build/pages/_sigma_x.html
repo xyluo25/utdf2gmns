@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sigma-x Engine Visualize Intersections &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Signal Conversation" href="_signal_conversion.html" />
+    <link rel="prev" title="Geocoding Intersections" href="_geocoding_intersection.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sigma-x Engine Visualize Intersections</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#signalized-intersection-overview-chart">Signalized Intersection Overview Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phasing-chart-table">Phasing Chart / Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#turning-volumes-vph-chart">Turning Volumes (VPH) Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-designation-phase-no-chart">Phase Designation (Phase No) Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#number-of-lanes-chart">Number of Lanes Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#split-durations-seconds-chart">Split Durations (Seconds) Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#movement-capacity-vph-chart">Movement Capacity (VPH) Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v-c-ratio-chart">V/C Ratio Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#control-delay-seconds-chart">Control Delay (Seconds) Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#intersection-level-of-service-los-chart">Intersection Level of Service (LOS) Chart</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Sigma-x Engine Visualize Intersections</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/_sigma_x.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sigma-x-engine-visualize-intersections">
+<h1>Sigma-x Engine Visualize Intersections<a class="headerlink" href="#sigma-x-engine-visualize-intersections" title="Link to this heading"></a></h1>
+<p><cite>utdf2gmns</cite> package provides a method to visualize intersections using the Sigma-x engine. This is an optional step and can be used to generate a visual representation of the intersections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span>    <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos"> 5</span>
+<span class="hll"><span class="linenos"> 6</span>        <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+</span><span class="linenos"> 7</span>
+<span class="linenos"> 8</span>        <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
+<span class="hll"><span class="linenos"> 9</span>        <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">10</span>
+<span class="linenos">11</span>        <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>  <span class="c1"># This will generate the Sigma-x engine visualization for intersections</span>
+</pre></div>
+</div>
+<p>This will save visualization file for each intersection in the current working directory. You can open these files to perform additional analysis.</p>
+<section id="signalized-intersection-overview-chart">
+<h2>Signalized Intersection Overview Chart<a class="headerlink" href="#signalized-intersection-overview-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_overview.png"><img alt="Signalized Intersection Overview Chart" src="../_images/int_overview.png" style="width: 600px;" />
+</a>
+</section>
+<section id="phasing-chart-table">
+<h2>Phasing Chart / Table<a class="headerlink" href="#phasing-chart-table" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_phasing_table.png"><img alt="Phasing Table" src="../_images/int_phasing_table.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/int_phasing_chart.png"><img alt="Phasing Chart" src="../_images/int_phasing_chart.png" style="width: 600px;" />
+</a>
+</section>
+<section id="turning-volumes-vph-chart">
+<h2>Turning Volumes (VPH) Chart<a class="headerlink" href="#turning-volumes-vph-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_turning_volumns.png"><img alt="Turning Volumes Chart" src="../_images/int_turning_volumns.png" style="width: 600px;" />
+</a>
+</section>
+<section id="phase-designation-phase-no-chart">
+<h2>Phase Designation (Phase No) Chart<a class="headerlink" href="#phase-designation-phase-no-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_phase_designation.png"><img alt="Phase Designation Chart" src="../_images/int_phase_designation.png" style="width: 600px;" />
+</a>
+</section>
+<section id="number-of-lanes-chart">
+<h2>Number of Lanes Chart<a class="headerlink" href="#number-of-lanes-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_num_lanes.png"><img alt="Number of Lanes Chart" src="../_images/int_num_lanes.png" style="width: 600px;" />
+</a>
+</section>
+<section id="split-durations-seconds-chart">
+<h2>Split Durations (Seconds) Chart<a class="headerlink" href="#split-durations-seconds-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_split_duration.png"><img alt="Split Durations Chart" src="../_images/int_split_duration.png" style="width: 600px;" />
+</a>
+</section>
+<section id="movement-capacity-vph-chart">
+<h2>Movement Capacity (VPH) Chart<a class="headerlink" href="#movement-capacity-vph-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_movement_capacity.png"><img alt="Movement Capacity Chart" src="../_images/int_movement_capacity.png" style="width: 600px;" />
+</a>
+</section>
+<section id="v-c-ratio-chart">
+<h2>V/C Ratio Chart<a class="headerlink" href="#v-c-ratio-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_v_c_ratio.png"><img alt="V/C Ratio Chart" src="../_images/int_v_c_ratio.png" style="width: 600px;" />
+</a>
+</section>
+<section id="control-delay-seconds-chart">
+<h2>Control Delay (Seconds) Chart<a class="headerlink" href="#control-delay-seconds-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_control_delay.png"><img alt="Control Delay Chart" src="../_images/int_control_delay.png" style="width: 600px;" />
+</a>
+</section>
+<section id="intersection-level-of-service-los-chart">
+<h2>Intersection Level of Service (LOS) Chart<a class="headerlink" href="#intersection-level-of-service-los-chart" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/int_level_of_service.png"><img alt="Intersection Level of Service (LOS) Chart" src="../_images/int_level_of_service.png" style="width: 600px;" />
+</a>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_geocoding_intersection.html" class="btn btn-neutral float-left" title="Geocoding Intersections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_signal_conversion.html" class="btn btn-neutral float-right" title="Signal Conversation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

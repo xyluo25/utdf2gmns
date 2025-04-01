@@ -35,7 +35,7 @@ dynamic = ["dependencies"]
 base = ["pyproj>=3.7.0", "geocoder>=1.38.1", "geopandas>=1.0.1", "geopy>=2.4.1", "Shapely>=2.0.7",
          "xlwings>=0.33.9"] # for the core functionality
 vis = ["keplergl", "matplotlib>=3.10.0"]
-test = ["pytest", "coverage"]
+test = ["pytest", "coverage", "sphinx", "myst-parser", "sphinx_copybutton"]
 sumo = ["sumolib"]
 all = ["my-package[base, vis, test, sumo]"]
 

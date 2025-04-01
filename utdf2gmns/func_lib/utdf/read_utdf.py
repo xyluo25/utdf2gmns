@@ -5,6 +5,7 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
+import os
 import pandas as pd
 from pyufunc import func_running_time
 
@@ -31,6 +32,18 @@ def read_UTDF(path_utdf: str) -> dict:
     Returns:
         dict: a dictionary of dataframes with keys are Network, Nodes, Links, Lanes, Timeplans, Phases
     """
+
+    # check if the file is a valid csv file
+    if not isinstance(path_utdf, str):
+        raise ValueError(
+            f"path_utdf should be a string, but got {type(path_utdf)}. Please provide a valid path to the utdf.csv file.")
+    if not os.path.isfile(path_utdf):
+        raise FileNotFoundError(
+            f"The file {path_utdf} does not exist. Please provide a valid path to the utdf.csv file.")
+
+    if not path_utdf.endswith(".csv"):
+        raise ValueError(
+            f"The file {path_utdf} is not a CSV file. Please provide a valid CSV file for the UTDF data.")
 
     # read the utdf.csv file
     with open(path_utdf, "r", encoding='utf-8') as f:
