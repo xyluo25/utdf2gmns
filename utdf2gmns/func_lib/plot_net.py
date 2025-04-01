@@ -6,14 +6,21 @@
 ##############################################################
 '''
 import os
+from typing import TYPE_CHECKING
 from pathlib import Path
 import pyufunc as pf
-import keplergl
 import pandas as pd
-import geopandas as gpd
-import matplotlib.pyplot as plt
+# import keplergl
+# import geopandas as gpd
+# import matplotlib.pyplot as plt
+
+if TYPE_CHECKING:
+    import geopandas as gpd
+    import keplergl
+    import matplotlib.pyplot as plt  # for type hinting only
 
 
+@pf.requires("matplotlib", verbose=False)
 def plot_net_mpl(net: object, *, save_fig: bool = False,
                  fig_name: str = "utdf_network.png",
                  fig_size: tuple = (12, 12), dpi: int = 600) -> plt.figure:
@@ -30,6 +37,8 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
         plt.figure: the figure object
 
     """
+    pf.import_package("matplotlib", verbose=False)  # ensure matplotlib is imported
+    import matplotlib.pyplot as plt  # ensure matplotlib is imported
 
     # crate a fix ans axis
     is_plot = False
@@ -71,6 +80,7 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
     return fig
 
 
+@pf.requires("keplergl", verbose=False)
 def plot_net_keplergl(net: object, *, save_fig: bool = False,
                       fig_name: str = "utdf_network.html") -> keplergl.KeplerGl:
     """Plot network in keplergl
@@ -83,6 +93,8 @@ def plot_net_keplergl(net: object, *, save_fig: bool = False,
     Returns:
         keplergl.KeplerGl: the keplergl map
     """
+    pf.import_package("keplergl", verbose=False)  # ensure keplergl is imported
+    import keplergl  # ensure keplergl is imported
 
     # check the extension of the fig_name
     if not fig_name.endswith('.html'):

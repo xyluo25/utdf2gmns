@@ -7,15 +7,20 @@
 
 # from geopy.geocoders import Nominatim
 # import googlemaps
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 # from pathlib import Path
-import geocoder
+# import geocoder
 import pandas as pd
-from pyufunc import func_running_time
+import pyufunc as pf
+# from pyufunc import func_running_time
 from utdf2gmns.util_lib.pkg_utils import calculate_point2point_distance_in_km
 
+if TYPE_CHECKING:
+    import geocoder  # for type hinting only, ensure geocoder is imported when TYPE_CHECKING
 
+
+@pf.requires("geocoder", verbose=False)
 def geocoder_geocoding_from_address(address: str) -> tuple:
     """geocoding from address using geocoder
 
@@ -25,6 +30,8 @@ def geocoder_geocoding_from_address(address: str) -> tuple:
     Returns:
         tuple: the longitude and latitude of the address
     """
+    pf.import_package("geocoder", verbose=False)  # ensure geocoder is imported
+    import geocoder  # ensure geocoder is imported
 
     # initialize geocoder arcgis client
     location_instance = geocoder.arcgis(address).geojson
@@ -38,7 +45,7 @@ def geocoder_geocoding_from_address(address: str) -> tuple:
     return location_lng_lat
 
 
-@func_running_time
+@pf.func_running_time
 def generate_intersection_coordinates(df_intersection: pd.DataFrame,
                                       dist_threshold: float = 0.01,
                                       geocode_one: bool = False) -> Any:

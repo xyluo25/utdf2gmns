@@ -7,13 +7,20 @@
 '''
 
 import math
-from shapely.geometry import Polygon, LineString, Point
-from pyproj import Transformer
+from typing import TYPE_CHECKING
 import pandas as pd
+import pyufunc as pf
+
+if TYPE_CHECKING:
+    from shapely.geometry import Polygon, LineString, Point
+    from pyproj import Transformer
 
 
+@pf.requires("pyproj", verbose=False)
 def cvt_lonlat_to_utm(lon: float, lat: float) -> tuple:
     """Convert latitude and longitude to UTM coordinates."""
+    pf.import_package("pyproj", verbose=False)  # ensure pyproj is imported
+    from pyproj import Transformer  # ensure Transformer is imported
 
     # Calculate UTM zone number
     zone_number = int((math.floor((lon + 180) / 6) % 60) + 1)
@@ -40,8 +47,12 @@ def cvt_lonlat_to_utm(lon: float, lat: float) -> tuple:
     return (easting, northing, zone_number, hemisphere)
 
 
+@pf.requires("pyproj", verbose=False)
 def cvt_utm_to_lonlat(easting: float, northing: float, zone_number: int, hemisphere: str) -> tuple:
     """Convert UTM coordinates back to latitude and longitude."""
+
+    pf.import_package("pyproj", verbose=False)  # ensure pyproj is imported
+    from pyproj import Transformer  # ensure Transformer is imported
 
     # Determine EPSG code based on hemisphere and zone
     if hemisphere.lower() == 'north':
@@ -131,6 +142,7 @@ def create_line_polygon_points(lon1: float, lat1: float, lon2: float, lat2: floa
     return [corner1_lonlat, corner2_lonlat, corner3_lonlat, corner4_lonlat]
 
 
+@pf.requires("shapely", verbose=False)
 def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
                         num_lanes: int, width: float, unit: str = "meters") -> Polygon:
     """Create a line polygons based on the width of the line and number of lanes.
@@ -148,6 +160,9 @@ def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
     Returns:
         Polygon: the line polygon
     """
+    pf.import_package("shapely", verbose=False)  # ensure shapely is imported
+    from shapely.geometry import Polygon  # ensure Polygon is imported
+
     lane_points = {}
 
     for i in range(num_lanes - 1, -1, -1):
@@ -213,7 +228,6 @@ def generate_links_polygon(df_link: pd.DataFrame,
     Returns:
         dict: a dictionary of links with keys are link ids and values are link polygon in wkt format
     """
-
     # extract intersection coordinates from df_node
     int_coords = {}
     for int_id in net_node:
@@ -256,11 +270,14 @@ def generate_links_polygon(df_link: pd.DataFrame,
     return links
 
 
+@pf.requires("shapely", verbose=False)
 def generate_links(df_link: pd.DataFrame,
                    net_node: dict,
                    default_link_width: float,
                    unit: str = "feet") -> dict:
     """Generate links from UTDF link data with default width and unit"""
+    pf.import_package("shapely", verbose=False)  # ensure shapely is imported
+    from shapely.geometry import LineString, Point
 
     # extract intersection coordinates from df_node
     int_coords = {}

@@ -1,9 +1,2 @@
-geocoder>=1.38.1
-geopandas>=1.0.1
-geopy>=2.4.1
 pandas>=2.2.3
-pyproj>=3.7.0
 pyufunc>=0.3.7
-Shapely>=2.0.7
-sumolib>=1.21.0
-xlwings>=0.33.9

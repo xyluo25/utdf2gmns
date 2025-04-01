@@ -7,11 +7,16 @@
 '''
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 import shutil
-import xlwings as xw
+
 import pyufunc as pf
 
+if TYPE_CHECKING:
+    import xlwings as xw
 
+
+@pf.requires("xlwings", verbose=False)
 def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = "", verbose: bool = False) -> bool:
     """Utilize sigma-X engine to process each signal intersection from Synchro UTDF file
     And save each signal intersection into a separate GMNS file.
@@ -36,6 +41,8 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
     Returns:
         bool: True if success, False otherwise
     """
+    pf.import_package("xlwings", verbose=False)  # ensure xlwings is imported
+    import xlwings as xw  # ensure xlwings is imported
 
     # TDD Test-Driven Development
     if not isinstance(utdf_filename, (str, Path)):

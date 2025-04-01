@@ -14,22 +14,30 @@
 
 
 from xml.dom import minidom
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # Use ElementTree for XML generation
+from typing import TYPE_CHECKING
 
-import sumolib
-from sumolib.net import Net
 import pandas as pd
 import pyufunc as pf
 
 from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_lonlat_to_utm
+
+if TYPE_CHECKING:
+    import sumolib
+    from sumolib.net import Net
 
 
 def generate_sumo_network() -> Net:
     pass
 
 
+@pf.requires("sumolib", verbose=False)
 def generate_sumo_nodes(network_nodes: dict, filename: str = "network.nod.xml") -> list:
     """Create SUMO node XML file."""
+
+    pf.import_package("sumolib", verbose=False)  # ensure sumolib is imported
+    import sumolib  # ensure sumolib is imported
+
     nodes = []
     for node_id, node in network_nodes.items():
         sumo_node = sumolib.net.node.Node(id=node_id,
@@ -39,8 +47,12 @@ def generate_sumo_nodes(network_nodes: dict, filename: str = "network.nod.xml") 
     return nodes
 
 
+@pf.requires("sumolib", verbose=False)
 def generate_sumo_edges(network_edges: dict, filename: str = "network.edg.xml") -> list:
     """Create SUMO edge XML file."""
+    pf.import_package("sumolib", verbose=False)  # ensure sumolib is imported
+    import sumolib  # ensure sumolib is imported
+
     edges = []
     for int_id, edges in network_edges.items():
         start_node = int_id

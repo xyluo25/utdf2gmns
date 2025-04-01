@@ -5,11 +5,15 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 '''
-
+from typing import TYPE_CHECKING
 import pandas as pd
-from geopy import distance
+import pyufunc as pf
+
+if TYPE_CHECKING:
+    from geopy import distance
 
 
+@pf.requires("geopy", verbose=False)
 def calculate_new_coordinates_from_offsets(base_lon: float,
                                            base_lat: float,
                                            x_offset: float,
@@ -25,6 +29,8 @@ def calculate_new_coordinates_from_offsets(base_lon: float,
         y_offset (float): the offset in y direction
         unit (str): the unit of the offsets, e.g., "feet" or "meter"
     """
+    pf.import_package("geopy", verbose=False)  # ensure geopy is imported
+    from geopy import distance  # ensure geopy.distance is imported
 
     # Convert offsets to meters (1 foot = 0.3048 meters)
     if "feet" in unit:
