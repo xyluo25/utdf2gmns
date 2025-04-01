@@ -31,6 +31,12 @@ keywords = ["UTDF", "Synchro", "GMNS", "SUMO", "Geojson", "Micro Simulation"]
 
 dynamic = ["dependencies"]
 
+[project.optional-dependencies]
+vis = ["keplergl", "matplotlib>=3.10.0"]
+test = ["pytest", "coverage"]
+sumo = ["sumolib"]
+all = ["my-package[vis, test, sumo]"]
+
 [project.urls]
 Homepage = 'https://github.com/xyluo25/utdf2gmns'
 # Documentation = 'https://github.com/xyluo25/grid2demand'
@@ -49,10 +55,10 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools]
 py-modules = []
-package-data = {'grid2demand' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_data" = ['*.xls']}
+package-data = {'utdf2gmns' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_data" = ['*.xls']}
 
 # [tool.setuptools.packages.find]
-# where = ["grid2demand"]
+# where = ["utdf2gmns"]
 
 # [tool.setuptools.package-data]
-# grid2demand = ['*.txt', '*.xls', '*.xlsx', '*.csv']
+# utdf2gmns = ['*.txt', '*.xls', '*.xlsx', '*.csv']
