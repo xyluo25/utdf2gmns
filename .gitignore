@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 Tutorial_PyPI.md
 .pypirc
-
+.coverage
 # C extensions
 *.so
 
