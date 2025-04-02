@@ -99,7 +99,3 @@ def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "",
     # Step6 delete the sigma-X engine from output directory
     print("  :Successfully processed each signal intersection from Synchro UTDF file")
     print(f"  :Please check the output directory: {output_dir}")
-
-if __name__ == '__main__':
-    path_utdf = r"./data_bullhead_seg4/my_utdf.csv"
-    utdf_to_each_signal_intersection(path_utdf)
