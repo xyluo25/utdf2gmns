@@ -423,7 +423,7 @@ class UTDF2GMNS:
         output_flow_file = os.path.join(sumo_output_dir, f"{xml_name}.flow.xml")
         output_flow_file = pf.path2linux(output_flow_file)
         begin = self.network_settings.get("ScenarioTime")
-        begin_time = time_str_to_seconds(begin)
+        begin_time = time_str_to_seconds(begin, verbose=False)
         end_time = begin_time + sim_duration
         generate_sumo_flow_xml(int_lanes, output_flow_file,
                                begin=begin_time,
