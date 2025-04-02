@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utdf2gmns.util_lib.pkg_utils &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/utdf2gmns.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../../../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utdf2gmns.util_lib.pkg_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utdf2gmns.util_lib.pkg_utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">##############################################################</span>
+<span class="c1"># Created Date: Wednesday, November 16th 2022</span>
+<span class="c1"># Contact Info: luoxiangyong01@gmail.com</span>
+<span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
+<span class="c1">##############################################################</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">atan2</span><span class="p">,</span> <span class="n">radians</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
+
+
+<div class="viewcode-block" id="calculate_point2point_distance_in_km">
+<a class="viewcode-back" href="../../../pages/api/utdf2gmns.util_lib.calculate_point2point_distance_in_km.html#utdf2gmns.util_lib.calculate_point2point_distance_in_km">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_point2point_distance_in_km</span><span class="p">(</span><span class="n">point1</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">point2</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; point1 and point2: a tuple of (longitude, latitude) &quot;&quot;&quot;</span>
+
+    <span class="c1"># TDD: Test-Driven Development</span>
+    <span class="c1"># assert isinstance(point1, list), &quot;point1 should be a list&quot;</span>
+    <span class="c1"># assert isinstance(point2, list), &quot;point2 should be a list&quot;</span>
+
+    <span class="c1"># approximate radius of earth in km</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="mf">6373.0</span>
+
+    <span class="n">lon1</span> <span class="o">=</span> <span class="n">radians</span><span class="p">(</span><span class="n">point1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">lat1</span> <span class="o">=</span> <span class="n">radians</span><span class="p">(</span><span class="n">point1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">lon2</span> <span class="o">=</span> <span class="n">radians</span><span class="p">(</span><span class="n">point2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">lat2</span> <span class="o">=</span> <span class="n">radians</span><span class="p">(</span><span class="n">point2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">lon_diff</span> <span class="o">=</span> <span class="n">lon2</span> <span class="o">-</span> <span class="n">lon1</span>
+    <span class="n">lat_diff</span> <span class="o">=</span> <span class="n">lat2</span> <span class="o">-</span> <span class="n">lat1</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">lat_diff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">lat1</span><span class="p">)</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">lat2</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">lon_diff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">atan2</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">a</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">R</span> <span class="o">*</span> <span class="n">c</span></div>
+
+
+
+<div class="viewcode-block" id="time_unit_converter">
+<a class="viewcode-back" href="../../../pages/api/utdf2gmns.util_lib.time_unit_converter.html#utdf2gmns.util_lib.time_unit_converter">[docs]</a>
+<span class="k">def</span> <span class="nf">time_unit_converter</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">from_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Convert a time value between seconds, minutes, hours, days, years</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value (float): The numerical value to convert.</span>
+<span class="sd">        from_unit (str): The unit of the input value.</span>
+<span class="sd">        to_unit (str): The desired output unit.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyufunc import time_unit_converter</span>
+<span class="sd">        &gt;&gt;&gt; time_unit_converter(1, &quot;hours&quot;, &quot;minutes&quot;)</span>
+<span class="sd">        60.0</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The converted value in the target unit.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If an invalid unit is provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define aliases to standardize unit names.</span>
+    <span class="n">unit_aliases</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;secs&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;mins&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;minute&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hrs&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;yr&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;yrs&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;season&quot;</span><span class="p">,</span> <span class="s2">&quot;seasons&quot;</span><span class="p">:</span> <span class="s2">&quot;season&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;quarter&quot;</span><span class="p">:</span> <span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="s2">&quot;quarters&quot;</span><span class="p">:</span> <span class="s2">&quot;quarter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lunar year&quot;</span><span class="p">:</span> <span class="s2">&quot;lunar year&quot;</span><span class="p">,</span> <span class="s2">&quot;lunar years&quot;</span><span class="p">:</span> <span class="s2">&quot;lunar year&quot;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Conversion factors in seconds.</span>
+    <span class="n">conversion_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>                     <span class="c1"># 60 seconds</span>
+        <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>                     <span class="c1"># 60 minutes * 60 seconds</span>
+        <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="mi">86400</span><span class="p">,</span>                     <span class="c1"># 24 hours * 3600 seconds</span>
+        <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="mi">31536000</span><span class="p">,</span>                 <span class="c1"># 365 days * 86400 seconds</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Normalize the provided unit strings.</span>
+    <span class="n">from_unit_norm</span> <span class="o">=</span> <span class="n">unit_aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">to_unit_norm</span> <span class="o">=</span> <span class="n">unit_aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">from_unit_norm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">to_unit_norm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid unit provided. Allowed units: seconds, minutes, hours, days, years, season, quarter, lunar year.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert the input value to seconds.</span>
+    <span class="n">value_in_seconds</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">conversion_factors</span><span class="p">[</span><span class="n">from_unit_norm</span><span class="p">]</span>
+
+    <span class="c1"># Convert from seconds to the target unit.</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">value_in_seconds</span> <span class="o">/</span> <span class="n">conversion_factors</span><span class="p">[</span><span class="n">to_unit_norm</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;  :</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">from_unit_norm</span><span class="si">}</span><span class="s2"> is approximately </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">to_unit_norm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="time_str_to_seconds">
+<a class="viewcode-back" href="../../../pages/api/utdf2gmns.util_lib.time_str_to_seconds.html#utdf2gmns.util_lib.time_str_to_seconds">[docs]</a>
+<span class="k">def</span> <span class="nf">time_str_to_seconds</span><span class="p">(</span><span class="n">time_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a time string to seconds</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        time_str (str): A time string, e.g., &quot;12:00AM&quot;, &quot;9:00am&quot;, &quot;3:00pm&quot;</span>
+<span class="sd">        to_unit (str): The desired output unit. e.g. &quot;seconds&quot;, &quot;minutes&quot;, &quot;hours&quot;, &quot;days&quot;</span>
+<span class="sd">        verbose (bool): Whether to print the conversion result. Defaults to True.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pyufunc import time_str_to_seconds</span>
+<span class="sd">        &gt;&gt;&gt; time_str_to_seconds(&quot;12:00AM&quot;)</span>
+<span class="sd">        0</span>
+
+<span class="sd">        &gt;&gt;&gt; time_str_to_seconds(&quot;9:00am&quot;)</span>
+<span class="sd">        34200.0</span>
+
+<span class="sd">        &gt;&gt;&gt; time_str_to_seconds(&quot;3:30pm&quot;)</span>
+<span class="sd">        55800.0</span>
+
+<span class="sd">        &gt;&gt;&gt; time_str_to_seconds(&quot;3:30pm&quot;, to_unit=&quot;minutes&quot;)</span>
+<span class="sd">        930.0</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The time in the target unit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">time_str</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">str_strip</span><span class="p">(</span><span class="n">time_str</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;%I:%M&quot;</span><span class="p">,</span>        <span class="c1"># 12-hour, no AM/PM</span>
+        <span class="s2">&quot;%I:%M:%S&quot;</span><span class="p">,</span>     <span class="c1"># 12-hour with seconds</span>
+        <span class="s2">&quot;%I:%M%p&quot;</span><span class="p">,</span>      <span class="c1"># 12-hour with AM/PM</span>
+        <span class="s2">&quot;%I:%M %p&quot;</span><span class="p">,</span>      <span class="c1"># 12-hour with AM/PM</span>
+        <span class="s2">&quot;%H:%M&quot;</span><span class="p">,</span>        <span class="c1"># 24-hour</span>
+        <span class="s2">&quot;%H:%M:%S&quot;</span>      <span class="c1"># 24-hour with seconds</span>
+    <span class="p">]</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">each_fmt</span> <span class="ow">in</span> <span class="n">fmt</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">time_str</span><span class="p">,</span> <span class="n">each_fmt</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Invalid time string: </span><span class="si">{</span><span class="n">time_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">minute</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">second</span>
+
+    <span class="n">unit_aliases</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;secs&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;mins&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;minute&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hrs&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;yr&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;yrs&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="s2">&quot;years&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Conversion factors in seconds.</span>
+    <span class="n">conversion_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;seconds&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;minutes&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>                     <span class="c1"># 60 seconds</span>
+        <span class="s2">&quot;hours&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>                     <span class="c1"># 60 minutes * 60 seconds</span>
+        <span class="s2">&quot;days&quot;</span><span class="p">:</span> <span class="mi">86400</span><span class="p">,</span>                     <span class="c1"># 24 hours * 3600 seconds</span>
+        <span class="s2">&quot;years&quot;</span><span class="p">:</span> <span class="mi">31536000</span><span class="p">,</span>                 <span class="c1"># 365 days * 86400 seconds</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Convert from seconds to the target unit.</span>
+    <span class="n">to_unit_norm</span> <span class="o">=</span> <span class="n">unit_aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">total_seconds</span> <span class="o">/</span> <span class="n">conversion_factors</span><span class="p">[</span><span class="n">to_unit_norm</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;  :</span><span class="si">{</span><span class="n">time_str</span><span class="si">}</span><span class="s2"> is approximately </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">to_unit_norm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

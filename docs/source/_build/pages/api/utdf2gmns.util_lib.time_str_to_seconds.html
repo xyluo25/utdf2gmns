@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utdf2gmns.util_lib.time_str_to_seconds &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../../_static/utdf2gmns.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Citation Request" href="../support.html" />
+    <link rel="prev" title="utdf2gmns.util_lib.time_unit_converter" href="utdf2gmns.util_lib.time_unit_converter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#utdf2gmns-class">UTDF2GMNS class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#function-library-utdf">Function Library: UTDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#function-library-gmns">Function Library: GMNS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#function-library-sumo">Function Library: SUMO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#visualization">Visualization</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#utility-functions">Utility Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="utdf2gmns.util_lib.calculate_point2point_distance_in_km.html">utdf2gmns.util_lib.calculate_point2point_distance_in_km</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utdf2gmns.util_lib.time_unit_converter.html">utdf2gmns.util_lib.time_unit_converter</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">utdf2gmns.util_lib.time_str_to_seconds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utdf2gmns.util_lib.time_str_to_seconds"><code class="docutils literal notranslate"><span class="pre">time_str_to_seconds()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+      <li class="breadcrumb-item active">utdf2gmns.util_lib.time_str_to_seconds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/api/utdf2gmns.util_lib.time_str_to_seconds.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utdf2gmns-util-lib-time-str-to-seconds">
+<h1>utdf2gmns.util_lib.time_str_to_seconds<a class="headerlink" href="#utdf2gmns-util-lib-time-str-to-seconds" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="utdf2gmns.util_lib.time_str_to_seconds">
+<span class="sig-prename descclassname"><span class="pre">utdf2gmns.util_lib.</span></span><span class="sig-name descname"><span class="pre">time_str_to_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'seconds'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/util_lib/pkg_utils.html#time_str_to_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.util_lib.time_str_to_seconds" title="Link to this definition"></a></dt>
+<dd><p>Convert a time string to seconds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_str</strong> (<em>str</em>) – A time string, e.g., “12:00AM”, “9:00am”, “3:00pm”</p></li>
+<li><p><strong>to_unit</strong> (<em>str</em>) – The desired output unit. e.g. “seconds”, “minutes”, “hours”, “days”</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Whether to print the conversion result. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyufunc</span> <span class="kn">import</span> <span class="n">time_str_to_seconds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time_str_to_seconds</span><span class="p">(</span><span class="s2">&quot;12:00AM&quot;</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">time_str_to_seconds</span><span class="p">(</span><span class="s2">&quot;9:00am&quot;</span><span class="p">)</span>
+<span class="go">34200.0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">time_str_to_seconds</span><span class="p">(</span><span class="s2">&quot;3:30pm&quot;</span><span class="p">)</span>
+<span class="go">55800.0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">time_str_to_seconds</span><span class="p">(</span><span class="s2">&quot;3:30pm&quot;</span><span class="p">,</span> <span class="n">to_unit</span><span class="o">=</span><span class="s2">&quot;minutes&quot;</span><span class="p">)</span>
+<span class="go">930.0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The time in the target unit.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utdf2gmns.util_lib.time_unit_converter.html" class="btn btn-neutral float-left" title="utdf2gmns.util_lib.time_unit_converter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../support.html" class="btn btn-neutral float-right" title="Citation Request" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

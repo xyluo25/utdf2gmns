@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="utdf2gmns.UTDF2GMNS" href="api/utdf2gmns.UTDF2GMNS.html" />
+    <link rel="prev" title="GMNS To SUMO Format" href="_gmns2sumo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utdf2gmns-class">UTDF2GMNS class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.UTDF2GMNS.html">utdf2gmns.UTDF2GMNS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#function-library-utdf">Function Library: UTDF</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.read_UTDF.html">utdf2gmns.func_lib.read_UTDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_lane_df_to_dict.html">utdf2gmns.func_lib.cvt_lane_df_to_dict</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#function-library-gmns">Function Library: GMNS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_utdf_to_signal_intersection.html">utdf2gmns.func_lib.cvt_utdf_to_signal_intersection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_link_df_to_dict.html">utdf2gmns.func_lib.cvt_link_df_to_dict</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#function-library-sumo">Function Library: SUMO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.remove_sumo_U_turn.html">utdf2gmns.func_lib.remove_sumo_U_turn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.update_sumo_signal_from_utdf.html">utdf2gmns.func_lib.update_sumo_signal_from_utdf</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.plot_net_mpl.html">utdf2gmns.func_lib.plot_net_mpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.func_lib.plot_net_keplergl.html">utdf2gmns.func_lib.plot_net_keplergl</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utility-functions">Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.util_lib.calculate_point2point_distance_in_km.html">utdf2gmns.util_lib.calculate_point2point_distance_in_km</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.util_lib.time_unit_converter.html">utdf2gmns.util_lib.time_unit_converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/utdf2gmns.util_lib.time_str_to_seconds.html">utdf2gmns.util_lib.time_str_to_seconds</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/api_reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<section id="utdf2gmns-class">
+<h2>UTDF2GMNS class<a class="headerlink" href="#utdf2gmns-class" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS" title="utdf2gmns.UTDF2GMNS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UTDF2GMNS</span></code></a>(utdf_filename[, region_name, verbose])</p></td>
+<td><p>UTDF2GMNS performs the data conversion from UTDF to different formats. The class includes functions such as:     - geocode_utdf_intersections: geocode intersections.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="function-library-utdf">
+<h2>Function Library: UTDF<a class="headerlink" href="#function-library-utdf" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.read_UTDF.html#utdf2gmns.func_lib.read_UTDF" title="utdf2gmns.func_lib.read_UTDF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.read_UTDF</span></code></a>(path_utdf)</p></td>
+<td><p>read the utdf.csv file and return a dictionary of dataframes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_lane_df_to_dict.html#utdf2gmns.func_lib.cvt_lane_df_to_dict" title="utdf2gmns.func_lib.cvt_lane_df_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.cvt_lane_df_to_dict</span></code></a>(df_lane)</p></td>
+<td><p>Convert UTDF lane DataFrame to dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="function-library-gmns">
+<h2>Function Library: GMNS<a class="headerlink" href="#function-library-gmns" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_utdf_to_signal_intersection.html#utdf2gmns.func_lib.cvt_utdf_to_signal_intersection" title="utdf2gmns.func_lib.cvt_utdf_to_signal_intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.cvt_utdf_to_signal_intersection</span></code></a>(...)</p></td>
+<td><p>Utilize sigma-X engine to process each signal intersection from Synchro UTDF file And save each signal intersection into a separate GMNS file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.cvt_link_df_to_dict.html#utdf2gmns.func_lib.cvt_link_df_to_dict" title="utdf2gmns.func_lib.cvt_link_df_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.cvt_link_df_to_dict</span></code></a>(df_link)</p></td>
+<td><p>Reformat the UTDF link dataframe to a dictionary of links with intersection id as keys</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="function-library-sumo">
+<h2>Function Library: SUMO<a class="headerlink" href="#function-library-sumo" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.remove_sumo_U_turn.html#utdf2gmns.func_lib.remove_sumo_U_turn" title="utdf2gmns.func_lib.remove_sumo_U_turn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.remove_sumo_U_turn</span></code></a>(path_net)</p></td>
+<td><p>Remove U-turns in the SUMO network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.update_sumo_signal_from_utdf.html#utdf2gmns.func_lib.update_sumo_signal_from_utdf" title="utdf2gmns.func_lib.update_sumo_signal_from_utdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.update_sumo_signal_from_utdf</span></code></a>(...[, ...])</p></td>
+<td><p>update sumo signal (.net.xml) from UTDF signal information</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.plot_net_mpl.html#utdf2gmns.func_lib.plot_net_mpl" title="utdf2gmns.func_lib.plot_net_mpl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.plot_net_mpl</span></code></a>(net, *[, save_fig, ...])</p></td>
+<td><p>Plot network</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/utdf2gmns.func_lib.plot_net_keplergl.html#utdf2gmns.func_lib.plot_net_keplergl" title="utdf2gmns.func_lib.plot_net_keplergl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">func_lib.plot_net_keplergl</span></code></a>(net, *[, ...])</p></td>
+<td><p>Plot network in keplergl</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="utility-functions">
+<h2>Utility Functions<a class="headerlink" href="#utility-functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.util_lib.calculate_point2point_distance_in_km.html#utdf2gmns.util_lib.calculate_point2point_distance_in_km" title="utdf2gmns.util_lib.calculate_point2point_distance_in_km"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util_lib.calculate_point2point_distance_in_km</span></code></a>(...)</p></td>
+<td><p>point1 and point2: a tuple of (longitude, latitude)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/utdf2gmns.util_lib.time_unit_converter.html#utdf2gmns.util_lib.time_unit_converter" title="utdf2gmns.util_lib.time_unit_converter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util_lib.time_unit_converter</span></code></a>(value, ...[, ...])</p></td>
+<td><p>Convert a time value between seconds, minutes, hours, days, years</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/utdf2gmns.util_lib.time_str_to_seconds.html#utdf2gmns.util_lib.time_str_to_seconds" title="utdf2gmns.util_lib.time_str_to_seconds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util_lib.time_str_to_seconds</span></code></a>(time_str[, ...])</p></td>
+<td><p>Convert a time string to seconds</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_gmns2sumo.html" class="btn btn-neutral float-left" title="GMNS To SUMO Format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/utdf2gmns.UTDF2GMNS.html" class="btn btn-neutral float-right" title="utdf2gmns.UTDF2GMNS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -33,10 +33,14 @@ def remove_sumo_U_turn(path_net: str) -> bool:
         if from_edge == to_edge:
             # change the dir attribute to "invalid" if the connection is a U-turn'
             connection.attrib['dir'] = "invalid"
-
+            # directly remove the connection if it is a U-turn
+            # root.remove(connection)
 
         if from_edge == "_".join(to_edge.split("_")[::-1]):
             connection.attrib["dir"] = "invalid"
+
+            # directly remove the connection if it is a U-turn
+            # root.remove(connection)
 
     # write the modified xml to the file
     tree.write(path_net, encoding='utf-8', xml_declaration=True)

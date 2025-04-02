@@ -183,7 +183,7 @@ def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
     return {key: Polygon(value + [value[0]]) for key, value in lane_points.items()}
 
 
-def reformat_link_dataframe_to_dict(df_link: pd.DataFrame) -> dict:
+def cvt_link_df_to_dict(df_link: pd.DataFrame) -> dict:
     """Reformat the UTDF link dataframe to a dictionary of links with intersection id as keys
 
     Args:
@@ -231,10 +231,11 @@ def generate_links_polygon(df_link: pd.DataFrame,
     # extract intersection coordinates from df_node
     int_coords = {}
     for int_id in net_node:
-        int_coords[int_id] = [net_node[int_id]["x_coord"], net_node[int_id]["y_coord"]]
+        int_coords[int_id] = [net_node[int_id]["x_coord"],
+                              net_node[int_id]["y_coord"]]
 
     # extract link data from df_link
-    int_links = reformat_link_dataframe_to_dict(df_link)
+    int_links = cvt_link_df_to_dict(df_link)
 
     # generate links
     links = {}
@@ -258,7 +259,8 @@ def generate_links_polygon(df_link: pd.DataFrame,
             dest_int_dict.pop("Up ID")
             dest_int_dict.pop("Lanes")
 
-            start_dest_links = create_line_polygon(start_x, start_y, dest_x, dest_y,
+            start_dest_links = create_line_polygon(start_x, start_y,
+                                                   dest_x, dest_y,
                                                    num_lanes, default_link_width, unit=unit)
 
             for i, link in start_dest_links.items():
@@ -285,7 +287,7 @@ def generate_links(df_link: pd.DataFrame,
         int_coords[int_id] = [net_node[int_id]["x_coord"], net_node[int_id]["y_coord"]]
 
     # extract link data from df_link
-    int_links = reformat_link_dataframe_to_dict(df_link)
+    int_links = cvt_link_df_to_dict(df_link)
 
     # generate links
     links = {}

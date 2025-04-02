@@ -3,7 +3,7 @@ Welcome to utdf2gmns documentation!
 ===================================
 
 
-.. image:: https://img.shields.io/badge/release-0.1.0-yellow.svg
+.. image:: https://img.shields.io/badge/release-1.0.1-yellow.svg
    :target: https://github.com/xyluo25/utdf2gmns
 
 .. image:: https://img.shields.io/pypi/wheel/gensim.svg
@@ -14,9 +14,6 @@ Welcome to utdf2gmns documentation!
 
 .. image:: https://img.shields.io/pypi/pyversions/utdf2gmns.svg
    :target: https://www.python.org/
-
-.. image:: https://img.shields.io/pypi/status/utdf2gmns.svg
-   :target: https://img.shields.io/pypi/status/utdf2gmns.svg
 
 .. image:: https://static.pepy.tech/badge/utdf2gmns
    :target: https://pepy.tech/project/utdf2gmns
@@ -38,14 +35,18 @@ Welcome to utdf2gmns documentation!
    :target: https://www.gnu.org/licenses
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
    :caption: utdf2gmns Navigation
 
+   pages/_installation.rst
    pages/quick_start.rst
    pages/_read_utdf.rst
    pages/_geocoding_intersection.rst
    pages/_sigma_x.rst
    pages/_signal_conversion.rst
+   pages/_utdf2gmns.rst
+   pages/_gmns2sumo.rst
+   pages/api_reference.rst
    pages/support.rst
 
 Indices and Tables

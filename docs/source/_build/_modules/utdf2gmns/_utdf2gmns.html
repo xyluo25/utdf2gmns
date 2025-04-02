@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utdf2gmns._utdf2gmns &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../../_static/utdf2gmns.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utdf2gmns._utdf2gmns</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utdf2gmns._utdf2gmns</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">##############################################################</span>
+<span class="c1"># Created Date: Friday, January 27th 2023</span>
+<span class="c1"># Contact Info: luoxiangyong01@gmail.com</span>
+<span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
+<span class="c1">##############################################################</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># import utility functions from pyufunc</span>
+<span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
+
+<span class="kn">from</span> <span class="nn">utdf2gmns.util_lib.pkg_utils</span> <span class="kn">import</span> <span class="n">time_unit_converter</span><span class="p">,</span> <span class="n">time_str_to_seconds</span>
+
+<span class="c1"># For deployment</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.geocoding_intersection</span> <span class="kn">import</span> <span class="n">generate_intersection_coordinates</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_intersection_from_Links</span><span class="p">,</span> <span class="n">read_UTDF</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict</span> <span class="kn">import</span> <span class="n">cvt_lane_df_to_dict</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.geocoding_Nodes</span> <span class="kn">import</span> <span class="n">update_node_from_one_intersection</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.geocoding_Links</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_links</span><span class="p">,</span>
+                                                     <span class="n">generate_links_polygon</span><span class="p">,</span>
+                                                     <span class="n">cvt_link_df_to_dict</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection</span> <span class="kn">import</span> <span class="n">cvt_utdf_to_signal_intersection</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.signal_intersections</span> <span class="kn">import</span> <span class="n">parse_signal_control</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf</span> <span class="kn">import</span> <span class="n">update_sumo_signal_from_utdf</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.remove_u_turn</span> <span class="kn">import</span> <span class="n">remove_sumo_U_turn</span>
+
+
+<span class="c1"># SUMO related functions</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.gmns2sumo</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_sumo_nod_xml</span><span class="p">,</span>
+                                               <span class="n">generate_sumo_edg_xml</span><span class="p">,</span>
+                                               <span class="n">generate_sumo_flow_xml</span><span class="p">)</span>
+
+
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># default=&#39;warn&#39;</span>
+
+
+<div class="viewcode-block" id="UTDF2GMNS">
+<a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS">[docs]</a>
+<span class="k">class</span> <span class="nc">UTDF2GMNS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;UTDF2GMNS performs the data conversion from UTDF to different formats.</span>
+<span class="sd">    The class includes functions such as:</span>
+<span class="sd">        - geocode_utdf_intersections: geocode intersections</span>
+
+<span class="sd">        - create_signal_control: signalize intersections</span>
+
+<span class="sd">        - create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases</span>
+
+<span class="sd">        - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory</span>
+
+<span class="sd">        - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory</span>
+
+<span class="sd">        - and more...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="UTDF2GMNS.__init__">
+<a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">region_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize UTDF2GMNS class with UTDF file and region name</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            utdf_filename (str): the path to the UTDF file.</span>
+<span class="sd">            region_name (str): the metropolitan region/place the utdf file represent. Defaults to &quot;&quot;.</span>
+<span class="sd">            verbose (bool): whether to printout processing message. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_region_name</span> <span class="o">=</span> <span class="n">region_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+        <span class="c1"># check if city_name is provided</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">region_name</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :region_name not provided, &quot;</span>
+                  <span class="s2">&quot;it is recommended to specify the region name that the UTDF.csv file represents.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># load UTDF data from the file in the initialization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__load_utdf</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__load_utdf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load UTDF file and generate dataframes for Networks, Nodes, Links, Lanes, Timeplans, and Phases</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TDD: check if the file exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UTDF file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="si">}</span><span class="s2"> not found!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># read UTDF file and create dataframes</span>
+        <span class="n">utdf_dict_data</span> <span class="o">=</span> <span class="n">read_UTDF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">)</span>
+
+        <span class="c1"># Extract network settings from utdf_dict_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_settings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Network&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;RECORDNAME&quot;</span><span class="p">]:</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Network&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;DATA&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Network&quot;</span><span class="p">)))}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_unit</span> <span class="o">=</span> <span class="s2">&quot;feet, mph&quot;</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Metric&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span> <span class="k">else</span> <span class="s2">&quot;meters, km/h&quot;</span>
+
+        <span class="c1"># assign to instance variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span> <span class="o">=</span> <span class="n">utdf_dict_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nodes&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+        <span class="c1"># initialize the instance variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_geocoding_intersections</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total number of intersections in the UTDF file: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">geocode_utdf_intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                   <span class="o">*</span><span class="p">,</span>
+                                   <span class="n">single_intersection_coord</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">dist_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Geocode intersections</span>
+<span class="sd">        Firstly, geocode one intersection from given single intersection coordinate.</span>
+<span class="sd">        Then, according to the Nodes information, calculate all intersections based on relative coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            single_intersection_coord (dict): a single intersection coordinates, defaults to None.</span>
+<span class="sd">                If not provided, geocoding one intersection from address.</span>
+<span class="sd">                Sample data: {&quot;INTID&quot;: &quot;1&quot;, &quot;x_coord&quot;: -114.568, &quot;y_coord&quot;: 35.155}</span>
+<span class="sd">            dist_threshold (float): distance threshold for geocoding intersections, defaults to 0.01. Unit: km</span>
+<span class="sd">                only used when single_intersection_coord is not provided.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            - single_intersection_coord should follow the format:</span>
+<span class="sd">                {&quot;INTID&quot;: &quot;1&quot;, &quot;x_coord&quot;: -114.568, &quot;y_coord&quot;: 35.155}</span>
+<span class="sd">            - if single_intersection_coord is not provided,</span>
+<span class="sd">                geocode intersections from address (region_name must be provided from input).</span>
+<span class="sd">            - dist_threshold is the distance threshold for geocoding intersections. Defaults to 0.01. Unit: km</span>
+<span class="sd">                and only used when single_intersection_coord is not provided.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: Single coordinate should have INTID, x_coord, and y_coord keys!</span>
+<span class="sd">            ValueError: INTID should be an integer!</span>
+<span class="sd">            ValueError: x_coord should be a float!</span>
+<span class="sd">            ValueError: y_coord should be a float!</span>
+<span class="sd">            ValueError: single_intersection_coord: {int_id} is not in the Nodes!</span>
+<span class="sd">            Exception: No valid intersection is geo-coded!</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the geocoding intersections is successful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check if single coordinate is provided and validate it&#39;s value</span>
+        <span class="k">if</span> <span class="n">single_intersection_coord</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Single coordinate should have INTID, x_coord, and y_coord keys!&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;INTID&quot;</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;INTID should be a string!&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x_coord&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x_coord should be a float!&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;y_coord&quot;</span><span class="p">),</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;y_coord should be a float!&quot;</span><span class="p">)</span>
+
+            <span class="c1"># check if id is in the Nodes</span>
+            <span class="n">int_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;INTID&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">int_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_intersection_ids</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;single intersection: </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> not in the UTDF Nodes!&quot;</span><span class="p">)</span>
+
+            <span class="n">single_intersection</span> <span class="o">=</span> <span class="n">single_intersection_coord</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_region_name</span><span class="p">:</span>
+                <span class="c1"># generate intersections with name for coordinations</span>
+                <span class="n">df_utdf_intersection</span> <span class="o">=</span> <span class="n">generate_intersection_from_Links</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Links&quot;</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_region_name</span><span class="p">)</span>
+
+                <span class="c1"># geocoding one intersection from address, with threshold (default 0.01) km</span>
+                <span class="n">single_intersection</span> <span class="o">=</span> <span class="n">generate_intersection_coordinates</span><span class="p">(</span>
+                    <span class="n">df_utdf_intersection</span><span class="p">,</span>
+                    <span class="n">dist_threshold</span><span class="o">=</span><span class="n">dist_threshold</span><span class="p">,</span>
+                    <span class="n">geocode_one</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="c1"># check if the single_intersection is empty</span>
+                <span class="k">if</span> <span class="n">single_intersection</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  No valid intersection is geo-coded!&quot;</span>
+                        <span class="s2">&quot;  Please change dist_threshold or provide single_coord manually.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Could not geocode intersections, two ways to solve this issue: </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  1. provide city_name when initializing UTDF2GMNS class; </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;  2. provide single_coord manually while running geocoding_intersections().&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># update Nodes from single_intersection</span>
+        <span class="n">node_df</span> <span class="o">=</span> <span class="n">update_node_from_one_intersection</span><span class="p">(</span><span class="n">single_intersection</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nodes&quot;</span><span class="p">),</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">network_unit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_nodes</span> <span class="o">=</span> <span class="n">node_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_geocoding_intersections</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">create_signal_control</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Signalize intersections</span>
+<span class="sd">        1. get signal intersection id from phase</span>
+<span class="sd">        2. parse signal control from UTDF data and create signal control for each intersection</span>
+<span class="sd">        3. assign signal control to network_signal_control, a dictionary as internal variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get signal intersection id from phase</span>
+        <span class="n">df_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Phases&quot;</span><span class="p">)</span>
+        <span class="n">df_lane</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">)</span>
+        <span class="n">signal_int_id</span> <span class="o">=</span> <span class="n">df_phase</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="n">signal_intersections</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">int_id</span><span class="p">:</span> <span class="n">parse_signal_control</span><span class="p">(</span><span class="n">df_phase</span><span class="p">,</span> <span class="n">df_lane</span><span class="p">,</span> <span class="n">int_id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">signal_int_id</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_signal_control</span> <span class="o">=</span> <span class="n">signal_intersections</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">create_gmns_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">default_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create network from UTDF data by combining Nodes, Links, Lanes, and Phases</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            default_width (float): default width of the link, defaults to 12.</span>
+<span class="sd">            is_link_polygon (bool): whether to create link polygon (bbox), defaults to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the network is created successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DefWidth&quot;</span><span class="p">,</span> <span class="n">default_width</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_unit</span>
+
+        <span class="c1"># whether to create link polygon</span>
+        <span class="k">if</span> <span class="n">is_link_polygon</span><span class="p">:</span>
+            <span class="n">links_dict</span> <span class="o">=</span> <span class="n">generate_links_polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Links&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_nodes</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">links_dict</span> <span class="o">=</span> <span class="n">generate_links</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Links&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_nodes</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_links</span> <span class="o">=</span> <span class="n">links_dict</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total number of edges generated: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">links_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@pf</span><span class="o">.</span><span class="n">func_running_time</span>
+    <span class="k">def</span> <span class="nf">utdf_to_gmns_signal_ints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Empower Sigma-X engine to generate each signal intersection with visualization  &quot;&quot;&quot;</span>
+
+        <span class="c1"># print out approximate time for processing</span>
+        <span class="n">total_seconds</span> <span class="o">=</span> <span class="mf">3.5</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :Processing each signal intersection, please wait...&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total time for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span><span class="p">)</span><span class="si">}</span><span class="s2"> intersections&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot; might be: </span><span class="si">{</span><span class="n">time_unit_converter</span><span class="p">(</span><span class="n">total_seconds</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;s&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;m&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> minutes...&quot;</span><span class="p">)</span>
+        <span class="n">cvt_utdf_to_signal_intersection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">utdf_to_gmns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">incl_utdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert UTDF data to GMNS data and save to the output directory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            out_dir (str): output directory to save the GMNS data, defaults to the same directory as the UTDF file.</span>
+<span class="sd">            incl_utdf (bool): whether to save the UTDF data to the output directory, defaults to True.</span>
+<span class="sd">            is_link_polygon (bool): whether to create link polygon, defaults to False.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            - the UTDF data includes Nodes, Networks, Timeplans, Links, Lanes, and Phases.</span>
+<span class="sd">            - the GMNS data includes node.csv and link.csv.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: Output directory not found!</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the conversion is successful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check if the output directory exists</span>
+        <span class="n">utdf_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="n">gmns_output_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utdf_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_to_gmns&quot;</span><span class="p">)</span>
+        <span class="n">gmns_output_dir</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">)</span>  <span class="c1"># convert to universal path format</span>
+
+        <span class="c1"># create the output directory if it does not exist</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">)</span>
+
+        <span class="c1"># Create node and link data if not exist</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;network_nodes&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please geocode intersections first: net.geocode_utdf_intersections()&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;network_links&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="n">is_link_polygon</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;network_signal_control&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_signal_control</span><span class="p">()</span>
+
+        <span class="c1"># Save the GMNS data to the output directory</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;node.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_links</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;link.csv&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;signal.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_signal_control</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># save the UTDF data to the output directory</span>
+        <span class="k">if</span> <span class="n">incl_utdf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nodes&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_nodes.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Network&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_network.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_timeplans.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Links&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_links.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_lanes.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Phases&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gmns_output_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_phases.csv&quot;</span><span class="p">),</span>
+                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully saved GMNS(csv) data to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">gmns_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">utdf_to_sumo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sumo_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                     <span class="n">show_warning_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="n">disable_U_turn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="n">sim_duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>  <span class="c1"># 1 hour</span>
+                     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert UTDF to SUMO and save networks to the output directory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            out_dir (str): the output directory for the generated sumo files.</span>
+<span class="sd">                Defaults to &quot;&quot;. If not provided, the output directory is the same as the UTDF file.</span>
+<span class="sd">            sumo_name (str): name the generated sumo files. Defaults to &quot;&quot;.</span>
+<span class="sd">                If not provided, the name is &quot;utdf_to_sumo&quot;.</span>
+<span class="sd">            show_warning_message (bool): whether to show warning message during the net processing.</span>
+<span class="sd">                Defaults to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the conversion is successful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check if the output directory exists</span>
+        <span class="n">utdf_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+        <span class="n">sumo_output_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utdf_dir</span><span class="p">,</span> <span class="s2">&quot;utdf_to_sumo&quot;</span><span class="p">)</span>
+        <span class="n">sumo_output_dir</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">)</span>
+
+        <span class="c1"># create the output directory if it does not exist</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Crate network nodes and links if not exist</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;network_nodes&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please geocode intersections first: net.geocode_utdf_intersections()&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;network_links&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="n">is_link_polygon</span><span class="p">)</span>
+
+        <span class="n">xml_name</span> <span class="o">=</span> <span class="n">sumo_name</span> <span class="ow">or</span> <span class="s2">&quot;utdf_to_sumo&quot;</span>
+
+        <span class="c1"># create SUMO .nod.xml file</span>
+        <span class="n">output_node_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.nod.xml&quot;</span><span class="p">)</span>
+        <span class="n">output_node_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">output_node_file</span><span class="p">)</span>
+        <span class="n">generate_sumo_nod_xml</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_nodes</span><span class="p">,</span> <span class="n">output_node_file</span><span class="p">)</span>
+
+        <span class="c1"># create SUMO .edg.xml file</span>
+        <span class="n">int_links</span> <span class="o">=</span> <span class="n">cvt_link_df_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Links&quot;</span><span class="p">))</span>
+        <span class="n">output_edge_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.edg.xml&quot;</span><span class="p">)</span>
+        <span class="n">output_edge_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">output_edge_file</span><span class="p">)</span>
+        <span class="n">generate_sumo_edg_xml</span><span class="p">(</span><span class="n">int_links</span><span class="p">,</span> <span class="n">output_edge_file</span><span class="p">)</span>
+
+        <span class="c1"># convert .nod.xml and .edg.xml files to .net.xml file</span>
+        <span class="n">output_net_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.net.xml&quot;</span><span class="p">)</span>
+        <span class="n">output_net_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">output_net_file</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># sumo-netconvert -n network.nod.xml -e network.edg.xml -o network.net.xml</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;netconvert&quot;</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--node-files=</span><span class="si">{</span><span class="n">output_node_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--edge-files=</span><span class="si">{</span><span class="n">output_edge_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--output-file=</span><span class="si">{</span><span class="n">output_net_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                    <span class="n">cwd</span><span class="o">=</span><span class="n">sumo_output_dir</span><span class="p">,</span>
+                                    <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># the return code is 0, which means the command executed failed</span>
+                <span class="c1"># One of the reason is that the running environment is not set up correctly</span>
+                <span class="c1"># Such as SUMO_HOME is not set up correctly or</span>
+                <span class="c1"># SUMO is not installed</span>
+
+                <span class="c1"># We will run netconvert (nc) from the package build-in file</span>
+                <span class="c1"># get the path of the netconvert(nc) file under the engine directory</span>
+                <span class="n">nc_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;engine&quot;</span> <span class="o">/</span> <span class="s2">&quot;netconvert.exe&quot;</span>
+                <span class="n">nc_filename</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">nc_filename</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">nc_filename</span><span class="p">,</span>
+                                         <span class="sa">f</span><span class="s2">&quot;--node-files=</span><span class="si">{</span><span class="n">output_node_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                         <span class="sa">f</span><span class="s2">&quot;--edge-files=</span><span class="si">{</span><span class="n">output_edge_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                         <span class="sa">f</span><span class="s2">&quot;--output-file=</span><span class="si">{</span><span class="n">output_net_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                                        <span class="n">cwd</span><span class="o">=</span><span class="n">sumo_output_dir</span><span class="p">,</span>
+                                        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :SUMO netconvert from nod.xml, edg.xml to net.xml failed!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; :</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully generated SUMO network to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">sumo_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">show_warning_message</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning message in generating SUMO network:&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Error in generating SUMO network: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># update SUMO signal in .net.xml file</span>
+        <span class="n">update_sumo_signal_from_utdf</span><span class="p">(</span><span class="n">output_net_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully updated SUMO signal xml to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">sumo_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># create SUMO .flow.xml file</span>
+        <span class="n">int_lanes</span> <span class="o">=</span> <span class="n">cvt_lane_df_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">))</span>
+        <span class="n">output_flow_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.flow.xml&quot;</span><span class="p">)</span>
+        <span class="n">output_flow_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">output_flow_file</span><span class="p">)</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ScenarioTime&quot;</span><span class="p">)</span>
+        <span class="n">begin_time</span> <span class="o">=</span> <span class="n">time_str_to_seconds</span><span class="p">(</span><span class="n">begin</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">begin_time</span> <span class="o">+</span> <span class="n">sim_duration</span>
+        <span class="n">generate_sumo_flow_xml</span><span class="p">(</span><span class="n">int_lanes</span><span class="p">,</span> <span class="n">output_flow_file</span><span class="p">,</span>
+                               <span class="n">begin</span><span class="o">=</span><span class="n">begin_time</span><span class="p">,</span>
+                               <span class="n">end</span><span class="o">=</span><span class="n">end_time</span><span class="p">)</span>
+
+        <span class="c1"># create .rou.xml file</span>
+        <span class="n">output_rou_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.rou.xml&quot;</span><span class="p">)</span>
+        <span class="n">output_rou_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">output_rou_file</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :Generating SUMO .rou.xml file from UTDF lanes...&quot;</span><span class="p">)</span>
+            <span class="n">jtrrouter_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;engine&quot;</span> <span class="o">/</span> <span class="s2">&quot;jtrrouter.exe&quot;</span>
+            <span class="n">jtrrouter_fname</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">jtrrouter_fname</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">jtrrouter_fname</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--route-files=</span><span class="si">{</span><span class="n">output_flow_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--net-file=</span><span class="si">{</span><span class="n">output_net_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;--accept-all-destinations=false&quot;</span><span class="p">,</span>
+                                     <span class="sa">f</span><span class="s2">&quot;--output-file=</span><span class="si">{</span><span class="n">output_rou_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;--remove-loops=true&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;--no-internal-links=false&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;--no-warnings=true&quot;</span><span class="p">,],</span>
+                                    <span class="n">cwd</span><span class="o">=</span><span class="n">sumo_output_dir</span><span class="p">,</span>
+                                    <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; :</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># get the path of the randomTrips.py file under the func_lib directory</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :Generating SUMO .rou.xml file with random trips...&quot;</span><span class="p">)</span>
+                <span class="n">path_random_trips</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;func_lib&quot;</span> <span class="o">/</span> <span class="s2">&quot;sumo&quot;</span> <span class="o">/</span> <span class="s2">&quot;randomTrips.py&quot;</span>
+                <span class="n">path_random_trips</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">path_random_trips</span><span class="p">)</span>
+
+                <span class="c1"># run randomTrips.py to generate .rou.xml file</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+                                        <span class="n">path_random_trips</span><span class="p">,</span>
+                                        <span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">output_net_file</span><span class="p">,</span>
+                                         <span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="n">output_rou_file</span><span class="p">],</span>
+                                        <span class="n">cwd</span><span class="o">=</span><span class="n">sumo_output_dir</span><span class="p">,</span>
+                                        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :SUMO create .flow.xml failed!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; :</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully generated default flow file to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">sumo_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Error in generating SUMO route file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># remove U-turns in the SUMO network</span>
+        <span class="k">if</span> <span class="n">disable_U_turn</span><span class="p">:</span>
+            <span class="n">remove_sumo_U_turn</span><span class="p">(</span><span class="n">output_net_file</span><span class="p">)</span>
+
+        <span class="c1"># create .sumocfg file for the generated network</span>
+        <span class="c1"># will generate default .rou.xml file for the network</span>
+        <span class="n">sumo_cfg_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sumo_output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s2">.sumocfg&quot;</span><span class="p">)</span>
+        <span class="n">sumo_cfg_file</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">sumo_cfg_file</span><span class="p">)</span>
+
+        <span class="n">cfg_str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;configuration&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;input&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;net-file value=&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s1">.net.xml&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;route-files value=&quot;</span><span class="si">{</span><span class="n">xml_name</span><span class="si">}</span><span class="s1">.rou.xml&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;/input&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;output&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;edgedata-output value=&quot;EdgeData.xml&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;/output&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;time&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;begin value=&quot;</span><span class="si">{</span><span class="n">begin_time</span><span class="si">}</span><span class="s1">&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;end value=&quot;</span><span class="si">{</span><span class="n">end_time</span><span class="si">}</span><span class="s1">&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;        &lt;step-length value=&quot;1&quot;/&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;/time&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;/configuration&gt;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Parse the XML string</span>
+        <span class="c1"># pretty_xml_str = minidom.parseString(cfg_str).toprettyxml(indent=&quot;    &quot;)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sumo_cfg_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cfg_str</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully generated SUMO configuration file to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">sumo_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

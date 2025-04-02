@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utdf2gmns.func_lib.gmns.geocoding_Links &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../../../../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utdf2gmns.func_lib.gmns.geocoding_Links</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utdf2gmns.func_lib.gmns.geocoding_Links</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">##############################################################</span>
+<span class="sd"># Created Date: Friday, October 18th 2024</span>
+<span class="sd"># Contact Info: luoxiangyong01@gmail.com</span>
+<span class="sd"># Author/Copyright: Mr. Xiangyong Luo</span>
+<span class="sd">##############################################################</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>
+
+
+<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;pyproj&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cvt_lonlat_to_utm</span><span class="p">(</span><span class="n">lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert latitude and longitude to UTM coordinates.&quot;&quot;&quot;</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;pyproj&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure pyproj is imported</span>
+    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>  <span class="c1"># ensure Transformer is imported</span>
+
+    <span class="c1"># Calculate UTM zone number</span>
+    <span class="n">zone_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Determine hemisphere</span>
+    <span class="n">hemisphere</span> <span class="o">=</span> <span class="s1">&#39;north&#39;</span> <span class="k">if</span> <span class="n">lat</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;south&#39;</span>
+
+    <span class="c1"># Determine EPSG code based on hemisphere and zone</span>
+    <span class="k">if</span> <span class="n">hemisphere</span> <span class="o">==</span> <span class="s1">&#39;north&#39;</span><span class="p">:</span>
+        <span class="n">epsg_code</span> <span class="o">=</span> <span class="mi">32600</span> <span class="o">+</span> <span class="n">zone_number</span>  <span class="c1"># Northern hemisphere</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">epsg_code</span> <span class="o">=</span> <span class="mi">32700</span> <span class="o">+</span> <span class="n">zone_number</span>  <span class="c1"># Southern hemisphere</span>
+
+    <span class="c1"># Define the coordinate reference systems</span>
+    <span class="n">wgs84_crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>  <span class="c1"># WGS84 Latitude/Longitude</span>
+    <span class="n">utm_crs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;EPSG:</span><span class="si">{</span><span class="n">epsg_code</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># UTM zone</span>
+
+    <span class="c1"># Create a transformer object for forward transformation</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">wgs84_crs</span><span class="p">,</span> <span class="n">utm_crs</span><span class="p">,</span> <span class="n">always_xy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Perform the transformation</span>
+    <span class="n">easting</span><span class="p">,</span> <span class="n">northing</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">easting</span><span class="p">,</span> <span class="n">northing</span><span class="p">,</span> <span class="n">zone_number</span><span class="p">,</span> <span class="n">hemisphere</span><span class="p">)</span>
+
+
+<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;pyproj&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cvt_utm_to_lonlat</span><span class="p">(</span><span class="n">easting</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">northing</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">zone_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hemisphere</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert UTM coordinates back to latitude and longitude.&quot;&quot;&quot;</span>
+
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;pyproj&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure pyproj is imported</span>
+    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>  <span class="c1"># ensure Transformer is imported</span>
+
+    <span class="c1"># Determine EPSG code based on hemisphere and zone</span>
+    <span class="k">if</span> <span class="n">hemisphere</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;north&#39;</span><span class="p">:</span>
+        <span class="n">epsg_code</span> <span class="o">=</span> <span class="mi">32600</span> <span class="o">+</span> <span class="n">zone_number</span>  <span class="c1"># Northern hemisphere</span>
+    <span class="k">elif</span> <span class="n">hemisphere</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;south&#39;</span><span class="p">:</span>
+        <span class="n">epsg_code</span> <span class="o">=</span> <span class="mi">32700</span> <span class="o">+</span> <span class="n">zone_number</span>  <span class="c1"># Southern hemisphere</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hemisphere must be &#39;north&#39; or &#39;south&#39;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define the coordinate reference systems</span>
+    <span class="n">utm_crs</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;EPSG:</span><span class="si">{</span><span class="n">epsg_code</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># UTM zone</span>
+    <span class="n">wgs84_crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>  <span class="c1"># WGS84 Latitude/Longitude</span>
+
+    <span class="c1"># Create a transformer object for inverse transformation</span>
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">utm_crs</span><span class="p">,</span> <span class="n">wgs84_crs</span><span class="p">,</span> <span class="n">always_xy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Perform the transformation</span>
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">easting</span><span class="p">,</span> <span class="n">northing</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">create_line_polygon_points</span><span class="p">(</span><span class="n">lon1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lon2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                               <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a line polygon points based on the width of the line.</span>
+<span class="sd">    The polygon is to the right of the directional line.</span>
+<span class="sd">    Start point is lon1, lat1 and end point is lon2, lat2.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lon1 (float): start longitude</span>
+<span class="sd">        lat1 (float): start latitude</span>
+<span class="sd">        lon2 (float): end longitude</span>
+<span class="sd">        lat2 (float): end latitude</span>
+<span class="sd">        width (float): width of the line</span>
+<span class="sd">        unit (str): the unit of the width. Defaults to &quot;meters&quot;.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        Exception: unit must be either feet or meters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: the polygon points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check if the unit is valid</span>
+    <span class="k">if</span> <span class="s2">&quot;feet&quot;</span> <span class="ow">in</span> <span class="n">unit</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;meters&quot;</span> <span class="ow">in</span> <span class="n">unit</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;unit must be either feet or meters.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Project the coordinates to UTM</span>
+    <span class="n">utm_coord1</span> <span class="o">=</span> <span class="n">cvt_lonlat_to_utm</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">lon1</span><span class="p">,</span> <span class="n">lat1</span><span class="p">])</span>
+    <span class="n">utm_coord2</span> <span class="o">=</span> <span class="n">cvt_lonlat_to_utm</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">lon2</span><span class="p">,</span> <span class="n">lat2</span><span class="p">])</span>
+
+    <span class="c1"># Convert width to meters if needed</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;feet&quot;</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3048</span>  <span class="c1"># Convert feet to meters</span>
+
+    <span class="c1"># Calculate the direction of the original line in UTM coordinates</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">zone_1</span><span class="p">,</span> <span class="n">hemi_1</span> <span class="o">=</span> <span class="n">utm_coord1</span>
+    <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">zone_2</span><span class="p">,</span> <span class="n">hemi_2</span> <span class="o">=</span> <span class="n">utm_coord2</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx</span> <span class="o">/</span> <span class="n">length</span><span class="p">,</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">length</span><span class="p">)</span>
+
+    <span class="c1"># Perpendicular direction to offset the polygon</span>
+    <span class="n">perp_direction</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Perpendicular vector</span>
+
+    <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">perp_direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">width</span><span class="p">,</span> <span class="n">perp_direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="c1"># Calculate the four corner points of the polygon</span>
+    <span class="c1"># Offset both start and end coordinates to the right</span>
+    <span class="n">corner1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">zone_1</span><span class="p">,</span> <span class="n">hemi_1</span><span class="p">)</span>
+    <span class="n">corner2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">zone_2</span><span class="p">,</span> <span class="n">hemi_2</span><span class="p">)</span>
+    <span class="n">corner3</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zone_2</span><span class="p">,</span> <span class="n">hemi_2</span><span class="p">)</span>
+    <span class="n">corner4</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zone_1</span><span class="p">,</span> <span class="n">hemi_1</span><span class="p">)</span>
+
+    <span class="c1"># Project the UTM coordinates back to lat/lon</span>
+    <span class="n">corner1_lonlat</span> <span class="o">=</span> <span class="n">cvt_utm_to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">corner1</span><span class="p">)</span>
+    <span class="n">corner2_lonlat</span> <span class="o">=</span> <span class="n">cvt_utm_to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">corner2</span><span class="p">)</span>
+    <span class="n">corner3_lonlat</span> <span class="o">=</span> <span class="n">cvt_utm_to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">corner3</span><span class="p">)</span>
+    <span class="n">corner4_lonlat</span> <span class="o">=</span> <span class="n">cvt_utm_to_lonlat</span><span class="p">(</span><span class="o">*</span><span class="n">corner4</span><span class="p">)</span>
+
+    <span class="c1"># directional from start to end</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">corner1_lonlat</span><span class="p">,</span> <span class="n">corner2_lonlat</span><span class="p">,</span> <span class="n">corner3_lonlat</span><span class="p">,</span> <span class="n">corner4_lonlat</span><span class="p">]</span>
+
+
+<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">create_line_polygon</span><span class="p">(</span><span class="n">lon1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lon2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">num_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a line polygons based on the width of the line and number of lanes.</span>
+<span class="sd">    The polygon is to the right of the directional line, each lane is exactly next to the previous one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lon1 (float): start longitude</span>
+<span class="sd">        lat1 (float): start latitude</span>
+<span class="sd">        lon2 (float): end longitude</span>
+<span class="sd">        lat2 (float): end latitude</span>
+<span class="sd">        num_lanes (int): number of lanes</span>
+<span class="sd">        width (float): width of the line</span>
+<span class="sd">        unit (str): the unit of the width. Defaults to &quot;meters&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Polygon: the line polygon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure shapely is imported</span>
+    <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>  <span class="c1"># ensure Polygon is imported</span>
+
+    <span class="n">lane_points</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_lanes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># reverse order as index 0 is the rightmost lane</span>
+        <span class="c1"># calculate four corners of the lane</span>
+        <span class="n">corner_coords</span> <span class="o">=</span> <span class="n">create_line_polygon_points</span><span class="p">(</span><span class="n">lon1</span><span class="p">,</span> <span class="n">lat1</span><span class="p">,</span> <span class="n">lon2</span><span class="p">,</span> <span class="n">lat2</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+
+        <span class="c1"># add the lane points to the list</span>
+        <span class="n">lane_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">corner_coords</span>
+
+        <span class="c1"># update the start and end points for the next lane</span>
+        <span class="n">lon1</span> <span class="o">=</span> <span class="n">corner_coords</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">lat1</span> <span class="o">=</span> <span class="n">corner_coords</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">lon2</span> <span class="o">=</span> <span class="n">corner_coords</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">lat2</span> <span class="o">=</span> <span class="n">corner_coords</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># return lane polygons as a dictionary</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">lane_points</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<div class="viewcode-block" id="cvt_link_df_to_dict">
+<a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.cvt_link_df_to_dict.html#utdf2gmns.func_lib.cvt_link_df_to_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">cvt_link_df_to_dict</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reformat the UTDF link dataframe to a dictionary of links with intersection id as keys</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df_link (pd.DataFrame): UTDF link dataframe</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: a dictionary of links with keys are intersection ids and values are link data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get unique intersection id</span>
+    <span class="n">intersection_id_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_link</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+    <span class="c1"># convert utdf_link dataframe to dictionary</span>
+    <span class="n">link_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">intersection_id</span> <span class="ow">in</span> <span class="n">intersection_id_list</span><span class="p">:</span>
+        <span class="n">df_link_int_id</span> <span class="o">=</span> <span class="n">df_link</span><span class="p">[</span><span class="n">df_link</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">intersection_id</span><span class="p">]</span>
+
+        <span class="n">df_link_int_id</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">df_link_int_id</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span>
+
+        <span class="c1"># select columns with Up ID not empty</span>
+        <span class="n">col_selection</span> <span class="o">=</span> <span class="n">df_link_int_id</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">df_link_int_id</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Up ID&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="n">df_link_int_id</span> <span class="o">=</span> <span class="n">df_link_int_id</span><span class="p">[</span><span class="n">col_selection</span><span class="p">]</span>
+
+        <span class="n">link_dict</span><span class="p">[</span><span class="n">intersection_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_link_int_id</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;dict&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">link_dict</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">generate_links_polygon</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">net_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                           <span class="n">default_link_width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                           <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate links from UTDF link data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df_link (pd.DataFrame): UTDF link data</span>
+<span class="sd">        net_node (dict): a dictionary of geocoded intersections</span>
+<span class="sd">        default_link_width (float): default width of the link.</span>
+<span class="sd">        unit (str): the unit of the width. Defaults to &quot;feet&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: a dictionary of links with keys are link ids and values are link polygon in wkt format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># extract intersection coordinates from df_node</span>
+    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">:</span>
+        <span class="n">int_coords</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span>
+                              <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+
+    <span class="c1"># extract link data from df_link</span>
+    <span class="n">int_links</span> <span class="o">=</span> <span class="n">cvt_link_df_to_dict</span><span class="p">(</span><span class="n">df_link</span><span class="p">)</span>
+
+    <span class="c1"># generate links</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">int_links</span><span class="p">:</span>
+        <span class="n">start_int</span> <span class="o">=</span> <span class="n">int_id</span>
+        <span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span> <span class="o">=</span> <span class="n">int_coords</span><span class="p">[</span><span class="n">start_int</span><span class="p">]</span>
+
+        <span class="n">start_connections</span> <span class="o">=</span> <span class="n">int_links</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_dir</span> <span class="ow">in</span> <span class="n">start_connections</span><span class="p">:</span>
+            <span class="n">dest_int_dict</span> <span class="o">=</span> <span class="n">start_connections</span><span class="p">[</span><span class="n">each_dir</span><span class="p">]</span>
+            <span class="n">dest_int</span> <span class="o">=</span> <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;Up ID&quot;</span><span class="p">]</span>
+
+            <span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span> <span class="o">=</span> <span class="n">int_coords</span><span class="p">[</span><span class="n">dest_int</span><span class="p">]</span>
+            <span class="n">num_lanes_str</span> <span class="o">=</span> <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;Lanes&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">num_lanes_str</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="n">num_lanes_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">char</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">num_lanes_str</span> <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()])</span>
+            <span class="n">num_lanes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_lanes_str</span><span class="p">)</span> <span class="k">if</span> <span class="n">num_lanes_str</span> <span class="k">else</span> <span class="mi">1</span>
+
+            <span class="c1"># remove keys &quot;Up ID&quot; and &quot;Lanes&quot;</span>
+            <span class="n">dest_int_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;Up ID&quot;</span><span class="p">)</span>
+            <span class="n">dest_int_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">)</span>
+
+            <span class="n">start_dest_links</span> <span class="o">=</span> <span class="n">create_line_polygon</span><span class="p">(</span><span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span><span class="p">,</span>
+                                                   <span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span><span class="p">,</span>
+                                                   <span class="n">num_lanes</span><span class="p">,</span> <span class="n">default_link_width</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">start_dest_links</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link</span>
+                <span class="n">link_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_int</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dest_int</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;Link_ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_id</span>
+
+                <span class="n">links</span><span class="p">[</span><span class="n">link_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dest_int_dict</span>
+    <span class="k">return</span> <span class="n">links</span>
+
+
+<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">generate_links</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                   <span class="n">net_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                   <span class="n">default_link_width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                   <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate links from UTDF link data with default width and unit&quot;&quot;&quot;</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure shapely is imported</span>
+    <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
+
+    <span class="c1"># extract intersection coordinates from df_node</span>
+    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">:</span>
+        <span class="n">int_coords</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span> <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+
+    <span class="c1"># extract link data from df_link</span>
+    <span class="n">int_links</span> <span class="o">=</span> <span class="n">cvt_link_df_to_dict</span><span class="p">(</span><span class="n">df_link</span><span class="p">)</span>
+
+    <span class="c1"># generate links</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">int_links</span><span class="p">:</span>
+        <span class="c1"># get start intersection coordinates</span>
+        <span class="n">start_int</span> <span class="o">=</span> <span class="n">int_id</span>
+        <span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span> <span class="o">=</span> <span class="n">int_coords</span><span class="p">[</span><span class="n">start_int</span><span class="p">]</span>
+
+        <span class="c1"># get the connections from the start intersection</span>
+        <span class="n">start_connections</span> <span class="o">=</span> <span class="n">int_links</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span>
+
+        <span class="c1"># iterate through each direction, such as &quot;NB&quot;, &quot;SB&quot;</span>
+        <span class="k">for</span> <span class="n">each_dir</span> <span class="ow">in</span> <span class="n">start_connections</span><span class="p">:</span>
+            <span class="n">dest_int_dict</span> <span class="o">=</span> <span class="n">start_connections</span><span class="p">[</span><span class="n">each_dir</span><span class="p">]</span>
+
+            <span class="c1"># get the destination intersection coordinates</span>
+            <span class="n">dest_int</span> <span class="o">=</span> <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;Up ID&quot;</span><span class="p">]</span>
+            <span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span> <span class="o">=</span> <span class="n">int_coords</span><span class="p">[</span><span class="n">dest_int</span><span class="p">]</span>
+
+            <span class="c1"># check if the link id already exists</span>
+            <span class="n">link_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_int</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dest_int</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">link_id_rev</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dest_int</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">start_int</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">link_id</span> <span class="ow">in</span> <span class="n">links</span> <span class="ow">or</span> <span class="n">link_id_rev</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># remove keys &quot;Up ID&quot; and &quot;Lanes&quot;</span>
+            <span class="n">dest_int_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;Up ID&quot;</span><span class="p">)</span>
+
+            <span class="c1"># create a link between the start and destination intersections</span>
+            <span class="n">start_dest_link</span> <span class="o">=</span> <span class="n">LineString</span><span class="p">([</span><span class="n">Point</span><span class="p">(</span><span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="n">dest_x</span><span class="p">,</span> <span class="n">dest_y</span><span class="p">)])</span>
+
+            <span class="c1"># add the link to the links dictionary,,,</span>
+            <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_dest_link</span>
+            <span class="n">link_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_int</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dest_int</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">dest_int_dict</span><span class="p">[</span><span class="s2">&quot;Link_ID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_id</span>
+
+            <span class="c1"># add the link to the links dictionary</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">link_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dest_int_dict</span>
+
+    <span class="k">return</span> <span class="n">links</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

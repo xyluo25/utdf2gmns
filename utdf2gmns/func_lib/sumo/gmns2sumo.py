@@ -145,6 +145,7 @@ def generate_sumo_flow_xml(network_lanes: dict, fname: str = "network.flow.xml",
     begin_time = kwargs.get("begin")
     end_time = kwargs.get("end")
 
+    flow_id_lst = []
     for int_id, direction_lanes in network_lanes.items():
         for direction in direction_lanes:
 
@@ -153,22 +154,28 @@ def generate_sumo_flow_xml(network_lanes: dict, fname: str = "network.flow.xml",
             dest_node = direction_lanes[direction].get("Dest Node")
             volume = direction_lanes[direction].get("Volume", None)
 
+            flow_id = f"{up_node}_{dest_node}"
+
             try:
                 volume = int(volume) if volume is not None else None
             except (ValueError, TypeError):
                 volume = None
 
             if up_node and dest_node and volume and volume > 0:
-                flow_elem = ET.SubElement(root, "flow")
-                flow_elem.set("id", f"{up_node}_{dest_node}")
-                flow_elem.set("from", f"{up_node}_{int_id}")
-                flow_elem.set("to", f"{int_id}_{dest_node}")
-                flow_elem.set("number", f"{volume}")
-                flow_elem.set("type", "car")
-                if begin_time:
-                    flow_elem.set("begin", f"{int(begin_time)}")
-                if end_time:
-                    flow_elem.set("end", f"{int(end_time)}")
+
+                # avoid duplicate flow id in the flow file
+                if flow_id not in flow_id_lst:
+                    flow_id_lst.append(flow_id)
+                    flow_elem = ET.SubElement(root, "flow")
+                    flow_elem.set("id", f"{up_node}_{dest_node}")
+                    flow_elem.set("from", f"{up_node}_{int_id}")
+                    flow_elem.set("to", f"{int_id}_{dest_node}")
+                    flow_elem.set("number", f"{volume}")
+                    flow_elem.set("type", "car")
+                    if begin_time:
+                        flow_elem.set("begin", f"{int(begin_time)}")
+                    if end_time:
+                        flow_elem.set("end", f"{int(end_time)}")
 
     xml_str = xml_prettify(root)
     with open(fname, "w") as f:

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @pf.requires("xlwings", verbose=False)
-def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = "", verbose: bool = False) -> bool:
+def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "", verbose: bool = False) -> bool:
     """Utilize sigma-X engine to process each signal intersection from Synchro UTDF file
     And save each signal intersection into a separate GMNS file.
 
@@ -29,10 +29,10 @@ def utdf_to_each_signal_intersection(utdf_filename: str, *, output_dir: str = ""
     Example:
         >>> import utdf2gmns as ug
         >>> utdf_filename = "your utdf file, in csv format"
-        >>> ug.utdf_to_each_signal_intersection(utdf_filename, output_dir="")
+        >>> ug.cvt_utdf_to_signal_intersection(utdf_filename, output_dir="")
 
     Location:
-        utdf2gmns/func_lib/gmns/sigma_X_process_each_signal_intersection.utdf_to_each_signal_intersection
+        utdf2gmns/func_lib/gmns/sigma_X_process_each_signal_intersection.cvt_utdf_to_signal_intersection
 
     Raises:
         TypeError: If the input file is not a string or Path

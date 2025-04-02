@@ -54,6 +54,10 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.todo',
     'sphinx_copybutton',
     'myst_parser',  # for parsing markdown files, must be after sphinx.ext.autodoc to work properly
 ]

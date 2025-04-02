@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTDF To GMNS Format &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMNS To SUMO Format" href="_gmns2sumo.html" />
+    <link rel="prev" title="Signal Conversation" href="_signal_conversion.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">UTDF To GMNS Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gmns-link-generation">GMNS Link Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-link-line">Create Link Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-link-polygon">Create Link Polygon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utdf-to-gmns">UTDF To GMNS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">UTDF To GMNS Format</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/_utdf2gmns.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utdf-to-gmns-format">
+<h1>UTDF To GMNS Format<a class="headerlink" href="#utdf-to-gmns-format" title="Link to this heading"></a></h1>
+<p>Convert UTDF files to GMNS format.
+This script converts UTDF files to GMNS format. It reads the UTDF file, extracts the relevant data, and writes it to GMNS format files.
+The resulting GMNS files are saved in the same directory as the input UTDF file.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>node.csv</p></li>
+<li><p>link.csv</p></li>
+<li><p>signal.json</p></li>
+<li><p>utdf_nodes.csv</p></li>
+<li><p>utdf_links.csv</p></li>
+<li><p>utdf_lanes.csv</p></li>
+<li><p>utdf_network.csv</p></li>
+<li><p>utdf_phases.csv</p></li>
+<li><p>utdf_timeplans.csv</p></li>
+</ul>
+</div></blockquote>
+<section id="gmns-link-generation">
+<h2>GMNS Link Generation<a class="headerlink" href="#gmns-link-generation" title="Link to this heading"></a></h2>
+<p>There are two ways to generate GMNS links from UTDF files:</p>
+<ol class="arabic simple">
+<li><p><strong>Create Link Line</strong></p>
+<ul class="simple">
+<li><p>This method creates a link line from the UTDF file. It uses the coordinates of the nodes in the UTDF file to create a line that represents the link.</p></li>
+<li><p>The resulting link line is saved in the GMNS format.</p></li>
+</ul>
+</li>
+<li><p><strong>Create Link Polygon</strong></p>
+<ul class="simple">
+<li><p>This method creates a link polygon from the UTDF file. It uses the coordinates of the nodes and number of lanes in each link to create a polygon that represents the link (<cite>With multiple lanes for each direction</cite>).</p></li>
+</ul>
+</li>
+</ol>
+<section id="create-link-line">
+<h3>Create Link Line<a class="headerlink" href="#create-link-line" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>    <span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
+<span class="linenos"> 6</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="hll"><span class="linenos">12</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="create-link-polygon">
+<h3>Create Link Polygon<a class="headerlink" href="#create-link-polygon" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>    <span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
+<span class="linenos"> 6</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="hll"><span class="linenos">12</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="utdf-to-gmns">
+<h2>UTDF To GMNS<a class="headerlink" href="#utdf-to-gmns" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>    <span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
+<span class="linenos"> 6</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">13</span>
+<span class="hll"><span class="linenos">14</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>The resulting GMNS network can be opened in QGIS, ArcGIS or any other GIS software that supports GMNS format (Below: example nodes and links).</p>
+<a class="reference internal image-reference" href="../_images/gmns_node_link.png"><img alt="GMNS node link" src="../_images/gmns_node_link.png" style="width: 600px;" />
+</a>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_signal_conversion.html" class="btn btn-neutral float-left" title="Signal Conversation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_gmns2sumo.html" class="btn btn-neutral float-right" title="GMNS To SUMO Format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

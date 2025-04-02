@@ -16,19 +16,13 @@ sys.path = [str(root)] + sys.path
 
 import utdf2gmns
 import utdf2gmns.func_lib
+import utdf2gmns.util_lib
 from utdf2gmns import UTDF2GMNS
 
 collected_functions = {
-    "realtwin._realtwin": ["RealTwin"],
-    "realtwin.utils_lib": realtwin.utils_lib.__all__,
-    "realtwin.func_lib._a_install_simulator": realtwin.func_lib._a_install_simulator.__all__,
-    "realtwin.func_lib._b_load_inputs": realtwin.func_lib._b_load_inputs.__all__,
-    "realtwin.func_lib._c_abstract_scenario": realtwin.func_lib._c_abstract_scenario.__all__,
-    "realtwin.func_lib._d_concrete_scenario": realtwin.func_lib._d_concrete_scenario.__all__,
-    "realtwin.func_lib._e_simulation": realtwin.func_lib._e_simulation.__all__,
-    "realtwin.func_lib._f_calibration": realtwin.func_lib._f_calibration.__all__,
-    "realtwin.func_lib._g_analyzer": realtwin.func_lib._g_analyzer.__all__,
-    "realtwin.func_lib._h_vis": realtwin.func_lib._h_vis.__all__,
+    "utdf2gmns": ["UTDF2GMNS"],
+    "utdf2gmns.util_lib": utdf2gmns.util_lib.__all__,
+    "utdf2gmns.func_lib": utdf2gmns.func_lib.__all__,
 }
 
 
@@ -41,6 +35,10 @@ for file in os.listdir(api_folder):
 # Create the API documentation
 total_functions = sum(len(module_list) for module_list in collected_functions.values())
 for relative_path, module_list in collected_functions.items():
+
+    # SKIP the UTDF2GMNS class (manually created)
+    if relative_path == "utdf2gmns":
+        continue
 
     if not module_list:
         continue

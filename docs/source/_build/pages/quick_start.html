@@ -6,8 +6,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+  <title>Quick Start Guide &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Read UTDF Format Data" href="_read_utdf.html" />
-    <link rel="prev" title="Welcome to utdf2gmns documentation!" href="../index.html" /> 
+    <link rel="prev" title="Installation" href="_installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,15 +49,20 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html#acknowledgements">Acknowledgements</a></li>
 </ul>
 
         </div>
@@ -74,7 +79,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Installation</li>
+      <li class="breadcrumb-item active">Quick Start Guide</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/pages/quick_start.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,34 +89,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<p>You can install the latest stable release of the package at <a class="reference external" href="https://pypi.org/project/osm2gmns">PyPI</a> using <a class="reference external" href="https://packaging.python.org/key_projects/#pip">pip</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span>
-</pre></div>
-</div>
-<p>By running the command above, the utdf2gmns package along with required dependency packages
-(<a class="reference external" href="https://pandas.pydata.org/">pandas</a>, <a class="reference external" href="https://github.com/xyluo25/pyufunc">pyufunc</a>) will be installed to your computer (if they have not been installed yet).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can also choose to install packages based on your needs. Below are the optional dependencies that can be included during installation.</p>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>  <span class="c1"># including test dependencies (pytest, coverage)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span>  <span class="c1"># including visualization dependencies (matplotlib, keplergl)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">sumo</span><span class="p">]</span>  <span class="c1"># including SUMO dependencies (traci, sumollib)</span>
-</pre></div>
-</div>
-<p>⚡⚡If you don’t know what’s best for your, the default <a class="reference internal" href="#installation"><span class="std std-ref">Installation</span></a> should work for most users.</p>
-<p>⚡⚡By the way, the utdf2gmns package will also install the required dependencies automatically when you run functions that require them.</p>
-</section>
-<section id="quick-start-guide">
+  <section id="quick-start-guide">
 <h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -121,7 +99,7 @@
 <li><p>The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: <cite>automatic_geociding</cite> or manually ::ref::  <cite>manual_geocoding</cite> as per your requirement.</p></li>
 </ul>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -154,13 +132,16 @@
 <span class="linenos">31</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
 </pre></div>
 </div>
+<p>The Design Framework of the package is based on the following principles:</p>
+<a class="reference internal image-reference" href="../_images/framework.png"><img alt="utdf2gmns framework" src="../_images/framework.png" style="width: 100%;" />
+</a>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to utdf2gmns documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="_read_utdf.html" class="btn btn-neutral float-right" title="Read UTDF Format Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

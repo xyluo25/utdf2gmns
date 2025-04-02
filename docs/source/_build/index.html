@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to utdf2gmns documentation! &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="pages/quick_start.html" /> 
+    <link rel="next" title="Installation" href="pages/_installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,12 +48,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html#official-links">Official Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html#license">License</a></li>
@@ -87,15 +90,13 @@
              
   <section id="welcome-to-utdf2gmns-documentation">
 <h1>Welcome to utdf2gmns documentation!<a class="headerlink" href="#welcome-to-utdf2gmns-documentation" title="Link to this heading"></a></h1>
-<a class="reference external image-reference" href="https://github.com/xyluo25/utdf2gmns"><img alt="https://img.shields.io/badge/release-0.1.0-yellow.svg" src="https://img.shields.io/badge/release-0.1.0-yellow.svg" />
+<a class="reference external image-reference" href="https://github.com/xyluo25/utdf2gmns"><img alt="https://img.shields.io/badge/release-1.0.1-yellow.svg" src="https://img.shields.io/badge/release-1.0.1-yellow.svg" />
 </a>
 <a class="reference external image-reference" href="https://pypi.org/project/utdf2gmns/"><img alt="https://img.shields.io/pypi/wheel/gensim.svg" src="https://img.shields.io/pypi/wheel/gensim.svg" />
 </a>
 <a class="reference external image-reference" href="https://badge.fury.io/py/utdf2gmns"><img alt="https://badge.fury.io/py/utdf2gmns.svg" src="https://badge.fury.io/py/utdf2gmns.svg" />
 </a>
 <a class="reference external image-reference" href="https://www.python.org/"><img alt="https://img.shields.io/pypi/pyversions/utdf2gmns.svg" src="https://img.shields.io/pypi/pyversions/utdf2gmns.svg" />
-</a>
-<a class="reference external image-reference" href="https://img.shields.io/pypi/status/utdf2gmns.svg"><img alt="https://img.shields.io/pypi/status/utdf2gmns.svg" src="https://img.shields.io/pypi/status/utdf2gmns.svg" />
 </a>
 <a class="reference external image-reference" href="https://pepy.tech/project/utdf2gmns"><img alt="https://static.pepy.tech/badge/utdf2gmns" src="https://static.pepy.tech/badge/utdf2gmns" />
 </a>
@@ -110,8 +111,8 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_read_utdf.html">Read UTDF Format Data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/_read_utdf.html#load-utdf-data-from-utdf2gmns-class">load utdf data from UTDF2GMNS class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/_read_utdf.html#load-utdf-data-from-read-utdf-function">Load UTDF data from read_UTDF function</a></li>
@@ -136,6 +137,49 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_utdf2gmns.html">UTDF To GMNS Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/_utdf2gmns.html#gmns-link-generation">GMNS Link Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/_utdf2gmns.html#create-link-line">Create Link Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/_utdf2gmns.html#create-link-polygon">Create Link Polygon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/_utdf2gmns.html#utdf-to-gmns">UTDF To GMNS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#utdf2gmns-class">UTDF2GMNS class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.UTDF2GMNS.html">utdf2gmns.UTDF2GMNS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#function-library-utdf">Function Library: UTDF</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.read_UTDF.html">utdf2gmns.func_lib.read_UTDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.cvt_lane_df_to_dict.html">utdf2gmns.func_lib.cvt_lane_df_to_dict</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#function-library-gmns">Function Library: GMNS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.cvt_utdf_to_signal_intersection.html">utdf2gmns.func_lib.cvt_utdf_to_signal_intersection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.cvt_link_df_to_dict.html">utdf2gmns.func_lib.cvt_link_df_to_dict</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#function-library-sumo">Function Library: SUMO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.remove_sumo_U_turn.html">utdf2gmns.func_lib.remove_sumo_U_turn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.update_sumo_signal_from_utdf.html">utdf2gmns.func_lib.update_sumo_signal_from_utdf</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#visualization">Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.plot_net_mpl.html">utdf2gmns.func_lib.plot_net_mpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.func_lib.plot_net_keplergl.html">utdf2gmns.func_lib.plot_net_keplergl</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/api_reference.html#utility-functions">Utility Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.util_lib.calculate_point2point_distance_in_km.html">utdf2gmns.util_lib.calculate_point2point_distance_in_km</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.util_lib.time_unit_converter.html">utdf2gmns.util_lib.time_unit_converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/api/utdf2gmns.util_lib.time_str_to_seconds.html">utdf2gmns.util_lib.time_str_to_seconds</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html#official-links">Official Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pages/support.html#license">License</a></li>
@@ -157,7 +201,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pages/quick_start.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pages/_installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

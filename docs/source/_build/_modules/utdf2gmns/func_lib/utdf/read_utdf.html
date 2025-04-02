@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utdf2gmns.func_lib.utdf.read_utdf &mdash; utdf2gmns</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            utdf2gmns
+              <img src="../../../../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#reference">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">utdf2gmns</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utdf2gmns.func_lib.utdf.read_utdf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utdf2gmns.func_lib.utdf.read_utdf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">##############################################################</span>
+<span class="c1"># Created Date: Tuesday, January 17th 2023</span>
+<span class="c1"># Contact Info: luoxiangyong01@gmail.com</span>
+<span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
+<span class="c1">##############################################################</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pyufunc</span> <span class="kn">import</span> <span class="n">func_running_time</span>
+
+<span class="kn">from</span> <span class="nn">utdf2gmns.util_lib.pkg_settings</span> <span class="kn">import</span> <span class="n">utdf_categories</span><span class="p">,</span> <span class="n">utdf_link_col_names</span>
+
+<span class="c1"># avoid the warning of &quot;A value is trying to be set on a copy of a slice from a DataFrame&quot;</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># default=&#39;warn&#39;</span>
+
+
+<div class="viewcode-block" id="read_UTDF">
+<a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.read_UTDF.html#utdf2gmns.func_lib.read_UTDF">[docs]</a>
+<span class="nd">@func_running_time</span>
+<span class="k">def</span> <span class="nf">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;read the utdf.csv file and return a dictionary of dataframes</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path_utdf (str): path to the utdf.csv file</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import utdf2gmns as ug</span>
+<span class="sd">        &gt;&gt;&gt; path_utdf = &quot;your utdf file, in csv format&quot;</span>
+<span class="sd">        &gt;&gt;&gt; utdf_dict = ug.read_UTDF(path_utdf)</span>
+<span class="sd">        &gt;&gt;&gt; utdf_dict.keys()</span>
+<span class="sd">        dict_keys([&#39;Network&#39;, &#39;Nodes&#39;, &#39;Links&#39;, &#39;Lanes&#39;, &#39;Timeplans&#39;, &#39;Phases&#39;, &#39;phase_timeplans&#39;])</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: a dictionary of dataframes with keys are Network, Nodes, Links, Lanes, Timeplans, Phases</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># check if the file is a valid csv file</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;path_utdf should be a string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">)</span><span class="si">}</span><span class="s2">. Please provide a valid path to the utdf.csv file.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">path_utdf</span><span class="si">}</span><span class="s2"> does not exist. Please provide a valid path to the utdf.csv file.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path_utdf</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">path_utdf</span><span class="si">}</span><span class="s2"> is not a CSV file. Please provide a valid CSV file for the UTDF data.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># read the utdf.csv file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="c1"># find the start index of each category, the index is the row contain column names</span>
+    <span class="n">categorical_data_beginning_index_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="s2">&quot;Network&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Network&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Network&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;Nodes&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Nodes&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Nodes&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;Links&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Links&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Links&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;Lanes&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Lanes&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Lanes&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;Timeplans&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Timeplans&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;Phases&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="n">utdf_categories</span><span class="p">[</span><span class="s2">&quot;Phases&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Phases&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+    <span class="n">categorical_index_ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">categorical_data_beginning_index_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>  <span class="c1"># ascending order</span>
+
+    <span class="c1"># prepare dataframe for each category</span>
+    <span class="n">utdf_dict_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">categorical_index_ordered</span><span class="p">)):</span>
+        <span class="c1"># get the category name from start_index_dict</span>
+        <span class="n">category_name</span> <span class="o">=</span> <span class="n">categorical_data_beginning_index_dict</span><span class="p">[</span><span class="n">categorical_index_ordered</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+
+        <span class="c1"># if it&#39;s the last value in the list, then the end index is the end of the file</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">categorical_index_ordered</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">category_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                              <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">categorical_index_ordered</span><span class="p">[</span><span class="n">j</span><span class="p">]:]]</span>
+
+        <span class="c1"># if it&#39;s not the last value in the list, then the end index is the start index of the next category - 2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">category_value</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">categorical_index_ordered</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span><span class="n">categorical_index_ordered</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]]</span>
+
+        <span class="c1"># save data to dictionary</span>
+        <span class="n">utdf_dict_data</span><span class="p">[</span><span class="n">category_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">category_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">category_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># format utdf_lane data : remove unnecessary rows with None and column with &#39;\n&#39;</span>
+    <span class="c1"># format each table in utdf_dict_data</span>
+    <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df_table_name</span> <span class="ow">in</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># get the last column name from utdf_setting</span>
+            <span class="n">last_col_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_table_name</span><span class="o">.</span><span class="n">columns</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># remove unnecessary rows / invalid rows with NaN</span>
+            <span class="k">if</span> <span class="n">table_name</span> <span class="o">!=</span> <span class="s2">&quot;Network&quot;</span><span class="p">:</span>
+                <span class="n">df_table_name</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="p">[</span><span class="n">df_table_name</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
+                <span class="n">df_table_name</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="p">[</span><span class="n">df_table_name</span><span class="p">[</span><span class="s1">&#39;INTID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df_table_name</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="p">[</span><span class="n">df_table_name</span><span class="p">[</span><span class="n">last_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span>
+                <span class="p">)]</span>
+
+            <span class="c1"># clean the data / remove &#39;\n&#39; in the end of column SW</span>
+            <span class="n">df_table_name</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">last_col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="p">[</span><span class="n">last_col_name</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="n">df_table_name</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">last_col_name</span><span class="p">:</span> <span class="n">last_col_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)})</span>
+
+            <span class="c1"># drop the column with empty string</span>
+            <span class="n">df_table_name</span> <span class="o">=</span> <span class="n">df_table_name</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;&quot;</span> <span class="ow">in</span> <span class="n">df_table_name</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="n">df_table_name</span>
+
+            <span class="n">utdf_dict_data</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_table_name</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not format table: </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+    <span class="c1"># update Timeplans table with three columns needed</span>
+    <span class="n">utdf_dict_data</span><span class="p">[</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="p">[</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">utdf_dict_data</span><span class="p">[</span><span class="s2">&quot;phase_timeplans&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spanning_phase_timeplans_data</span><span class="p">(</span>
+        <span class="n">utdf_dict_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">utdf_dict_data</span></div>
+
+
+
+<span class="nd">@func_running_time</span>
+<span class="k">def</span> <span class="nf">generate_intersection_from_Links</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">city_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;generate_intersection_data_from_utdf: convert utdf links to intersection</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        utdf_dict_data (dict): a dictionary include key of Links</span>
+<span class="sd">        city_name (str): city name of the utdf data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: a dataframe of intersection</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># update columns name</span>
+    <span class="n">df_link</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">i</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">i</span> <span class="k">else</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_link</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]</span>
+
+    <span class="c1"># remove unnecessary rows / invalid rows with NaN</span>
+    <span class="n">df_link</span> <span class="o">=</span> <span class="n">df_link</span><span class="p">[</span><span class="n">df_link</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">()]</span>
+
+    <span class="c1"># clean the data / remove &#39;\n&#39; in the end of column SW</span>
+    <span class="c1"># df_link = df_link.rename(columns={&quot;SW\n&quot;: &quot;SW&quot;})</span>
+    <span class="c1"># df_link[&quot;SW&quot;] = df_link[&quot;SW&quot;].map(lambda x: x.replace(&quot;\n&quot;, &quot;&quot;))</span>
+
+    <span class="c1"># get the unique link id</span>
+    <span class="n">link_id</span> <span class="o">=</span> <span class="n">df_link</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># generate link dictionary in format of: {link_id: {RECORDNAME:{columns:values}}}</span>
+    <span class="n">df_link_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">single_id</span> <span class="ow">in</span> <span class="n">link_id</span><span class="p">:</span>
+        <span class="n">df_single_id</span> <span class="o">=</span> <span class="n">df_link</span><span class="p">[</span><span class="n">df_link</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">single_id</span><span class="p">]</span>
+        <span class="n">record_name</span> <span class="o">=</span> <span class="n">df_single_id</span><span class="p">[</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">df_single_id_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">record_name</span><span class="p">:</span>
+            <span class="c1"># convert one row of dataframe to dictionary</span>
+            <span class="n">df_single_id_name</span> <span class="o">=</span> <span class="n">df_single_id</span><span class="p">[</span><span class="n">df_single_id</span><span class="p">[</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)[</span>
+                <span class="mi">0</span><span class="p">]</span>
+            <span class="n">df_single_id_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_single_id_name</span>
+        <span class="n">df_link_dict</span><span class="p">[</span><span class="n">single_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_single_id_dict</span>
+
+    <span class="c1"># prepare intersection dataframe</span>
+    <span class="n">sequenced_intersection_id</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">link_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># for each single link id</span>
+    <span class="k">for</span> <span class="n">single_id</span> <span class="ow">in</span> <span class="n">df_link_dict</span><span class="p">:</span>
+        <span class="c1"># define a flag to indicate whether an intersection exists</span>
+        <span class="n">isIntersection</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">direction_list</span> <span class="o">=</span> <span class="n">df_link_dict</span><span class="p">[</span><span class="n">single_id</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span>
+        <span class="n">direction_name_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># for link table, direction info store in column 3 to 10</span>
+        <span class="k">for</span> <span class="n">direction_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+            <span class="n">direction_name</span> <span class="o">=</span> <span class="n">direction_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">utdf_link_col_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">direction_id</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">direction_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">direction_name_list</span> <span class="ow">and</span> <span class="n">direction_name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">direction_name</span> <span class="o">!=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="n">direction_name_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">direction_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">direction_name_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">isIntersection</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># generate intersection name if it&#39;s an intersection</span>
+        <span class="n">intersection_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">isIntersection</span><span class="p">:</span>
+            <span class="n">intersection_name</span> <span class="o">=</span> <span class="s1">&#39; &amp; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">direction_name_list</span><span class="p">)</span>
+            <span class="c1"># get &quot;INTID&quot;</span>
+            <span class="n">intersection_id</span> <span class="o">=</span> <span class="n">direction_list</span><span class="p">[</span><span class="n">utdf_link_col_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+
+            <span class="n">link_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">intersection_name</span><span class="p">,</span> <span class="n">city_name</span><span class="p">,</span>
+                             <span class="n">intersection_id</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sequenced_intersection_id</span><span class="p">])</span>
+            <span class="n">sequenced_intersection_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">intersection_column_name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;intersection_name&quot;</span><span class="p">,</span> <span class="s2">&quot;city_name&quot;</span><span class="p">,</span>
+                                <span class="s2">&quot;synchro_INTID&quot;</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">,</span> <span class="s2">&quot;intersection_id&quot;</span><span class="p">]</span>
+    <span class="n">df_utdf_intersection</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">link_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">intersection_column_name</span><span class="p">)</span>
+
+    <span class="n">df_utdf_intersection</span><span class="p">[</span><span class="s2">&quot;intersection_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_utdf_intersection</span><span class="p">[</span><span class="s2">&quot;intersection_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">df_utdf_intersection</span>
+
+
+<span class="c1"># combine phase and timeplans data into one dataframe (intersection id based)</span>
+<span class="k">def</span> <span class="nf">spanning_phase_timeplans_data</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">isSimpleCol</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;spanning_phase_timeplans_data: combine phase and timeplans data into one dataframe (intersection id based)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        utdf_dict_data (dict): a dictionary include key of Phases and Timeplans</span>
+<span class="sd">        isSimpleCol (bool, optional): defaults to True, if True,</span>
+<span class="sd">            keep columns between Start_D and End_D if _D exists in column name, else keep all columns</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: a dataframe of phase and timeplans</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_phase</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Phases&quot;</span><span class="p">)</span>
+    <span class="n">df_timeplans</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get unique intersection id</span>
+    <span class="n">intersection_id</span> <span class="o">=</span> <span class="n">df_phase</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">final_spanned_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">INTID</span> <span class="ow">in</span> <span class="n">intersection_id</span><span class="p">:</span>
+
+        <span class="c1"># get utdf_phase dataframe by id</span>
+        <span class="n">df_phase_single_id</span> <span class="o">=</span> <span class="n">df_phase</span><span class="p">[</span><span class="n">df_phase</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span>
+                                      <span class="o">==</span> <span class="n">INTID</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df_timeplans_single_id</span> <span class="o">=</span> <span class="n">df_timeplans</span><span class="p">[</span><span class="n">df_timeplans</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">INTID</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
+            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">df_phase_single_id_dict</span> <span class="o">=</span> <span class="n">df_phase_single_id</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
+        <span class="n">df_timeplans_single_id_dict</span> <span class="o">=</span> <span class="n">df_timeplans_single_id</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
+
+        <span class="c1"># df phase new column name and data</span>
+        <span class="n">df_phase_col_name_new</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">df_phase_single_id_new</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># df timeplans new column name and data</span>
+        <span class="n">df_timeplans_col_name_new</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">df_timeplans_single_id_new</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># span df_phase_single_id_dict</span>
+        <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">df_phase_single_id_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">,</span> <span class="s2">&quot;INTID&quot;</span><span class="p">]:</span>
+                <span class="n">df_phase_col_name_new</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">row_name</span> <span class="ow">in</span> <span class="n">df_phase_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">)]</span>
+                <span class="n">df_phase_single_id_new</span> <span class="o">+=</span> <span class="n">df_phase_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+
+        <span class="c1"># span df_timeplans_single_id_dict</span>
+        <span class="n">df_timeplans_col_name_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;RECORDNAME&quot;</span><span class="p">)</span>
+        <span class="n">df_timeplans_single_id_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">)</span>
+
+        <span class="c1"># generate final column name and data for single intersection id</span>
+        <span class="n">single_id_col_name_final</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df_phase_col_name_new</span> <span class="o">+</span> <span class="n">df_timeplans_col_name_new</span>
+        <span class="n">single_id_data_final</span> <span class="o">=</span> <span class="p">[</span><span class="n">INTID</span><span class="p">]</span> <span class="o">+</span> \
+            <span class="n">df_phase_single_id_new</span> <span class="o">+</span> <span class="n">df_timeplans_single_id_new</span>
+
+        <span class="n">final_spanned_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">single_id_data_final</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">single_id_col_name_final</span><span class="p">))</span>
+
+        <span class="c1"># if isSimpleCol is True, then only keep the columns with Start_D and End_D if _D exists</span>
+        <span class="c1"># if _D not exists in column name, then keep all columns</span>
+        <span class="k">if</span> <span class="n">isSimpleCol</span><span class="p">:</span>
+            <span class="n">simple_col_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">single_id_col_name_final</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;_D&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;Start&quot;</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">and</span> <span class="s2">&quot;Local&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;End&quot;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                        <span class="n">simple_col_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">simple_col_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">final_spanned_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">simple_col_list</span><span class="p">]</span>
+                                  <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">final_spanned_list</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">final_spanned_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">final_spanned_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">reformat_lane_dataframe</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;reformat the utdf_lane dataframe to a new dataframe</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        utdf_dict_data (dict): a dictionary include key of Lanes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: a dataframe of lanes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get utdf_lane data</span>
+    <span class="n">df_lane</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="p">[</span><span class="s2">&quot;Lanes&quot;</span><span class="p">]</span>
+
+    <span class="c1"># get unique intersection id</span>
+    <span class="n">intersection_id_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_lane</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+
+    <span class="c1"># convert utdf_lane dataframe to dictionary</span>
+    <span class="n">lane_dict</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">intersection_id</span> <span class="ow">in</span> <span class="n">intersection_id_list</span><span class="p">:</span>
+        <span class="n">df_lane_intersection_id</span> <span class="o">=</span> <span class="n">df_lane</span><span class="p">[</span><span class="n">df_lane</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">intersection_id</span><span class="p">]</span>
+        <span class="n">df_lane_intersection_id</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">lane_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_lane_intersection_id</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;dict&quot;</span><span class="p">))</span>
+
+    <span class="c1"># reformat lane_dict to dataframe</span>
+    <span class="n">df_lane_formatted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">lane_dict</span><span class="p">)</span>
+    <span class="n">df_lane_formatted</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">intersection_id_list</span>
+    <span class="k">return</span> <span class="n">df_lane_formatted</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
