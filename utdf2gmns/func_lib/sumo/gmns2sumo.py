@@ -181,3 +181,51 @@ def generate_sumo_flow_xml(network_lanes: dict, fname: str = "network.flow.xml",
     with open(fname, "w") as f:
         f.write(xml_str)
     return True
+
+
+def generate_sumo_connection_xml(network_lanes: dict, fname: str = "network_connection.add.xml", **kwargs) -> bool:
+    """Generate the .con.xml file."""
+    root = ET.Element("connections")
+    # from= to= fromLane= toLane= via = tl = linkIndex = dir = "r" state = "o"
+
+    for int_id, direction_lanes in network_lanes.items():
+
+        # get all directions for the intersection
+        all_directions = list(direction_lanes.keys())
+
+        # group direction into 4 directions: N, S, E, W
+        North = [d for d in all_directions if "N" in d]
+        South = [d for d in all_directions if "S" in d]
+        East = [d for d in all_directions if "E" in d]
+        West = [d for d in all_directions if "W" in d]
+
+        for direction in direction_lanes:
+
+            # check whether the node have valid Up Node and Dest Node with volume greater than 0
+            up_node = direction_lanes[direction].get("Up Node")
+            dest_node = direction_lanes[direction].get("Dest Node")
+            lanes = direction_lanes[direction].get("Lanes", None)
+            shared = direction_lanes[direction].get("Shared", None)
+
+            """
+            Lanes: For each lane group, enter the number of lanes. Shared lanes count as through lanes,
+            unless there is no through movement, in which case LR lanes count as left lanes.
+        Shared: Enter code for sharing of this lane with adjacent movements.
+            This field specified which movements the through lanes are shared with.
+            Enter 0, 1, 2, 3 for No-sharing, shared-with-left, shared-with-right, shared-with-both;
+            This field is normally 0 for turning lane groups.
+            if a left shares with left2 or u-turns, the sharing is coded as 1.
+
+
+            """
+
+            flow_id = f"{up_node}_{dest_node}"
+
+            if up_node and dest_node > 0:
+
+                pass
+
+    xml_str = xml_prettify(root)
+    with open(fname, "w") as f:
+        f.write(xml_str)
+    return True

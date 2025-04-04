@@ -429,6 +429,12 @@ class UTDF2GMNS:
                                begin=begin_time,
                                end=end_time)
 
+        # create connection.add.xml file to specify the turning movement from Lanes
+        output_connection_add_file = os.path.join(sumo_output_dir, f"{xml_name}_connection.add.xml")
+        # generate_sumo_connection_add_xml(int_lanes, output_connection_add_file)
+        # update sumo net.xml file to include the connection.add.xml file
+
+
         # create .rou.xml file
         output_rou_file = os.path.join(sumo_output_dir, f"{xml_name}.rou.xml")
         output_rou_file = pf.path2linux(output_rou_file)

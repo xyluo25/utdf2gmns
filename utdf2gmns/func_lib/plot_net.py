@@ -80,7 +80,7 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
     return fig
 
 
-@pf.requires("keplergl", verbose=False)
+@pf.requires("keplergl", "geopandas", verbose=False)
 def plot_net_keplergl(net: object, *, save_fig: bool = False,
                       fig_name: str = "utdf_network.html") -> "keplergl.KeplerGl":
     """Plot network in keplergl
@@ -93,8 +93,11 @@ def plot_net_keplergl(net: object, *, save_fig: bool = False,
     Returns:
         keplergl.KeplerGl: the keplergl map
     """
-    pf.import_package("keplergl", verbose=False)  # ensure keplergl is imported
+    pf.import_package("keplergl", verbose=False)
+    pf.import_package("geopandas", verbose=False)  # ensure geopandas is imported
+    # ensure keplergl is imported
     import keplergl  # ensure keplergl is imported
+    import geopandas as gpd  # ensure geopandas is imported
 
     # check the extension of the fig_name
     if not fig_name.endswith('.html'):
