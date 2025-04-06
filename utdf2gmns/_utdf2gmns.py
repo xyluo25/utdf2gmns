@@ -20,11 +20,13 @@ from utdf2gmns.util_lib.pkg_utils import time_unit_converter, time_str_to_second
 from utdf2gmns.func_lib.utdf.geocoding_intersection import generate_intersection_coordinates
 from utdf2gmns.func_lib.utdf.read_utdf import (generate_intersection_from_Links, read_UTDF)
 from utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict import cvt_lane_df_to_dict
+
 from utdf2gmns.func_lib.gmns.geocoding_Nodes import update_node_from_one_intersection
 from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      cvt_link_df_to_dict)
 from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import cvt_utdf_to_signal_intersection
+
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
 from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
@@ -33,7 +35,9 @@ from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
 # SUMO related functions
 from utdf2gmns.func_lib.sumo.gmns2sumo import (generate_sumo_nod_xml,
                                                generate_sumo_edg_xml,
-                                               generate_sumo_flow_xml)
+                                               generate_sumo_flow_xml,
+                                               generate_sumo_connection_xml,
+                                               generate_sumo_loop_detector_add_xml)
 
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -62,7 +66,7 @@ class UTDF2GMNS:
             region_name (str): the metropolitan region/place the utdf file represent. Defaults to "".
             verbose (bool): whether to printout processing message. Defaults to False.
         """
-
+        print("Initializing UTDF2GMNS...")
         self._utdf_filename = pf.path2linux(os.path.abspath(utdf_filename))
         self._utdf_region_name = region_name
         self._verbose = verbose
@@ -140,7 +144,7 @@ class UTDF2GMNS:
         Returns:
             bool: whether the geocoding intersections is successful.
         """
-
+        print("\nGeocoding UTDF intersections...")
         # check if single coordinate is provided and validate it's value
         if single_intersection_coord:
             if not {"INTID", "x_coord", "y_coord"}.issubset(set(single_intersection_coord.keys())):
@@ -188,11 +192,12 @@ class UTDF2GMNS:
                 )
 
         # update Nodes from single_intersection
-        node_df = update_node_from_one_intersection(single_intersection,
-                                                    self._utdf_dict.get("Nodes"),
-                                                    self.network_unit)
+        node_dict = update_node_from_one_intersection(single_intersection,
+                                                      self._utdf_dict.get("Nodes"),
+                                                      self.network_unit)
 
-        self.network_nodes = node_df
+        self.network_nodes = node_dict
+        self._utdf_dict["network_nodes"] = node_dict
         self._is_geocoding_intersections = True
         return True
 
@@ -244,6 +249,7 @@ class UTDF2GMNS:
     def utdf_to_gmns_signal_ints(self, *, output_dir: str = "") -> bool:
         """ Empower Sigma-X engine to generate each signal intersection with visualization  """
 
+        print("\nRunning Sigma-X engine... \n")
         # print out approximate time for processing
         total_seconds = 3.5 * len(self.network_int_ids_signalized)
         print("  :Processing each signal intersection, please wait...")
@@ -271,7 +277,7 @@ class UTDF2GMNS:
         Returns:
             bool: whether the conversion is successful.
         """
-
+        print("\nConverting UTDF to GMNS...")
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
         gmns_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_gmns")
@@ -323,10 +329,10 @@ class UTDF2GMNS:
         print(f"  :Successfully saved GMNS(csv) data to \n    {gmns_output_dir}.")
         return True
 
-    def utdf_to_sumo(self, *, output_dir: str = "", sumo_name: str = "",
+    def utdf_to_sumo(self, *, output_dir: str = "", sim_name: str = "",
                      show_warning_message: bool = False,
                      disable_U_turn: bool = True,
-                     is_link_polygon: bool = False,
+                     sim_start_time: int = 0,
                      sim_duration: int = 3600  # 1 hour
                      ) -> bool:
         """Convert UTDF to SUMO and save networks to the output directory
@@ -334,15 +340,26 @@ class UTDF2GMNS:
         Args:
             out_dir (str): the output directory for the generated sumo files.
                 Defaults to "". If not provided, the output directory is the same as the UTDF file.
-            sumo_name (str): name the generated sumo files. Defaults to "".
+
+            sim_name (str): name the generated sumo files. Defaults to "".
                 If not provided, the name is "utdf_to_sumo".
+
             show_warning_message (bool): whether to show warning message during the net processing.
                 Defaults to False.
+
+            disable_U_turn (bool): whether to remove U-turns in the SUMO network.
+                Defaults to True.
+
+            sim_start_time (int): the start time of the simulation in seconds.
+                The program will extract start time from UTDF file, if not provided, will use the default value of 0.
+
+            sim_duration (int): the duration of the simulation in seconds.
+                Defaults to 3600 seconds (1 hour).
 
         Returns:
             bool: whether the conversion is successful.
         """
-
+        print("\nConverting UTDF to SUMO using GMNS standard...")
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
         sumo_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_sumo")
@@ -355,21 +372,38 @@ class UTDF2GMNS:
         if not hasattr(self, "network_nodes"):
             raise Exception("Please geocode intersections first: net.geocode_utdf_intersections()")
 
-        if not hasattr(self, "network_links"):
-            self.create_gmns_links(is_link_polygon=is_link_polygon)
+        # if not hasattr(self, "network_links"):
+        #     self.create_gmns_links(is_link_polygon=is_link_polygon)
+        #     print()
 
-        xml_name = sumo_name or "utdf_to_sumo"
+        xml_name = sim_name or "utdf_to_sumo"
 
         # create SUMO .nod.xml file
         output_node_file = os.path.join(sumo_output_dir, f"{xml_name}.nod.xml")
         output_node_file = pf.path2linux(output_node_file)
-        generate_sumo_nod_xml(self.network_nodes, output_node_file)
+        generate_sumo_nod_xml(self._utdf_dict, output_node_file)
+        print(f"  :generated SUMO node xml file: {xml_name}.nod.xml")
 
         # create SUMO .edg.xml file
-        int_links = cvt_link_df_to_dict(self._utdf_dict.get("Links"))
         output_edge_file = os.path.join(sumo_output_dir, f"{xml_name}.edg.xml")
         output_edge_file = pf.path2linux(output_edge_file)
-        generate_sumo_edg_xml(int_links, output_edge_file)
+        generate_sumo_edg_xml(self._utdf_dict, self.network_unit, output_edge_file)
+        print(f"  :generated SUMO edge xml file: {xml_name}.edg.xml")
+
+        # Create SUMO .con.xml file
+        output_con_file = os.path.join(sumo_output_dir, f"{xml_name}.con.xml")
+        output_con_file = pf.path2linux(output_con_file)
+        generate_sumo_connection_xml(self._utdf_dict, output_con_file)
+        print(f"  :generated SUMO connection xml file: {xml_name}.con.xml")
+
+        # Create SUMO loop detector in .add.xml file
+        output_add_file = os.path.join(sumo_output_dir, f"{xml_name}.add.xml")
+        output_add_file = pf.path2linux(output_add_file)
+        generate_sumo_loop_detector_add_xml(self._utdf_dict, self.network_unit,
+                                            detector_type="E1",
+                                            add_fname=output_add_file,
+                                            sim_output_fname="")
+        print(f"  :generated SUMO loop detector xml file: {xml_name}.add.xml")
 
         # convert .nod.xml and .edg.xml files to .net.xml file
         output_net_file = os.path.join(sumo_output_dir, f"{xml_name}.net.xml")
@@ -379,7 +413,10 @@ class UTDF2GMNS:
             result = subprocess.run(["netconvert",
                                      f"--node-files={output_node_file}",
                                      f"--edge-files={output_edge_file}",
-                                     f"--output-file={output_net_file}"],
+                                     f"--connection-files={output_con_file}",
+                                     f"--output-file={output_net_file}",
+                                     "--no-warnings=true",
+                                     "--proj.utm"],
                                     cwd=sumo_output_dir,
                                     capture_output=True,
                                     text=True)
@@ -396,7 +433,10 @@ class UTDF2GMNS:
                 result = subprocess.run([nc_filename,
                                          f"--node-files={output_node_file}",
                                          f"--edge-files={output_edge_file}",
-                                         f"--output-file={output_net_file}"],
+                                         f"--connection-files={output_con_file}",
+                                         f"--output-file={output_net_file}",
+                                         "--no-warnings=true",
+                                         "--proj.utm"],
                                         cwd=sumo_output_dir,
                                         capture_output=True,
                                         text=True)
@@ -408,8 +448,9 @@ class UTDF2GMNS:
 
             print(f"  :Successfully generated SUMO network to \n    {sumo_output_dir}.")
             if show_warning_message:
-                print("Warning message in generating SUMO network:")
-                print(f"{result.stderr}")
+                pass
+                # print("Warning message in generating SUMO network:")
+                # print(f"{result.stderr}")
         except Exception as e:
             print(f"  :Error in generating SUMO network: {e}")
             return False
@@ -419,28 +460,23 @@ class UTDF2GMNS:
         print(f"  :Successfully updated SUMO signal xml to \n    {sumo_output_dir}.")
 
         # create SUMO .flow.xml file
-        int_lanes = cvt_lane_df_to_dict(self._utdf_dict.get("Lanes"))
         output_flow_file = os.path.join(sumo_output_dir, f"{xml_name}.flow.xml")
         output_flow_file = pf.path2linux(output_flow_file)
-        begin = self.network_settings.get("ScenarioTime")
-        begin_time = time_str_to_seconds(begin, verbose=False)
+        if begin := self.network_settings.get("ScenarioTime"):
+            begin_time = time_str_to_seconds(begin, verbose=False)
+        else:
+            begin_time = sim_start_time
         end_time = begin_time + sim_duration
-        generate_sumo_flow_xml(int_lanes, output_flow_file,
+        generate_sumo_flow_xml(self._utdf_dict, output_flow_file,
                                begin=begin_time,
                                end=end_time)
-
-        # create connection.add.xml file to specify the turning movement from Lanes
-        output_connection_add_file = os.path.join(sumo_output_dir, f"{xml_name}_connection.add.xml")
-        # generate_sumo_connection_add_xml(int_lanes, output_connection_add_file)
-        # update sumo net.xml file to include the connection.add.xml file
-
 
         # create .rou.xml file
         output_rou_file = os.path.join(sumo_output_dir, f"{xml_name}.rou.xml")
         output_rou_file = pf.path2linux(output_rou_file)
 
         try:
-            print("  :Generating SUMO .rou.xml file from UTDF lanes...")
+            print("\n  :Generating SUMO .rou.xml file from UTDF lanes...")
             jtrrouter_fname = Path(__file__).parent / "engine" / "jtrrouter.exe"
             jtrrouter_fname = pf.path2linux(jtrrouter_fname)
             result = subprocess.run([jtrrouter_fname,
@@ -450,7 +486,7 @@ class UTDF2GMNS:
                                      f"--output-file={output_rou_file}",
                                      "--remove-loops=true",
                                      "--no-internal-links=false",
-                                     "--no-warnings=true",],
+                                     "--no-warnings=true"],
                                     cwd=sumo_output_dir,
                                     capture_output=True,
                                     text=True)
@@ -482,7 +518,9 @@ class UTDF2GMNS:
 
         # remove U-turns in the SUMO network
         if disable_U_turn:
+            print()
             remove_sumo_U_turn(output_net_file)
+            print()
 
         # create .sumocfg file for the generated network
         # will generate default .rou.xml file for the network
@@ -496,6 +534,7 @@ class UTDF2GMNS:
             f'    <input>\n'
             f'        <net-file value="{xml_name}.net.xml"/>\n'
             f'        <route-files value="{xml_name}.rou.xml"/>\n'
+            f'        <additional-files value="{xml_name}.add.xml"/>\n'
             f'    </input>\n'
             f'    <output>\n'
             f'        <edgedata-output value="EdgeData.xml"/>\n'

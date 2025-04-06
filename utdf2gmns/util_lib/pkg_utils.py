@@ -5,6 +5,7 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
+import math
 from math import sin, cos, sqrt, atan2, radians
 from datetime import datetime
 import pyufunc as pf
@@ -32,6 +33,44 @@ def calculate_point2point_distance_in_km(point1: list, point2: list) -> float:
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return R * c
+
+
+def point_on_line(x1, y1, x2, y2, distance):
+    """
+    Calculate the (x, y) coordinates on the line from (x1, y1) to (x2, y2)
+    at a given distance from the starting point (x1, y1).
+
+    Parameters:
+        x1, y1 : float
+            Coordinates of the starting point.
+        x2, y2 : float
+            Coordinates of the ending point.
+        distance : float
+            The distance from the starting point at which to find the point.
+
+    Returns:
+        (x, y) : tuple of floats
+            The coordinates of the point along the line.
+    """
+    # Calculate the difference in coordinates
+    dx = x2 - x1
+    dy = y2 - y1
+
+    # Calculate the total length of the line segment
+    line_length = math.sqrt(dx**2 + dy**2)
+
+    # If the points are identical, return the starting point
+    if line_length == 0:
+        return x1, y1
+
+    # Determine the ratio of the given distance to the total length
+    ratio = distance / line_length
+
+    # Calculate the new coordinates using the ratio
+    x = x1 + ratio * dx
+    y = y1 + ratio * dy
+
+    return x, y
 
 
 def time_unit_converter(value: float, from_unit: str, to_unit: str, verbose: bool = True) -> float:

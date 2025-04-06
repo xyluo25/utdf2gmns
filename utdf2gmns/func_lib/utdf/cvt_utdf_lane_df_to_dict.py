@@ -23,4 +23,13 @@ def cvt_lane_df_to_dict(df_lane: pd.DataFrame) -> dict:
         del df_lane_int['INTID']
 
         lane_dict[int_id] = df_lane_int.to_dict('dict')
+
+        empty_key = []
+        # Remove invalid turning movement
+        for key in lane_dict[int_id].keys():
+            if not lane_dict[int_id][key]['Up Node']:  # Up Node is empty
+                empty_key.append(key)
+        for key in empty_key:
+            del lane_dict[int_id][key]
+
     return lane_dict

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <input>
+        <net-file value="utdf_to_sumo.net.xml"/>
+        <route-files value="utdf_to_sumo.rou.xml"/>
+        <additional-files value="utdf_to_sumo.add.xml"/>
+    </input>
+    <output>
+        <edgedata-output value="EdgeData.xml"/>
+    </output>
+    <time>
+        <begin value="36840.0"/>
+        <end value="44040.0"/>
+        <step-length value="1"/>
+    </time>
+</configuration>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-04-02 02:33:38.205564 by randomTrips.py v1_21_0+0000-d7b3b481c43
+<!-- generated on 2025-04-06 02:16:52.100572 by randomTrips.py v1_21_0+0000-d7b3b481c43
 <configuration>
     <net-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.net.xml"/>
     <route-file value="c:/Users/xyluo25/anaconda3_workspace/001_GitHub/utdf2gmns/datasets/data_Tempe_network/utdf_to_sumo/utdf_to_sumo.rou.xml"/>

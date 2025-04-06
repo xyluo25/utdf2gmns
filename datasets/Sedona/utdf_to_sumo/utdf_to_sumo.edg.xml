@@ -1,0 +1,190 @@
+<?xml version="1.0" ?>
+<edges>
+    <edge id="7_1" from="7" to="1" numLanes="1" speed="13.4112"/>
+    <edge id="3_2" from="3" to="2" numLanes="2" speed="13.4112"/>
+    <edge id="5_3" from="5" to="3" numLanes="2" speed="13.4112">
+        <lane index="0" length="104.2416" speed="13.4112"/>
+        <lane index="1" length="104.2416" speed="13.4112"/>
+    </edge>
+    <edge id="4_3" from="4" to="3" numLanes="2" speed="13.4112">
+        <lane index="0" length="74.9808" speed="13.4112"/>
+        <lane index="1" length="74.9808" speed="13.4112"/>
+    </edge>
+    <edge id="7_3" from="7" to="3" numLanes="4" speed="15.6464">
+        <lane index="0" length="33.528" speed="15.6464"/>
+        <lane index="1" length="247.8024" speed="15.6464"/>
+        <lane index="2" length="247.8024" speed="15.6464"/>
+        <lane index="3" length="79.248" speed="15.6464"/>
+    </edge>
+    <edge id="2_3" from="2" to="3" numLanes="4" speed="15.6464">
+        <lane index="0" length="60.96" speed="15.6464"/>
+        <lane index="1" length="206.9592" speed="15.6464"/>
+        <lane index="2" length="206.9592" speed="15.6464"/>
+        <lane index="3" length="106.68" speed="15.6464"/>
+    </edge>
+    <edge id="3_4" from="3" to="4" numLanes="1" speed="13.4112"/>
+    <edge id="3_5" from="3" to="5" numLanes="1" speed="13.4112"/>
+    <edge id="13_6" from="13" to="6" numLanes="2" speed="13.4112">
+        <lane index="0" length="73.152" speed="13.4112"/>
+        <lane index="1" length="73.152" speed="13.4112"/>
+    </edge>
+    <edge id="32_6" from="32" to="6" numLanes="2" speed="13.4112">
+        <lane index="0" length="88.39200000000001" speed="13.4112"/>
+        <lane index="1" length="88.39200000000001" speed="13.4112"/>
+    </edge>
+    <edge id="31_6" from="31" to="6" numLanes="2" speed="13.4112">
+        <lane index="0" length="95.7072" speed="13.4112"/>
+        <lane index="1" length="95.7072" speed="13.4112"/>
+    </edge>
+    <edge id="1_7" from="1" to="7" numLanes="1" speed="13.4112">
+        <lane index="0" length="39.3192" speed="13.4112"/>
+    </edge>
+    <edge id="8_7" from="8" to="7" numLanes="2" speed="13.4112">
+        <lane index="0" length="58.52160000000001" speed="13.4112"/>
+        <lane index="1" length="36.576" speed="13.4112"/>
+    </edge>
+    <edge id="10_7" from="10" to="7" numLanes="3" speed="15.6464">
+        <lane index="0" length="696.7728000000001" speed="15.6464"/>
+        <lane index="1" length="696.7728000000001" speed="15.6464"/>
+        <lane index="2" length="64.00800000000001" speed="15.6464"/>
+    </edge>
+    <edge id="3_7" from="3" to="7" numLanes="3" speed="15.6464">
+        <lane index="0" length="247.8024" speed="15.6464"/>
+        <lane index="1" length="247.8024" speed="15.6464"/>
+        <lane index="2" length="71.628" speed="15.6464"/>
+    </edge>
+    <edge id="7_8" from="7" to="8" numLanes="1" speed="13.4112"/>
+    <edge id="18_9" from="18" to="9" numLanes="3" speed="13.4112">
+        <lane index="0" length="36.576" speed="13.4112"/>
+        <lane index="1" length="148.7424" speed="13.4112"/>
+        <lane index="2" length="42.672000000000004" speed="13.4112"/>
+    </edge>
+    <edge id="17_9" from="17" to="9" numLanes="3" speed="13.4112">
+        <lane index="0" length="60.96" speed="13.4112"/>
+        <lane index="1" length="98.7552" speed="13.4112"/>
+        <lane index="2" length="60.96" speed="13.4112"/>
+    </edge>
+    <edge id="14_9" from="14" to="9" numLanes="4" speed="15.6464">
+        <lane index="0" length="65.532" speed="15.6464"/>
+        <lane index="1" length="409.6512" speed="15.6464"/>
+        <lane index="2" length="409.6512" speed="15.6464"/>
+        <lane index="3" length="121.92" speed="15.6464"/>
+    </edge>
+    <edge id="10_9" from="10" to="9" numLanes="4" speed="15.6464">
+        <lane index="0" length="70.104" speed="15.6464"/>
+        <lane index="1" length="432.20640000000003" speed="15.6464"/>
+        <lane index="2" length="432.20640000000003" speed="15.6464"/>
+        <lane index="3" length="100.584" speed="15.6464"/>
+    </edge>
+    <edge id="12_10" from="12" to="10" numLanes="2" speed="13.4112">
+        <lane index="0" length="78.3336" speed="13.4112"/>
+        <lane index="1" length="48.768" speed="13.4112"/>
+    </edge>
+    <edge id="11_10" from="11" to="10" numLanes="2" speed="13.4112">
+        <lane index="0" length="90.22080000000001" speed="13.4112"/>
+        <lane index="1" length="36.576" speed="13.4112"/>
+    </edge>
+    <edge id="9_10" from="9" to="10" numLanes="3" speed="15.6464">
+        <lane index="0" length="432.20640000000003" speed="15.6464"/>
+        <lane index="1" length="432.20640000000003" speed="15.6464"/>
+        <lane index="2" length="85.34400000000001" speed="15.6464"/>
+    </edge>
+    <edge id="7_10" from="7" to="10" numLanes="3" speed="15.6464">
+        <lane index="0" length="696.7728000000001" speed="15.6464"/>
+        <lane index="1" length="696.7728000000001" speed="15.6464"/>
+        <lane index="2" length="60.96" speed="15.6464"/>
+    </edge>
+    <edge id="10_11" from="10" to="11" numLanes="1" speed="13.4112"/>
+    <edge id="10_12" from="10" to="12" numLanes="1" speed="13.4112"/>
+    <edge id="6_13" from="6" to="13" speed="13.4112"/>
+    <edge id="16_14" from="16" to="14" numLanes="2" speed="13.4112">
+        <lane index="0" length="115.21440000000001" speed="13.4112"/>
+        <lane index="1" length="24.384" speed="13.4112"/>
+    </edge>
+    <edge id="15_14" from="15" to="14" numLanes="3" speed="13.4112">
+        <lane index="0" length="99.06" speed="13.4112"/>
+        <lane index="1" length="99.06" speed="13.4112"/>
+        <lane index="2" length="24.384" speed="13.4112"/>
+    </edge>
+    <edge id="20_14" from="20" to="14" numLanes="3" speed="15.6464">
+        <lane index="0" length="453.23760000000004" speed="15.6464"/>
+        <lane index="1" length="453.23760000000004" speed="15.6464"/>
+        <lane index="2" length="67.056" speed="15.6464"/>
+    </edge>
+    <edge id="9_14" from="9" to="14" numLanes="4" speed="15.6464">
+        <lane index="0" length="176.78400000000002" speed="15.6464"/>
+        <lane index="1" length="409.6512" speed="15.6464"/>
+        <lane index="2" length="409.6512" speed="15.6464"/>
+        <lane index="3" length="76.2" speed="15.6464"/>
+    </edge>
+    <edge id="14_15" from="14" to="15" numLanes="1" speed="13.4112"/>
+    <edge id="14_16" from="14" to="16" numLanes="1" speed="13.4112"/>
+    <edge id="9_17" from="9" to="17" numLanes="1" speed="13.4112"/>
+    <edge id="9_18" from="9" to="18" numLanes="1" speed="13.4112"/>
+    <edge id="21_20" from="21" to="20" numLanes="2" speed="13.4112">
+        <lane index="0" length="39.624" speed="13.4112"/>
+        <lane index="1" length="19.812" speed="13.4112"/>
+    </edge>
+    <edge id="22_20" from="22" to="20" numLanes="2" speed="13.4112">
+        <lane index="0" length="92.6592" speed="13.4112"/>
+        <lane index="1" length="15.24" speed="13.4112"/>
+    </edge>
+    <edge id="24_20" from="24" to="20" numLanes="3" speed="15.6464">
+        <lane index="0" length="1024.1280000000002" speed="15.6464"/>
+        <lane index="1" length="1024.1280000000002" speed="15.6464"/>
+        <lane index="2" length="70.104" speed="15.6464"/>
+    </edge>
+    <edge id="14_20" from="14" to="20" numLanes="4" speed="15.6464">
+        <lane index="0" length="121.92" speed="15.6464"/>
+        <lane index="1" length="453.23760000000004" speed="15.6464"/>
+        <lane index="2" length="453.23760000000004" speed="15.6464"/>
+        <lane index="3" length="83.82000000000001" speed="15.6464"/>
+    </edge>
+    <edge id="20_21" from="20" to="21" numLanes="1" speed="13.4112"/>
+    <edge id="20_22" from="20" to="22" numLanes="1" speed="13.4112"/>
+    <edge id="26_24" from="26" to="24" numLanes="2" speed="13.4112">
+        <lane index="0" length="85.64880000000001" speed="13.4112"/>
+        <lane index="1" length="45.72" speed="13.4112"/>
+    </edge>
+    <edge id="25_24" from="25" to="24" numLanes="2" speed="13.4112">
+        <lane index="0" length="92.3544" speed="13.4112"/>
+        <lane index="1" length="97.536" speed="13.4112"/>
+    </edge>
+    <edge id="31_24" from="31" to="24" numLanes="3" speed="13.4112">
+        <lane index="0" length="1734.3120000000001" speed="13.4112"/>
+        <lane index="1" length="1734.3120000000001" speed="13.4112"/>
+        <lane index="2" length="76.2" speed="13.4112"/>
+    </edge>
+    <edge id="20_24" from="20" to="24" numLanes="4" speed="13.4112">
+        <lane index="0" length="45.72" speed="13.4112"/>
+        <lane index="1" length="1024.1280000000002" speed="13.4112"/>
+        <lane index="2" length="1024.1280000000002" speed="13.4112"/>
+        <lane index="3" length="106.68" speed="13.4112"/>
+    </edge>
+    <edge id="24_25" from="24" to="25" numLanes="1" speed="13.4112"/>
+    <edge id="24_26" from="24" to="26" numLanes="1" speed="13.4112"/>
+    <edge id="31_30" from="31" to="30" numLanes="2" speed="13.4112"/>
+    <edge id="33_31" from="33" to="31" numLanes="3" speed="13.4112">
+        <lane index="0" length="33.528" speed="13.4112"/>
+        <lane index="1" length="116.43360000000001" speed="13.4112"/>
+        <lane index="2" length="33.528" speed="13.4112"/>
+    </edge>
+    <edge id="6_31" from="6" to="31" numLanes="2" speed="13.4112">
+        <lane index="0" length="95.7072" speed="13.4112"/>
+        <lane index="1" length="95.7072" speed="13.4112"/>
+    </edge>
+    <edge id="30_31" from="30" to="31" numLanes="4" speed="13.4112">
+        <lane index="0" length="91.44" speed="13.4112"/>
+        <lane index="1" length="307.5432" speed="13.4112"/>
+        <lane index="2" length="307.5432" speed="13.4112"/>
+        <lane index="3" length="94.488" speed="13.4112"/>
+    </edge>
+    <edge id="24_31" from="24" to="31" numLanes="4" speed="13.4112">
+        <lane index="0" length="99.06" speed="13.4112"/>
+        <lane index="1" length="1734.3120000000001" speed="13.4112"/>
+        <lane index="2" length="1734.3120000000001" speed="13.4112"/>
+        <lane index="3" length="99.06" speed="13.4112"/>
+    </edge>
+    <edge id="6_32" from="6" to="32" numLanes="2" speed="13.4112"/>
+    <edge id="31_33" from="31" to="33" numLanes="1" speed="13.4112"/>
+</edges>
