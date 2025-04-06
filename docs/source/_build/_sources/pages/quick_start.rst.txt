@@ -2,6 +2,9 @@
 Quick Start Guide
 =================
 
+Quick Python Example
+====================
+
 .. note::
     - This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
     - The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
@@ -42,11 +45,30 @@ Quick Start Guide
         # Step 6 (optional): visualize the network
         # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
 
+Design Framework
+================
+
 The Design Framework of the package is based on the following principles:
 
 .. image:: ../_static/framework.png
     :width: 100%
     :alt: utdf2gmns framework
+
+
+Illustration of Selected Intersection
+=====================================
+
+We select one intersection from the Tempe City, AZ, the name if intersection is: University Dr & Mill Ave.
+We show to intersection in details:
+    * Google street view
+    * Google 3D view
+    * GMNS view (Keplergl or Matplotlib, ect...)
+    * SUMO view
+
+.. image:: ../_static/plot_university_mill_framework.png
+    :width: 100%
+    :alt: tempe intersection
+
 
 .. _`PyPI`: https://pypi.org/project/osm2gmns
 .. _`pip`: https://packaging.python.org/key_projects/#pip

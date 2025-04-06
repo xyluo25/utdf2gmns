@@ -46,8 +46,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
@@ -94,6 +94,7 @@
 <span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
 <span class="c1">##############################################################</span>
 
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">atan2</span><span class="p">,</span> <span class="n">radians</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
@@ -124,6 +125,44 @@
 
     <span class="k">return</span> <span class="n">R</span> <span class="o">*</span> <span class="n">c</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">point_on_line</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the (x, y) coordinates on the line from (x1, y1) to (x2, y2)</span>
+<span class="sd">    at a given distance from the starting point (x1, y1).</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        x1, y1 : float</span>
+<span class="sd">            Coordinates of the starting point.</span>
+<span class="sd">        x2, y2 : float</span>
+<span class="sd">            Coordinates of the ending point.</span>
+<span class="sd">        distance : float</span>
+<span class="sd">            The distance from the starting point at which to find the point.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (x, y) : tuple of floats</span>
+<span class="sd">            The coordinates of the point along the line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Calculate the difference in coordinates</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span>
+
+    <span class="c1"># Calculate the total length of the line segment</span>
+    <span class="n">line_length</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># If the points are identical, return the starting point</span>
+    <span class="k">if</span> <span class="n">line_length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span>
+
+    <span class="c1"># Determine the ratio of the given distance to the total length</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">/</span> <span class="n">line_length</span>
+
+    <span class="c1"># Calculate the new coordinates using the ratio</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">dx</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">dy</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
 
 <div class="viewcode-block" id="time_unit_converter">

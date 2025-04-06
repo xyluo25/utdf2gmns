@@ -46,8 +46,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
@@ -114,6 +114,15 @@
         <span class="k">del</span> <span class="n">df_lane_int</span><span class="p">[</span><span class="s1">&#39;INTID&#39;</span><span class="p">]</span>
 
         <span class="n">lane_dict</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_lane_int</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;dict&#39;</span><span class="p">)</span>
+
+        <span class="n">empty_key</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Remove invalid turning movement</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lane_dict</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">lane_dict</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;Up Node&#39;</span><span class="p">]:</span>  <span class="c1"># Up Node is empty</span>
+                <span class="n">empty_key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">empty_key</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">lane_dict</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+
     <span class="k">return</span> <span class="n">lane_dict</span></div>
 
 </pre></div>

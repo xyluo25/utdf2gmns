@@ -46,8 +46,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
@@ -174,7 +174,7 @@
 
 <div class="viewcode-block" id="plot_net_keplergl">
 <a class="viewcode-back" href="../../../pages/api/utdf2gmns.func_lib.plot_net_keplergl.html#utdf2gmns.func_lib.plot_net_keplergl">[docs]</a>
-<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;keplergl&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;keplergl&quot;</span><span class="p">,</span> <span class="s2">&quot;geopandas&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">plot_net_keplergl</span><span class="p">(</span><span class="n">net</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">save_fig</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                       <span class="n">fig_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utdf_network.html&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;keplergl.KeplerGl&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot network in keplergl</span>
@@ -187,8 +187,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        keplergl.KeplerGl: the keplergl map</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;keplergl&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure keplergl is imported</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;keplergl&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;geopandas&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure geopandas is imported</span>
+    <span class="c1"># ensure keplergl is imported</span>
     <span class="kn">import</span> <span class="nn">keplergl</span>  <span class="c1"># ensure keplergl is imported</span>
+    <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>  <span class="c1"># ensure geopandas is imported</span>
 
     <span class="c1"># check the extension of the fig_name</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fig_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.html&#39;</span><span class="p">):</span>
