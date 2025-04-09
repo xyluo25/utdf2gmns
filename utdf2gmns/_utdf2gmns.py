@@ -101,8 +101,9 @@ class UTDF2GMNS:
 
         # assign to instance variable
         self._utdf_dict = utdf_dict_data
-        self.network_int_ids = set(self._utdf_dict.get("Nodes")["INTID"].tolist())
-        self.network_int_ids_signalized = set(self._utdf_dict.get("Timeplans")["INTID"].tolist())
+        self.network_int_ids = [str(int_id) for int_id in set(self._utdf_dict.get("Nodes")["INTID"].tolist())]
+        self.network_int_ids_signalized = [str(int_id) for int_id in set(
+            self._utdf_dict.get("Timeplans")["INTID"].tolist())]
 
         # initialize the instance variables
         self._is_geocoding_intersections = False
@@ -161,7 +162,7 @@ class UTDF2GMNS:
 
             # check if id is in the Nodes
             int_id = int(single_intersection_coord.get("INTID"))
-            if int_id not in self.network_intersection_ids:
+            if str(int_id) not in self.network_int_ids:
                 raise ValueError(f"single intersection: {int_id} not in the UTDF Nodes!")
 
             single_intersection = single_intersection_coord
