@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
@@ -46,8 +46,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
@@ -96,19 +96,19 @@
 <span class="sd">##############################################################</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.read_sumo</span> <span class="kn">import</span> <span class="n">ReadSUMO</span>
-<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.signal_intersections</span> <span class="kn">import</span> <span class="n">parse_signal_control</span>
-<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.signal_mapping</span> <span class="kn">import</span> <span class="p">(</span><span class="n">direction_mapping</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.read_sumo</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReadSUMO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.signal_intersections</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_signal_control</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.signal_mapping</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">direction_mapping</span><span class="p">,</span>
                                                     <span class="n">build_linkDuration</span><span class="p">,</span>
                                                     <span class="n">extract_dir_info</span><span class="p">,</span>
                                                     <span class="n">create_SignalTimingPlan</span><span class="p">,</span>
                                                     <span class="n">process_pedestrian_crossing</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span> <span class="kn">import</span> <span class="n">read_UTDF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_UTDF</span>
 
 
 <div class="viewcode-block" id="update_sumo_signal_from_utdf">
 <a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.update_sumo_signal_from_utdf.html#utdf2gmns.func_lib.update_sumo_signal_from_utdf">[docs]</a>
-<span class="k">def</span> <span class="nf">update_sumo_signal_from_utdf</span><span class="p">(</span><span class="n">sumo_net_xml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">utdf_dict_or_fname</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_sumo_signal_from_utdf</span><span class="p">(</span><span class="n">sumo_net_xml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">utdf_dict_or_fname</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;update sumo signal (.net.xml) from UTDF signal information</span>
 
 <span class="sd">    Args:</span>

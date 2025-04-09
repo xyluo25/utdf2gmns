@@ -33,8 +33,8 @@ sys.setrecursionlimit(5000)
 # General information about the project.
 project = "utdf2gmns"  # Name of the project to document, e.g. 'utdf2gmns'
 author = 'Xiangyong Luo'
-copyright = f'2023 - {datetime.datetime.now().year} Xiangyong Luo'
-version = "1.0.2"
+copyright = f'2022 - {datetime.datetime.now().year} Xiangyong Luo'
+version = "1.1.2"
 release = version
 language = "en"
 

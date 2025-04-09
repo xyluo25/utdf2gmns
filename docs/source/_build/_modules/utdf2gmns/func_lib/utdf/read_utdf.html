@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.utdf.read_utdf &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
@@ -46,8 +46,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
@@ -94,11 +94,11 @@
 <span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
 <span class="c1">##############################################################</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">pyufunc</span> <span class="kn">import</span> <span class="n">func_running_time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyufunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">func_running_time</span>
 
-<span class="kn">from</span> <span class="nn">utdf2gmns.util_lib.pkg_settings</span> <span class="kn">import</span> <span class="n">utdf_categories</span><span class="p">,</span> <span class="n">utdf_link_col_names</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.util_lib.pkg_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">utdf_categories</span><span class="p">,</span> <span class="n">utdf_link_col_names</span>
 
 <span class="c1"># avoid the warning of &quot;A value is trying to be set on a copy of a slice from a DataFrame&quot;</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># default=&#39;warn&#39;</span>
@@ -107,7 +107,7 @@
 <div class="viewcode-block" id="read_UTDF">
 <a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.read_UTDF.html#utdf2gmns.func_lib.read_UTDF">[docs]</a>
 <span class="nd">@func_running_time</span>
-<span class="k">def</span> <span class="nf">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;read the utdf.csv file and return a dictionary of dataframes</span>
 
 <span class="sd">    Args:</span>
@@ -224,7 +224,7 @@
 
 
 <span class="nd">@func_running_time</span>
-<span class="k">def</span> <span class="nf">generate_intersection_from_Links</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">city_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_intersection_from_Links</span><span class="p">(</span><span class="n">df_link</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">city_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;generate_intersection_data_from_utdf: convert utdf links to intersection</span>
 
 <span class="sd">    Args:</span>
@@ -307,7 +307,7 @@
 
 
 <span class="c1"># combine phase and timeplans data into one dataframe (intersection id based)</span>
-<span class="k">def</span> <span class="nf">spanning_phase_timeplans_data</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">isSimpleCol</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">spanning_phase_timeplans_data</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">isSimpleCol</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;spanning_phase_timeplans_data: combine phase and timeplans data into one dataframe (intersection id based)</span>
 
 <span class="sd">    Args:</span>
@@ -383,7 +383,7 @@
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">final_spanned_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">reformat_lane_dataframe</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reformat_lane_dataframe</span><span class="p">(</span><span class="n">utdf_dict_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;reformat the utdf_lane dataframe to a new dataframe</span>
 
 <span class="sd">    Args:</span>

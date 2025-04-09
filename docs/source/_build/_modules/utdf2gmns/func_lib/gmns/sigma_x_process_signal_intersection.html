@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
@@ -94,21 +94,21 @@
 <span class="sd"># Author/Copyright: Mr. Xiangyong Luo</span>
 <span class="sd">##############################################################</span>
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
-<span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyufunc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pf</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">xlwings</span> <span class="k">as</span> <span class="nn">xw</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xlwings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xw</span>
 
 
 <div class="viewcode-block" id="cvt_utdf_to_signal_intersection">
 <a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.cvt_utdf_to_signal_intersection.html#utdf2gmns.func_lib.cvt_utdf_to_signal_intersection">[docs]</a>
 <span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;xlwings&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">cvt_utdf_to_signal_intersection</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cvt_utdf_to_signal_intersection</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utilize sigma-X engine to process each signal intersection from Synchro UTDF file</span>
 <span class="sd">    And save each signal intersection into a separate GMNS file.</span>
 
@@ -133,7 +133,7 @@
 <span class="sd">        bool: True if success, False otherwise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;xlwings&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure xlwings is imported</span>
-    <span class="kn">import</span> <span class="nn">xlwings</span> <span class="k">as</span> <span class="nn">xw</span>  <span class="c1"># ensure xlwings is imported</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xlwings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xw</span>  <span class="c1"># ensure xlwings is imported</span>
 
     <span class="c1"># TDD Test-Driven Development</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>

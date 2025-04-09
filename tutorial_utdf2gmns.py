@@ -10,11 +10,8 @@ import utdf2gmns as ug
 
 if __name__ == "__main__":
 
-    region_name = " Bullhead City, AZ"
-    path_utdf = r"datasets/data_bullhead_seg4\UTDF.csv"
-
-    # region_name = " Tempe, AZ"
-    # path_utdf = r"datasets/data_Tempe_network\UTDF.csv"
+    region_name = " Tempe, AZ"
+    path_utdf = r"datasets/data_Tempe_network\UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
@@ -24,7 +21,7 @@ if __name__ == "__main__":
 
     # Step 3: Geocode intersection
     #   if user manually provide single intersection coordinate, such as:
-    #   single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
+    #   single_coord={"INTID": "1", "x_coord": -111.963073214095, "y_coord": 33.3545737884511}
     #   Intersections will geocoded base on this point (Recommended Method)
     net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
 

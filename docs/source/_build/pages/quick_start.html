@@ -7,15 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start Guide &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
-  
+
     <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/documentation_options.js?v=6f037312"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,17 +24,17 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Read UTDF Format Data" href="_read_utdf.html" />
-    <link rel="prev" title="Installation" href="_installation.html" /> 
+    <link rel="prev" title="Installation" href="_installation.html" />
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-          
-          
+
+
           <a href="../index.html" class="icon icon-home">
             utdf2gmns
               <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
@@ -51,7 +51,19 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="_installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#quick-python-example">Quick Python Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-python-example">Quick Python Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prepare-your-utdf-file">Prepare your UTDF file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialize-the-utdf2gmns">Initialize the UTDF2GMNS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#signalized-intersection-calculation-and-visualization-optional">Signalized Intersection Calculation and Visualization (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geocoding-intersections-use-automatic-geocoding">Geocoding Intersections (Use <span class="xref std std-ref">Automatic Geocoding</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geocoding-intersections-use-manual-geocoding">Geocoding Intersections (Use <span class="xref std std-ref">Manual Geocoding</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-gmns-links">Create GMNS links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-gmns-network-utdf-to-gmns-format">Save GMNS Network (<span class="xref std std-ref">UTDF To GMNS Format</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convert-utdf-network-to-sumo-gmns-to-sumo-format">Convert UTDF Network to SUMO (<span class="xref std std-ref">GMNS To SUMO Format</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualize-the-network">Visualize the Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-example-full-code">Quick Example (Full Code)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#design-framework">Design Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#illustration-of-selected-intersection">Illustration of Selected Intersection</a></li>
 </ul>
@@ -93,7 +105,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+
   <section id="quick-start-guide">
 <h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Link to this heading"></a></h1>
 <section id="quick-python-example">
@@ -106,7 +118,124 @@
 <li><p>The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: <cite>automatic_geociding</cite> or manually ::ref::  <cite>manual_geocoding</cite> as per your requirement.</p></li>
 </ul>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<section id="prepare-your-utdf-file">
+<h3>Prepare your UTDF file<a class="headerlink" href="#prepare-your-utdf-file" title="Link to this heading"></a></h3>
+<p>Please note that file name does not need to be UTDF.csv, it can be any name.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>  <span class="c1"># Name of the region the UTDF file represents</span>
+<span class="linenos">4</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>  <span class="c1"># Path to the UTDF file</span>
+</pre></div>
+</div>
+</section>
+<section id="initialize-the-utdf2gmns">
+<h3>Initialize the UTDF2GMNS<a class="headerlink" href="#initialize-the-utdf2gmns" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Initialize the UTDF2GMNS object with the UTDF file and region name</span>
+<span class="linenos">2</span><span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="signalized-intersection-calculation-and-visualization-optional">
+<h3>Signalized Intersection Calculation and Visualization (Optional)<a class="headerlink" href="#signalized-intersection-calculation-and-visualization-optional" title="Link to this heading"></a></h3>
+<p>This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Generate signalized intersections and visualize them using Sigma-X engine</span>
+<span class="linenos">2</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="geocoding-intersections-use-automatic-geocoding">
+<h3>Geocoding Intersections (Use <a class="reference internal" href="_geocoding_intersection.html#automatic-geocoding"><span class="std std-ref">Automatic Geocoding</span></a>)<a class="headerlink" href="#geocoding-intersections-use-automatic-geocoding" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Geocode intersections using automatic geocoding method</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="c1"># dist_threshold: The distance threshold for geocoding (default is 0.01 km), unit is km</span>
+<span class="linenos">4</span><span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="geocoding-intersections-use-manual-geocoding">
+<h3>Geocoding Intersections (Use <a class="reference internal" href="_geocoding_intersection.html#manual-geocoding"><span class="std std-ref">Manual Geocoding</span></a>)<a class="headerlink" href="#geocoding-intersections-use-manual-geocoding" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Geocode intersections using manual geocoding method</span>
+<span class="linenos">2</span><span class="c1"># This method could provide more accurate geocoding results,</span>
+<span class="linenos">3</span><span class="c1"># Bit it requires user to provide a single intersection coordinate.</span>
+<span class="linenos">4</span>
+<span class="linenos">5</span><span class="c1"># INTED is the intersection ID in UTDF file</span>
+<span class="linenos">6</span><span class="c1"># x_coord and x_coord are the coordinates of the intersection in decimal degrees (Latitude and Longitude)</span>
+<span class="linenos">7</span>
+<span class="linenos">8</span><span class="n">single_coord</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.568</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="mf">35.155</span><span class="p">}</span>
+<span class="linenos">9</span><span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="n">single_coord</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-gmns-links">
+<h3>Create GMNS links<a class="headerlink" href="#create-gmns-links" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Create GMNS links (polygon-link or line-link)</span>
+<span class="linenos">2</span><span class="c1"># is_link_polygon: If True, create polygon links; if False, create line links (default is False)</span>
+<span class="linenos">3</span><span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="save-gmns-network-utdf-to-gmns-format">
+<h3>Save GMNS Network (<a class="reference internal" href="_utdf2gmns.html#utdf-to-gmns-format"><span class="std std-ref">UTDF To GMNS Format</span></a>)<a class="headerlink" href="#save-gmns-network-utdf-to-gmns-format" title="Link to this heading"></a></h3>
+<p>This step will convert the UTDF network to GMNS format and save it to CSV and json files.
+Specifically, it will save the following files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>nodes.csv</strong>: Contains information about the nodes in the network.</p></li>
+<li><p><strong>links.csv</strong>: Contains information about the links in the network.</p></li>
+<li><p><strong>signal.json</strong>: Contains information about the signals of each signalized intersection in the network.</p></li>
+<li><p><strong>utdf_network.csv</strong>: Contains information from the UTDF file regarding the network configuration and settings.</p></li>
+<li><p><strong>utdf_nodes.csv</strong>: Contains information from the UTDF file regarding the nodes in the network.</p></li>
+<li><p><strong>utdf_links.csv</strong>: Contains information from the UTDF file regarding the links in the network.</p></li>
+<li><p><strong>utdf_lanes.csv</strong>: Contains information from the UTDF file regarding the lanes in the network.</p></li>
+<li><p><strong>utdf_phases.csv</strong>: Contains information from the UTDF file regarding the phases in the network.</p></li>
+<li><p><strong>utdf_timeplans.csv</strong>: Contains information from the UTDF file regarding the time plans in the network.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Convert UTDF network to GMNS format (CSV and JSON files)</span>
+<span class="linenos">2</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="convert-utdf-network-to-sumo-gmns-to-sumo-format">
+<h3>Convert UTDF Network to SUMO (<a class="reference internal" href="_gmns2sumo.html#gmns-to-sumo-format"><span class="std std-ref">GMNS To SUMO Format</span></a>)<a class="headerlink" href="#convert-utdf-network-to-sumo-gmns-to-sumo-format" title="Link to this heading"></a></h3>
+<p>Since we have already converted the UTDF network to GMNS format, we can now convert it to SUMO format.
+This step will save the following files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>nod.xml</strong>: Contains information about the nodes in the SUMO network.</p></li>
+<li><p><strong>edg.xml</strong>: Contains information about the edges in the SUMO network.</p></li>
+<li><p><strong>con.xml</strong>: Contains information about the connections in the SUMO network.</p></li>
+<li><p><strong>flow.xml</strong>: Contains information about the flow in the SUMO network.</p></li>
+<li><p><strong>add.xml</strong>: contains loop detectors information.</p></li>
+<li><p><strong>net.xml</strong>: Contains information about the network in the SUMO network.</p></li>
+<li><p><strong>rou.xml</strong>: Contains information about the routes in the SUMO network.</p></li>
+<li><p><strong>.sumocfg</strong>: Contains configuration information for the SUMO network.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Convert UTDF network to SUMO format (SUMO files)</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="c1"># sumo_name is the name of the SUMO network (default is &quot;utdf_to_sumo&quot;)</span>
+<span class="linenos">4</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sumo_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualize-the-network">
+<h3>Visualize the Network<a class="headerlink" href="#visualize-the-network" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>We provide two methods to visualize the network: Keplergl and Matplotlib.</dt><dd><ul class="simple">
+<li><p>Keplergl: A powerful tool for visualizing large-scale geospatial data.</p></li>
+<li><p>Matplotlib: A widely used library for creating static, animated, and interactive visualizations in Python.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">net_map</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">plot_net_mpl</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="s2">&quot;Bullhead_City.png&quot;</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">net_map</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">plot_net_keplergl</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fig_name</span><span class="o">=</span><span class="s2">&quot;Bullhead_City.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="quick-example-full-code">
+<h3>Quick Example (Full Code)<a class="headerlink" href="#quick-example-full-code" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -139,6 +268,7 @@
 <span class="linenos">31</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="design-framework">
 <h2>Design Framework<a class="headerlink" href="#design-framework" title="Link to this heading"></a></h2>
@@ -174,13 +304,13 @@ We show to intersection in details:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+
 
 </footer>
         </div>
@@ -191,7 +321,7 @@ We show to intersection in details:</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
 
 </body>
 </html>

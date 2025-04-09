@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Read UTDF Format Data &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../_static/documentation_options.js?v=6f037312"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Geocoding Intersections" href="_geocoding_intersection.html" />
-    <link rel="prev" title="Installation" href="quick_start.html" /> 
+    <link rel="prev" title="Quick Start Guide" href="quick_start.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,8 +49,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Read UTDF Format Data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#load-utdf-data-from-utdf2gmns-class">load utdf data from UTDF2GMNS class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-utdf-data-from-read-utdf-function">Load UTDF data from read_UTDF function</a></li>
@@ -130,7 +130,7 @@
 </table>
 <section id="load-utdf-data-from-utdf2gmns-class">
 <h2>load utdf data from UTDF2GMNS class<a class="headerlink" href="#load-utdf-data-from-utdf2gmns-class" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <span class="linenos">4</span>
@@ -163,7 +163,7 @@
 <section id="load-utdf-data-from-read-utdf-function">
 <h2>Load UTDF data from read_UTDF function<a class="headerlink" href="#load-utdf-data-from-read-utdf-function" title="Link to this heading"></a></h2>
 <p><strong>If you just want to read the UTDF file without converting it to GMNS format, you can simply run the code</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
 <span class="linenos">4</span><span class="n">utdf_dict</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">)</span>
@@ -179,14 +179,14 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quick_start.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quick_start.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="_geocoding_intersection.html" class="btn btn-neutral float-right" title="Geocoding Intersections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

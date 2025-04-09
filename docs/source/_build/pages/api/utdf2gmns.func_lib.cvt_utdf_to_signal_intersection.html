@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.cvt_utdf_to_signal_intersection &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="../../_static/utdf2gmns.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../_static/documentation_options.js?v=6f037312"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -109,7 +109,7 @@
 <h1>utdf2gmns.func_lib.cvt_utdf_to_signal_intersection<a class="headerlink" href="#utdf2gmns-func-lib-cvt-utdf-to-signal-intersection" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="utdf2gmns.func_lib.cvt_utdf_to_signal_intersection">
-<span class="sig-prename descclassname"><span class="pre">utdf2gmns.func_lib.</span></span><span class="sig-name descname"><span class="pre">cvt_utdf_to_signal_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utdf_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/func_lib/gmns/sigma_x_process_signal_intersection.html#cvt_utdf_to_signal_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.func_lib.cvt_utdf_to_signal_intersection" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utdf2gmns.func_lib.</span></span><span class="sig-name descname"><span class="pre">cvt_utdf_to_signal_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utdf_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/func_lib/gmns/sigma_x_process_signal_intersection.html#cvt_utdf_to_signal_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.func_lib.cvt_utdf_to_signal_intersection" title="Link to this definition"></a></dt>
 <dd><p>Utilize sigma-X engine to process each signal intersection from Synchro UTDF file
 And save each signal intersection into a separate GMNS file.</p>
 <dl class="field-list simple">
@@ -122,7 +122,7 @@ If not specified, the output directory will be the same as the input directory.<
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utdf_filename</span> <span class="o">=</span> <span class="s2">&quot;your utdf file, in csv format&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ug</span><span class="o">.</span><span class="n">cvt_utdf_to_signal_intersection</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
@@ -160,7 +160,7 @@ If not specified, the output directory will be the same as the input directory.<
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
