@@ -95,5 +95,5 @@ For more information about the ways you can contribute to utdf2gmns, visit [our 
 If you use utdf2gmns in your work or research, please use the following entry:
 
 ```plaintext
-Xiangyong, Luo and Xuesong Simon，Zhou. “Xyluo25/utdf2gmns: V1.0.0”. Zenodo, December 17, 2022. https://doi.org/10.5281/zenodo.14825686.
+Xiangyong, Luo and Xuesong Simon，Zhou. “xyluo25/utdf2gmns: V1.0.0”. Zenodo, December 17, 2022. https://doi.org/10.5281/zenodo.14825686.
 ```
