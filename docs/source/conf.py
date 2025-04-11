@@ -14,7 +14,7 @@ from pathlib import Path
 import datetime
 import os
 import sys
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 import warnings
 import inspect
 
