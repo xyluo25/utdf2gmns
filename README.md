@@ -1,3 +1,21 @@
+- [utdf2gmns](#utdf2gmns)
+  - [Introduction](#introduction)
+  - [Required Input Data](#required-input-data)
+  - [Installation](#installation)
+  - [Quick Python Example](#quick-python-example)
+    - [Prepare your UTDF File](#prepare-your-utdf-file)
+    - [Initialize the UTDF2GMNS](#initialize-the-utdf2gmns)
+    - [Signalized Intersection Calculation and Visualization (Optional)](#signalized-intersection-calculation-and-visualization-optional)
+    - [Geocoding Intersections (Use Automatic Geocoding)](#geocoding-intersections-use-automatic-geocoding)
+    - [Geocoding Intersections (Use Manual Geocoding)](#geocoding-intersections-use-manual-geocoding)
+    - [Create GMNS links](#create-gmns-links)
+    - [Save GMNS Network](#save-gmns-network)
+    - [Convert UTDF Network to SUMO](#convert-utdf-network-to-sumo)
+    - [Visualize the Network](#visualize-the-network)
+    - [Quick Example (Full Code)](#quick-example-full-code)
+  - [Call for Contributions](#call-for-contributions)
+  - [How to Cite](#how-to-cite)
+
 # utdf2gmns
 
 ## Introduction
@@ -193,7 +211,7 @@ Writing code isn't the only way to contribute to utdf2gmns. You can also:
 
 For more information about the ways you can contribute to utdf2gmns, visit [our GitHub](https://github.com/xyluo25/utdf2gmns). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
 
-## **How to Cite**
+## How to Cite
 
 If you use utdf2gmns in your work or research, please use the following entry:
 
