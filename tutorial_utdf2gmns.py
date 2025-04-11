@@ -11,7 +11,7 @@ import utdf2gmns as ug
 if __name__ == "__main__":
 
     region_name = " Tempe, AZ"
-    path_utdf = r"datasets/data_Tempe_network\UTDF.csv"
+    path_utdf = r"datasets/data_Tempe_network/UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)

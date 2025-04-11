@@ -4,11 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "utdf2gmns"
-version = "1.0.1"
+version = "1.1.2"
 description = "Convert Synchro UTDF data format to other formats, such as GMNS, SUMO, etc..."
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
-    {name = "Xuesong Simon Zhou", email = "xzhou74@asu.edu"},
 ]
 maintainers = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
@@ -27,7 +26,7 @@ license = {file = 'LICENSE', content-type='text/plain'}
 # license = {text = "Apache License"}
 
 requires-python = ">=3.10"
-keywords = ["UTDF", "Synchro", "GMNS", "SUMO", "Geojson", "Micro Simulation"]
+keywords = ["Synchro UTDF", "GMNS", "SUMO", "Conversion", "Traffic Microsimulation", "Visualization"]
 
 dynamic = ["dependencies"]
 
@@ -41,10 +40,9 @@ all = ["my-package[base, vis, test, sumo]"]
 
 [project.urls]
 Homepage = 'https://github.com/xyluo25/utdf2gmns'
-# Documentation = 'https://github.com/xyluo25/grid2demand'
-# Bug_Tracker = 'https://github.com/xyluo25/grid2demand/issues'
-# Repository = "https://github.com/xyluo25/grid2demand"
-# Download = "https://www.pepy.tech/projects/pyufunc"
+Documentation = 'https://utdf2gmns.readthedocs.io/en/latest/'
+"Bug Tracker" = 'https://github.com/xyluo25/utdf2gmns/issues'
+Download = "https://www.pepy.tech/projects/utdf2gmns"
 
 #         # 'Publication': '',
 #         # 'Citation': '',
