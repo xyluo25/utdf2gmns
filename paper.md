@@ -1,31 +1,21 @@
 ---
-title: 'utdf2gmns: A Python Package for Automating Synchro UTDF to SUMO Simulation'
+title: "utdf2gmns: A Python Package for Automating Synchro UTDF to SUMO Simulation"
 tags:
-    -Python
-    -UTDF
-    -SUMO
-    -Traffic Micro-simulation
-    -Automation
+  - Python
+  - UTDF
+  - SUMO
+  - Traffic Micro-simulation
+  - Automation
 authors:
--name: Xiangyong Luo
+  - name: Xiangyong Luo
     orcid: 0009-0003-1290-9983
-    # equal-contrib: true
-    corresponding: true # (This is how to denote the corresponding author)
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    affiliation: "1" # (Multiple affiliations must be quoted)
 
 affiliations:
--name: Xiangyong Luo, Oak Ridge National Laboratory, United States
-   index: 1
-#    ror: 00hx57361
--name: Arizona State University, United States
-   index: 2
+  - name: Xiangyong Luo, Oak Ridge National Laboratory, United States
+    index: 1
 date: 11 April 2025
 bibliography: paper.bib
-
-# Optional fields if submitting to a AAS journal too, see this blog post:
-# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-# aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
-# aas-journal: Astrophysical Journal <- The name of the AAS journal.
 ---
 
 # Summary
