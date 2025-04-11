@@ -11,11 +11,11 @@ import pytest
 from pathlib import Path
 
 try:
-    from utdf2gmns._utdf2gmns import UTDF2GMNS
+    from utdf2gmns import UTDF2GMNS
 except Exception:
     import sys
     sys.path.append(str(Path(__file__).resolve().parents[1]))
-    from utdf2gmns._utdf2gmns import UTDF2GMNS
+    from utdf2gmns import UTDF2GMNS
 
 
 # TODO test the UTDF2GMNS class
