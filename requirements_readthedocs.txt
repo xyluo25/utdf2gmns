@@ -1,0 +1,6 @@
+pyufunc>=0.3.7
+pytest
+coverage
+sphinx
+myst-parser
+sphinx_copybutton

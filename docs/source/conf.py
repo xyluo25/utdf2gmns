@@ -58,8 +58,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.extlinks',
     'sphinx.ext.todo',
-    # 'sphinx_copybutton',
-    # 'myst_parser',  # for parsing markdown files, must be after sphinx.ext.autodoc to work properly
+    'sphinx_copybutton',
+    'myst_parser',  # for parsing markdown files, must be after sphinx.ext.autodoc to work properly
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
