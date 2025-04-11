@@ -37,10 +37,10 @@ Welcome to utdf2gmns documentation!
    pages/quick_start.rst
    pages/_read_utdf.rst
    pages/_geocoding_intersection.rst
-   pages/_sigma_x.rst
    pages/_signal_conversion.rst
    pages/_utdf2gmns.rst
    pages/_gmns2sumo.rst
+   pages/_sigma_x.rst
    pages/api_reference.rst
    pages/support.rst
 

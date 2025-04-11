@@ -73,7 +73,9 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
         ax.set_title('UTDF Network')
 
         if save_fig:
-            plt.savefig(fig_name, dpi=dpi)
+            path_output = Path(net._utdf_filename).parent
+            path_output_fig = pf.path2linux(os.path.join(path_output, fig_name))
+            plt.savefig(path_output_fig, dpi=dpi)
 
         plt.show()
 

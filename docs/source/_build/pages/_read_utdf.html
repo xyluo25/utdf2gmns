@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Read UTDF Format Data &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -57,10 +57,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
@@ -130,7 +130,7 @@
 </table>
 <section id="load-utdf-data-from-utdf2gmns-class">
 <h2>load utdf data from UTDF2GMNS class<a class="headerlink" href="#load-utdf-data-from-utdf2gmns-class" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <span class="linenos">4</span>
@@ -163,7 +163,7 @@
 <section id="load-utdf-data-from-read-utdf-function">
 <h2>Load UTDF data from read_UTDF function<a class="headerlink" href="#load-utdf-data-from-read-utdf-function" title="Link to this heading"></a></h2>
 <p><strong>If you just want to read the UTDF file without converting it to GMNS format, you can simply run the code</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
 <span class="linenos">4</span><span class="n">utdf_dict</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">read_UTDF</span><span class="p">(</span><span class="n">path_utdf</span><span class="p">)</span>

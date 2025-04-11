@@ -34,17 +34,6 @@ Initialize the UTDF2GMNS
     # Initialize the UTDF2GMNS object with the UTDF file and region name
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
 
-Signalized Intersection Calculation and Visualization (Optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)
-
-.. code-block:: python
-    :linenos:
-
-    # Generate signalized intersections and visualize them using Sigma-X engine
-    net.utdf_to_gmns_signal_ints()
-
 Geocoding Intersections (Use :ref:`Automatic Geocoding`)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -140,6 +129,16 @@ We provide two methods to visualize the network: Keplergl and Matplotlib.
     net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
     net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
 
+Signalized Intersection Calculation and Visualization (Optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)
+
+.. code-block:: python
+    :linenos:
+
+    # Generate signalized intersections and visualize them using Sigma-X engine
+    net.utdf_to_gmns_signal_ints()
 
 Quick Example (Full Code)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -158,9 +157,6 @@ Quick Example (Full Code)
         # Step 1: Initialize the UTDF2GMNS
         net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
 
-        # (Optional) Sigma-X engine generate each signal intersection with visualization
-        # net.utdf_to_gmns_signal_ints()
-
         # Step 2: Geocode intersection
         #   if user manually provide single intersection coordinate, such as:
         #   single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
@@ -178,6 +174,10 @@ Quick Example (Full Code)
 
         # Step 6 (optional): visualize the network
         # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
+        # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
+
+        # (Optional) Sigma-X engine generate each signal intersection with visualization
+        # net.utdf_to_gmns_signal_ints()
 
 Design Framework
 ================

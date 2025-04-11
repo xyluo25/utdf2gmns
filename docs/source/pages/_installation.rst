@@ -18,7 +18,7 @@ By running the command above, the utdf2gmns package along with required dependen
 .. code-block:: python
     :linenos:
 
-    pip install utdf2gmns[all]
+    pip install utdf2gmns[base]
 
 .. code-block:: python
     :linenos:
@@ -28,12 +28,7 @@ By running the command above, the utdf2gmns package along with required dependen
 .. code-block:: python
     :linenos:
 
-    pip install utdf2gmns[vis]  # including visualization dependencies (matplotlib, keplergl)
-
-.. code-block:: python
-    :linenos:
-
-    pip install utdf2gmns[sumo]  # including SUMO dependencies (traci, sumollib)
+    pip install utdf2gmns[all]  # including all optional dependencies, including test dependencies and visualization dependencies (matplotlib, keplergl)
 
 ⚡⚡If you don't know what's best for your, the default :ref:`Installation` should work for most users.
 

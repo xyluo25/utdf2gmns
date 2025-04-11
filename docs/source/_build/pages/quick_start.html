@@ -7,11 +7,11 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start Guide &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
-
+  
     <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -24,17 +24,17 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Read UTDF Format Data" href="_read_utdf.html" />
-    <link rel="prev" title="Installation" href="_installation.html" />
+    <link rel="prev" title="Installation" href="_installation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-
-
+          
+          
           <a href="../index.html" class="icon icon-home">
             utdf2gmns
               <img src="../_static/utdf2gmns.ico" class="logo" alt="Logo"/>
@@ -54,13 +54,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#quick-python-example">Quick Python Example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prepare-your-utdf-file">Prepare your UTDF file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#initialize-the-utdf2gmns">Initialize the UTDF2GMNS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#signalized-intersection-calculation-and-visualization-optional">Signalized Intersection Calculation and Visualization (Optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#geocoding-intersections-use-automatic-geocoding">Geocoding Intersections (Use <span class="xref std std-ref">Automatic Geocoding</span>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#geocoding-intersections-use-manual-geocoding">Geocoding Intersections (Use <span class="xref std std-ref">Manual Geocoding</span>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-gmns-links">Create GMNS links</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#save-gmns-network-utdf-to-gmns-format">Save GMNS Network (<span class="xref std std-ref">UTDF To GMNS Format</span>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#convert-utdf-network-to-sumo-gmns-to-sumo-format">Convert UTDF Network to SUMO (<span class="xref std std-ref">GMNS To SUMO Format</span>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#visualize-the-network">Visualize the Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#signalized-intersection-calculation-and-visualization-optional">Signalized Intersection Calculation and Visualization (Optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#quick-example-full-code">Quick Example (Full Code)</a></li>
 </ul>
 </li>
@@ -70,10 +70,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
@@ -105,7 +105,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+             
   <section id="quick-start-guide">
 <h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Link to this heading"></a></h1>
 <section id="quick-python-example">
@@ -121,7 +121,7 @@
 <section id="prepare-your-utdf-file">
 <h3>Prepare your UTDF file<a class="headerlink" href="#prepare-your-utdf-file" title="Link to this heading"></a></h3>
 <p>Please note that file name does not need to be UTDF.csv, it can be any name.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>  <span class="c1"># Name of the region the UTDF file represents</span>
 <span class="linenos">4</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>  <span class="c1"># Path to the UTDF file</span>
@@ -132,14 +132,6 @@
 <h3>Initialize the UTDF2GMNS<a class="headerlink" href="#initialize-the-utdf2gmns" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Initialize the UTDF2GMNS object with the UTDF file and region name</span>
 <span class="linenos">2</span><span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="signalized-intersection-calculation-and-visualization-optional">
-<h3>Signalized Intersection Calculation and Visualization (Optional)<a class="headerlink" href="#signalized-intersection-calculation-and-visualization-optional" title="Link to this heading"></a></h3>
-<p>This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Generate signalized intersections and visualize them using Sigma-X engine</span>
-<span class="linenos">2</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -233,9 +225,17 @@ This step will save the following files:</p>
 </pre></div>
 </div>
 </section>
+<section id="signalized-intersection-calculation-and-visualization-optional">
+<h3>Signalized Intersection Calculation and Visualization (Optional)<a class="headerlink" href="#signalized-intersection-calculation-and-visualization-optional" title="Link to this heading"></a></h3>
+<p>This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Generate signalized intersections and visualize them using Sigma-X engine</span>
+<span class="linenos">2</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 <section id="quick-example-full-code">
 <h3>Quick Example (Full Code)<a class="headerlink" href="#quick-example-full-code" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -246,26 +246,27 @@ This step will save the following files:</p>
 <span class="linenos"> 9</span>    <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
 <span class="linenos">10</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">11</span>
-<span class="linenos">12</span>    <span class="c1"># (Optional) Sigma-X engine generate each signal intersection with visualization</span>
-<span class="linenos">13</span>    <span class="c1"># net.utdf_to_gmns_signal_ints()</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span>    <span class="c1"># Step 2: Geocode intersection</span>
-<span class="linenos">16</span>    <span class="c1">#   if user manually provide single intersection coordinate, such as:</span>
-<span class="linenos">17</span>    <span class="c1">#   single_coord={&quot;INTID&quot;: &quot;1&quot;, &quot;x_coord&quot;: -114.568, &quot;y_coord&quot;: 35.155}</span>
-<span class="linenos">18</span>    <span class="c1">#   Intersections will geocoded base on this point (Recommended Method)</span>
-<span class="linenos">19</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">12</span>    <span class="c1"># Step 2: Geocode intersection</span>
+<span class="linenos">13</span>    <span class="c1">#   if user manually provide single intersection coordinate, such as:</span>
+<span class="linenos">14</span>    <span class="c1">#   single_coord={&quot;INTID&quot;: &quot;1&quot;, &quot;x_coord&quot;: -114.568, &quot;y_coord&quot;: 35.155}</span>
+<span class="linenos">15</span>    <span class="c1">#   Intersections will geocoded base on this point (Recommended Method)</span>
+<span class="linenos">16</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>    <span class="c1"># Step 3: create network links: user can generate polygon-link or line-link</span>
+<span class="linenos">19</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">20</span>
-<span class="linenos">21</span>    <span class="c1"># Step 3: create network links: user can generate polygon-link or line-link</span>
-<span class="linenos">22</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">21</span>    <span class="c1"># Step 4: convert UTDF network to GMNS format (csv)</span>
+<span class="linenos">22</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span>    <span class="c1"># Step 4: convert UTDF network to GMNS format (csv)</span>
-<span class="linenos">25</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">24</span>    <span class="c1"># Step 5 (optional): convert UTDF network to SUMO</span>
+<span class="linenos">25</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sumo_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="linenos">26</span>
-<span class="linenos">27</span>    <span class="c1"># Step 5 (optional): convert UTDF network to SUMO</span>
-<span class="linenos">28</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sumo_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">29</span>
-<span class="linenos">30</span>    <span class="c1"># Step 6 (optional): visualize the network</span>
-<span class="linenos">31</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
+<span class="linenos">27</span>    <span class="c1"># Step 6 (optional): visualize the network</span>
+<span class="linenos">28</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
+<span class="linenos">29</span>    <span class="c1"># net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=&quot;Bullhead_City.png&quot;)</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span>    <span class="c1"># (Optional) Sigma-X engine generate each signal intersection with visualization</span>
+<span class="linenos">32</span>    <span class="c1"># net.utdf_to_gmns_signal_ints()</span>
 </pre></div>
 </div>
 </section>
@@ -310,7 +311,7 @@ We show to intersection in details:</p>
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -321,7 +322,7 @@ We show to intersection in details:</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>

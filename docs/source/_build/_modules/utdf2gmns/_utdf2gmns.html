@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns._utdf2gmns &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/utdf2gmns.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../_static/documentation_options.js?v=6f037312"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -50,10 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pages/support.html#official-links">Official Links</a></li>
@@ -94,35 +94,35 @@
 <span class="c1"># Author/Copyright: Mr. Xiangyong Luo</span>
 <span class="c1">##############################################################</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="c1"># import utility functions from pyufunc</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pyufunc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pf</span>
+<span class="kn">import</span> <span class="nn">pyufunc</span> <span class="k">as</span> <span class="nn">pf</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.util_lib.pkg_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_unit_converter</span><span class="p">,</span> <span class="n">time_str_to_seconds</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.util_lib.pkg_utils</span> <span class="kn">import</span> <span class="n">time_unit_converter</span><span class="p">,</span> <span class="n">time_str_to_seconds</span>
 
 <span class="c1"># For deployment</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.geocoding_intersection</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_intersection_coordinates</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">generate_intersection_from_Links</span><span class="p">,</span> <span class="n">read_UTDF</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict</span><span class="w"> </span><span class="kn">import</span> <span class="n">cvt_lane_df_to_dict</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.geocoding_intersection</span> <span class="kn">import</span> <span class="n">generate_intersection_coordinates</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_intersection_from_Links</span><span class="p">,</span> <span class="n">read_UTDF</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict</span> <span class="kn">import</span> <span class="n">cvt_lane_df_to_dict</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.gmns.geocoding_Nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_node_from_one_intersection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.gmns.geocoding_Links</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">generate_links</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.geocoding_Nodes</span> <span class="kn">import</span> <span class="n">update_node_from_one_intersection</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.geocoding_Links</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_links</span><span class="p">,</span>
                                                      <span class="n">generate_links_polygon</span><span class="p">,</span>
                                                      <span class="n">cvt_link_df_to_dict</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection</span><span class="w"> </span><span class="kn">import</span> <span class="n">cvt_utdf_to_signal_intersection</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection</span> <span class="kn">import</span> <span class="n">cvt_utdf_to_signal_intersection</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.signal_intersections</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_signal_control</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_sumo_signal_from_utdf</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.remove_u_turn</span><span class="w"> </span><span class="kn">import</span> <span class="n">remove_sumo_U_turn</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.signal_intersections</span> <span class="kn">import</span> <span class="n">parse_signal_control</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf</span> <span class="kn">import</span> <span class="n">update_sumo_signal_from_utdf</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.remove_u_turn</span> <span class="kn">import</span> <span class="n">remove_sumo_U_turn</span>
 
 
 <span class="c1"># SUMO related functions</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.sumo.gmns2sumo</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">generate_sumo_nod_xml</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">utdf2gmns.func_lib.sumo.gmns2sumo</span> <span class="kn">import</span> <span class="p">(</span><span class="n">generate_sumo_nod_xml</span><span class="p">,</span>
                                                <span class="n">generate_sumo_edg_xml</span><span class="p">,</span>
                                                <span class="n">generate_sumo_flow_xml</span><span class="p">,</span>
                                                <span class="n">generate_sumo_connection_xml</span><span class="p">,</span>
@@ -134,7 +134,7 @@
 
 <div class="viewcode-block" id="UTDF2GMNS">
 <a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">UTDF2GMNS</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">UTDF2GMNS</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;UTDF2GMNS performs the data conversion from UTDF to different formats.</span>
 <span class="sd">    The class includes functions such as:</span>
 <span class="sd">        - geocode_utdf_intersections: geocode intersections</span>
@@ -151,7 +151,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="UTDF2GMNS.__init__">
 <a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">region_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">region_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize UTDF2GMNS class with UTDF file and region name</span>
 
 <span class="sd">        Args:</span>
@@ -173,7 +173,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__load_utdf</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__load_utdf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__load_utdf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load UTDF file and generate dataframes for Networks, Nodes, Links, Lanes, Timeplans, and Phases</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -195,8 +195,9 @@
 
         <span class="c1"># assign to instance variable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span> <span class="o">=</span> <span class="n">utdf_dict_data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nodes&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nodes&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())]</span>
 
         <span class="c1"># initialize the instance variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_geocoding_intersections</span> <span class="o">=</span> <span class="kc">False</span>
@@ -204,7 +205,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total number of intersections in the UTDF file: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">geocode_utdf_intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">geocode_utdf_intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                    <span class="o">*</span><span class="p">,</span>
                                    <span class="n">single_intersection_coord</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                    <span class="n">dist_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -255,7 +256,7 @@
 
             <span class="c1"># check if id is in the Nodes</span>
             <span class="n">int_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;INTID&quot;</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">int_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_intersection_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;single intersection: </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> not in the UTDF Nodes!&quot;</span><span class="p">)</span>
 
             <span class="n">single_intersection</span> <span class="o">=</span> <span class="n">single_intersection_coord</span>
@@ -295,7 +296,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_geocoding_intersections</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_signal_control</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">create_signal_control</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Signalize intersections</span>
 <span class="sd">        1. get signal intersection id from phase</span>
 <span class="sd">        2. parse signal control from UTDF data and create signal control for each intersection</span>
@@ -314,7 +315,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">network_signal_control</span> <span class="o">=</span> <span class="n">signal_intersections</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_gmns_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">default_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">create_gmns_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">default_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create network from UTDF data by combining Nodes, Links, Lanes, and Phases</span>
 
 <span class="sd">        Args:</span>
@@ -340,7 +341,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@pf</span><span class="o">.</span><span class="n">func_running_time</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">utdf_to_gmns_signal_ints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">utdf_to_gmns_signal_ints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Empower Sigma-X engine to generate each signal intersection with visualization  &quot;&quot;&quot;</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Running Sigma-X engine... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -353,7 +354,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">utdf_to_gmns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">incl_utdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">utdf_to_gmns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">incl_utdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert UTDF data to GMNS data and save to the output directory</span>
 
 <span class="sd">        Args:</span>
@@ -423,7 +424,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Successfully saved GMNS(csv) data to </span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">gmns_output_dir</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">utdf_to_sumo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sim_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">utdf_to_sumo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sim_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                      <span class="n">show_warning_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                      <span class="n">disable_U_turn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                      <span class="n">sim_start_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -659,7 +660,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

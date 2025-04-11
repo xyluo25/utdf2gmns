@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -53,10 +53,10 @@
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
@@ -101,16 +101,13 @@
 <p class="admonition-title">Note</p>
 <p>You can also choose to install packages based on your needs. Below are the optional dependencies that can be included during installation.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>  <span class="c1"># including test dependencies (pytest, coverage)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">vis</span><span class="p">]</span>  <span class="c1"># including visualization dependencies (matplotlib, keplergl)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">sumo</span><span class="p">]</span>  <span class="c1"># including SUMO dependencies (traci, sumollib)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>  <span class="c1"># including all optional dependencies, including test dependencies and visualization dependencies (matplotlib, keplergl)</span>
 </pre></div>
 </div>
 <p>⚡⚡If you don’t know what’s best for your, the default <a class="reference internal" href="#installation"><span class="std std-ref">Installation</span></a> should work for most users.</p>
