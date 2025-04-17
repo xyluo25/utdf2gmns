@@ -7,7 +7,7 @@
 ##############################################################
 '''
 
-from utdf2gmns.func_lib.sumo.read_sumo import ReadSUMO
+from utdf2gmns.func_lib.sumo.signal_read_sumo import ReadSUMO
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.sumo.signal_mapping import (direction_mapping,
                                                     build_linkDuration,
@@ -65,7 +65,7 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
                                                    df_lane=utdf_dict.get("Lanes"),
                                                    int_id=int_id)
         UTDF_DIRS = set(extract_dir_info(utdf_signal[int_id]))
-        traffic_directions = set(map(lambda s: s[0:2], UTDF_DIRS))
+        traffic_directions = set(map(lambda s: s[:2], UTDF_DIRS))
 
         if verbose:
             print(f"\nIntersection id: {int_id} \nDirections: {UTDF_DIRS}\n")
@@ -76,10 +76,9 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
             if ":" not in sumo_movement["fromEdge"] and sumo_movement["fromEdge"] not in unique_inbound_edges:
                 unique_inbound_edges.append(sumo_movement["fromEdge"])
 
-        if len(unique_inbound_edges) != len(traffic_directions):
-            if verbose:
-                print(f"  :UTDF node {int_id} does not have the same "
-                      f"number of inbounds with SUMO {int_id}")
+        if len(unique_inbound_edges) != len(traffic_directions) and verbose:
+            print(f"  :UTDF node {int_id} does not have the same "
+                  f"number of inbounds with SUMO {int_id}")
 
         flag, inbound_direction_mapping = direction_mapping(sumo_net,
                                                             int_id,
@@ -87,9 +86,8 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
                                                             traffic_directions,
                                                             verbose=verbose)
 
-        if not flag:
-            if verbose:
-                print(f"  :UTDF node {int_id} map inbounds with SUMO {int_id} failed")
+        if not flag and verbose:
+            print(f"  :UTDF node {int_id} map inbounds with SUMO {int_id} failed")
 
         for connection_index in sumo_net.sumo_signal_info[int_id].keys():
             sumo_movement = sumo_net.sumo_signal_info[int_id][connection_index]

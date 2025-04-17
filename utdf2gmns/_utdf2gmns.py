@@ -28,8 +28,8 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
 from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import cvt_utdf_to_signal_intersection
 
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
-from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
-from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
+from utdf2gmns.func_lib.sumo._update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
+from utdf2gmns.func_lib.sumo._remove_u_turn import remove_sumo_U_turn
 
 
 # SUMO related functions

@@ -67,7 +67,7 @@ pygments_style = "sphinx"
 templates_path = ["./_templates/"]
 
 external_links = {
-    "GitHub": ("https: // github.com/ORNL-Real-Sim/Real-Twin")
+    "GitHub": ("https: // github.com/xyluo25/utdf2gmns"),
 }
 
 # If true, section author and module author directives will be shown in the
@@ -84,6 +84,14 @@ html_short_title = "utdf2gmns"
 html_logo = "./_static/utdf2gmns.ico"
 html_favicon = "./_static/utdf2gmns.ico"
 html_static_path = ["_static"]
+
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "xyluo25",  # Username
+    "github_repo": "utdf2gmns",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
+}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "utdf2gmns"
