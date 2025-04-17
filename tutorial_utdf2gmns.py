@@ -24,15 +24,15 @@ if __name__ == "__main__":
     net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
 
     # Step 3: convert UTDF network to GMNS format (csv)
-    net.utdf_to_gmns(incl_utdf=True)
+    # net.utdf_to_gmns(incl_utdf=True)
 
     # Step 4 (optional): convert UTDF network to SUMO
     net.utdf_to_sumo(sim_name="", show_warning_message=True, disable_U_turn=True, sim_duration=7200)
 
     # Step 5 (optional): visualize the network
     # # visualize in matplotlib (png) and kepler.gl (html)
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
+    # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
+    # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()

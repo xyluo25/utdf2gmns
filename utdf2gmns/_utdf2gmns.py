@@ -27,17 +27,17 @@ from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      cvt_link_df_to_dict)
 from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import cvt_utdf_to_signal_intersection
 
+# SUMO related functions
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
 from utdf2gmns.func_lib.sumo._update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
 from utdf2gmns.func_lib.sumo._remove_u_turn import remove_sumo_U_turn
-
-
-# SUMO related functions
 from utdf2gmns.func_lib.sumo.gmns2sumo import (generate_sumo_nod_xml,
+                                               update_sumo_nod_xml_for_turn_bay,
                                                generate_sumo_edg_xml,
                                                generate_sumo_flow_xml,
                                                generate_sumo_connection_xml,
                                                generate_sumo_loop_detector_add_xml)
+from utdf2gmns.func_lib.sumo._adjust_turn_bay import update_turn_bay_length
 
 
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -114,7 +114,8 @@ class UTDF2GMNS:
     def geocode_utdf_intersections(self,
                                    *,
                                    single_intersection_coord: dict = None,
-                                   dist_threshold: float = 0.01) -> bool:
+                                   dist_threshold: float = 0.01,
+                                   return_dict_value: bool = False) -> dict:
         """Geocode intersections
         Firstly, geocode one intersection from given single intersection coordinate.
         Then, according to the Nodes information, calculate all intersections based on relative coordinates.
@@ -167,30 +168,29 @@ class UTDF2GMNS:
 
             single_intersection = single_intersection_coord
 
-        else:
-            if self._utdf_region_name:
-                # generate intersections with name for coordinations
-                df_utdf_intersection = generate_intersection_from_Links(
-                    self._utdf_dict.get("Links"),
-                    self._utdf_region_name)
+        elif self._utdf_region_name:
+            # generate intersections with name for coordinations
+            df_utdf_intersection = generate_intersection_from_Links(
+                self._utdf_dict.get("Links"),
+                self._utdf_region_name)
 
-                # geocoding one intersection from address, with threshold (default 0.01) km
-                single_intersection = generate_intersection_coordinates(
-                    df_utdf_intersection,
-                    dist_threshold=dist_threshold,
-                    geocode_one=True)
+            # geocoding one intersection from address, with threshold (default 0.01) km
+            single_intersection = generate_intersection_coordinates(
+                df_utdf_intersection,
+                dist_threshold=dist_threshold,
+                geocode_one=True)
 
-                # check if the single_intersection is empty
-                if single_intersection["INTID"] is None:
-                    raise Exception(
-                        "\n  No valid intersection is geo-coded!"
-                        "  Please change dist_threshold or provide single_coord manually.")
-            else:
+            # check if the single_intersection is empty
+            if single_intersection["INTID"] is None:
                 raise Exception(
-                    "\nCould not geocode intersections, two ways to solve this issue: \n"
-                    "  1. provide city_name when initializing UTDF2GMNS class; \n"
-                    "  2. provide single_coord manually while running geocoding_intersections()."
-                )
+                    "\n  No valid intersection is geo-coded!"
+                    "  Please change dist_threshold or provide single_coord manually.")
+        else:
+            raise Exception(
+                "\nCould not geocode intersections, two ways to solve this issue: \n"
+                "  1. provide city_name when initializing UTDF2GMNS class; \n"
+                "  2. provide single_coord manually while running geocoding_intersections()."
+            )
 
         # update Nodes from single_intersection
         node_dict = update_node_from_one_intersection(single_intersection,
@@ -200,7 +200,8 @@ class UTDF2GMNS:
         self.network_nodes = node_dict
         self._utdf_dict["network_nodes"] = node_dict
         self._is_geocoding_intersections = True
-        return True
+
+        return node_dict if return_dict_value else {}
 
     def create_signal_control(self) -> bool:
         """Signalize intersections
@@ -385,6 +386,10 @@ class UTDF2GMNS:
         generate_sumo_nod_xml(self._utdf_dict, output_node_file)
         print(f"  :generated SUMO node xml file: {xml_name}.nod.xml")
 
+        # add additional nodes for turn bay implementation
+        # update_sumo_nod_xml_for_turn_bay(self._utdf_dict, self.network_unit, output_node_file)
+        # print(f"  :updated SUMO node xml file for turn bay: {xml_name}.nod.xml")
+
         # create SUMO .edg.xml file
         output_edge_file = os.path.join(sumo_output_dir, f"{xml_name}.edg.xml")
         output_edge_file = pf.path2linux(output_edge_file)
@@ -455,6 +460,10 @@ class UTDF2GMNS:
         except Exception as e:
             print(f"  :Error in generating SUMO network: {e}")
             return False
+
+        # update turn bay length in the SUMO network
+        # update_turn_bay_length(output_net_file, self._utdf_dict, self.network_unit)
+        # print(f"  :Successfully updated turn bay length to \n    {sumo_output_dir}.")
 
         # update SUMO signal in .net.xml file
         update_sumo_signal_from_utdf(output_net_file, self._utdf_dict, verbose=self._verbose)

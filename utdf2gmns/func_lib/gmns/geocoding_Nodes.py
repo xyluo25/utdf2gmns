@@ -78,7 +78,8 @@ def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, u
         unit: the unit of the coordinates, e.g., "feet" or "meter"
 
     Returns:
-        pd.DataFrame: a dataframe of node data with updated coordinates
+        dict: a dictionary of updated node data.
+            {"1": {"INTID": 1, "x_coord": 0, "y_coord": 0, "X": 0, "Y": 0, "INTID_base": 1, "TYPE_DESC": "Signalized"}, ...}
     """
 
     # Copy the node dataframe
@@ -120,7 +121,7 @@ def update_node_from_one_intersection(single_int: dict, df_node: pd.DataFrame, u
                                                                   y_offset,
                                                                   unit)
         # update the node dataframe
-        df_node.loc[i, "INTID_base"] = 1 if int(int_id) == int(node_id) else 0
+        df_node.loc[i, "INTID_base"] = 1 if int_id == int(node_id) else 0
         df_node.loc[i, "x_coord"] = float(x_coord)
         df_node.loc[i, "y_coord"] = float(y_coord)
 

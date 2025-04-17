@@ -18,10 +18,12 @@ import xml.etree.ElementTree as ET  # Use ElementTree for XML generation
 import re
 import copy
 from datetime import datetime
+from pathlib import Path
+import pandas as pd
 
-from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_lonlat_to_utm
 from utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict import cvt_lane_df_to_dict
 from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_link_df_to_dict
+from utdf2gmns.util_lib.pkg_utils import point_coord_on_line_lonlat
 
 
 def xml_prettify(element: str) -> str:
@@ -46,60 +48,103 @@ def cvt_kmh_to_mps(kmh: float) -> float:
     return kmh / 3.6
 
 
-def generate_sumo_nod_xml(utdf_dict: dict, filename: str = "network.nod.xml") -> bool:
-    """Generate the .nod.xml file.
+def cal_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
+    """Calculate the number of lanes for each movement type in the edge.
+
+    Args:
+        edge_id (str): The ID of the edge.
+        lane_lookup_dict (dict): A dictionary containing lane information.
+
+    Return:
+        dict: A dictionary containing the number of lanes and lengths for each movement type.
+        {"R": [num_R_turn, R_length], "T": [num_T_turn, T_length],
+        "L": [num_L_turn, L_length], "U": [num_U_turn, U_length]}
+    """
+
+    num_R_turn = 0
+    R_length = []
+    num_T_turn = 0
+    T_length = []
+    num_L_turn = 0
+    L_length = []
+    num_U_turn = 0
+    U_length = []
+
+    lane_index_in_edge = 0
+    lane_id = f"{edge_id}_{lane_index_in_edge}"
+    while lane_id in lane_lookup_dict:
+        lane_info = lane_lookup_dict[lane_id]
+        lane_length = float(lane_info["length"])
+
+        if lane_info["dir"] == "r":
+            num_R_turn += 1
+            R_length.append(lane_length)
+        elif lane_info["dir"] == "s":
+            num_T_turn += 1
+            T_length.append(lane_length)
+        elif lane_info["dir"] == "l":
+            num_L_turn += 1
+            L_length.append(lane_length)
+        elif lane_info["dir"] == "t":
+            num_U_turn += 1
+            U_length.append(lane_length)
+
+        lane_index_in_edge += 1
+        lane_id = f"{edge_id}_{lane_index_in_edge}"
+
+    return {
+        "R": [num_R_turn, R_length],
+        "T": [num_T_turn, T_length],
+        "L": [num_L_turn, L_length],
+        "U": [num_U_turn, U_length],
+        # calculate the maximum length of left and right turn bays
+        "max_turn_length": max([max(R_length, default=0), max(L_length, default=0)])}
+
+
+def generate_net_link_lookup_dict(utdf_dict: dict) -> dict:
+    """Generate a lookup dictionary for edges.
 
     Args:
         utdf_dict (dict): A dictionary containing UTDF data.
-        filename (str): The name of the output node XML file (.nod.xml).
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_sumo_nod_xml
-        >>> generate_sumo_nod_xml(utdf_dict, filename="network.nod.xml")
-        >>> # This will generate a network.nod.xml file in the current directory.
-        True
 
     Raises:
-        ValueError: No network_nodes found, please run geocode_utdf_intersections() first.
+        ValueError: UTDF Links data are required in utdf_dict.
+
+    Example:
+        >>> from utdf2gmns.func_lib import generate_net_link_lookup_dict
+        >>> edge_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+        >>> # This will generate a lookup dictionary for edges based on the provided UTDF Links data.
+        >>> print(edge_lookup_dict)  # {"edge_id": "num_lanes"}
+        {'1_2': '2', '2_3': '2', ...}
 
     Returns:
-        bool: True if the XML file is generated successfully, False otherwise.
+        dict: A dictionary containing edge information for each intersection.
     """
+    link_df = utdf_dict.get("Links")
 
-    network_nodes = utdf_dict.get("network_nodes")
+    if link_df is None:
+        raise ValueError("UTDF Links data are required in utdf_dict.")
 
-    # TDD
-    if network_nodes is None:
-        raise ValueError("No network_nodes found, please run geocode_utdf_intersections() first.")
+    network_links = cvt_link_df_to_dict(link_df)  # Convert links DataFrame to dictionary
 
-    root = ET.Element("nodes")
-    for node_id, node in network_nodes.items():
-        node_elem = ET.SubElement(root, "node")
-        node_elem.set("id", str(node_id))
+    # Create a lookup dictionary for edges
+    edge_lookup_dict = {}
+    for int_id, direction_links in network_links.items():
+        for direction in direction_links:
+            num_lanes = direction_links[direction].get("Lanes")  # Default lanes
+            length = direction_links[direction].get("Distance")
+            speed = direction_links[direction].get("Speed")
 
-        # Convert lonlat to UTM
-        utm_x, utm_y, zone, hemi = cvt_lonlat_to_utm(node["x_coord"], node["y_coord"])
-
-        # Convert lon and lat to UTM coordinates
-        # node_elem.set("x", str(utm_x))
-        # node_elem.set("y", str(utm_y))
-
-        # Use real-world coordinates for SUMO and then use --proj.utm to convert to UTM
-        node_elem.set("x", str(node["x_coord"]))
-        node_elem.set("y", str(node["y_coord"]))
-
-        node_type_description = node.get("TYPE_DESC")
-        if node_type_description == "Signalized":
-            node_elem.set("type", "traffic_light")  # Default type
-
-    xml_str = xml_prettify(root)
-    with open(filename, "w") as f:
-        f.write(xml_str)
-
-    return True
+            up_node = direction_links[direction]["Up ID"]
+            edge_lookup_dict[f"{up_node}_{int_id}"] = {
+                "num_lanes": num_lanes,
+                "length": length,
+                "speed": speed,
+            }
+    return edge_lookup_dict
 
 
-def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
+def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, save_lane_csv: str = "") -> dict:
     """Generate the .lane.xml file.
                      int_id
                     ____|____ _____  __ ...
@@ -141,14 +186,8 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
         unit_distance = "meters"
         unit_speed = "km/h"
 
-    cvt_unit_speed = {
-        "mph": cvt_mph_to_mps,
-        "km/h": cvt_kmh_to_mps,
-    }
-    cvt_unit_distance = {
-        "feet": cvt_feet_to_meters,
-        "meters": lambda x: x,
-    }
+    cvt_unit_speed = {"mph": cvt_mph_to_mps, "km/h": cvt_kmh_to_mps}
+    cvt_unit_distance = {"feet": cvt_feet_to_meters, "meters": lambda x: x}
 
     lanes_df = utdf_dict.get("Lanes")
 
@@ -168,18 +207,13 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
         "SW": {},
     }
 
-    mvt_type_base = {
-        "L": [],
-        "T": [],
-        "R": [],
-        "U": [],
-    }
-
-    # Store lane information for each intersection
-    lane_lookup_dict = {}
+    mvt_type_base = {"L": [], "T": [], "R": [], "U": []}
 
     # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
     link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+
+    # Store lane information for each intersection
+    lane_lookup_dict = {}
 
     # Loop through each intersection, mvt group, lane and connection
     for int_id, mvt_lanes in network_lanes.items():
@@ -463,7 +497,242 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
 
                             lane_index += 1
 
+    if save_lane_csv:
+        # Save lane lookup dictionary to CSV file
+        output_lane_file = Path(save_lane_csv).with_suffix(".csv")
+        lane_df = pd.DataFrame.from_dict(lane_lookup_dict, orient="index")
+        lane_df.to_csv(output_lane_file, index=False)
+
     return lane_lookup_dict
+
+
+def generate_sumo_nod_xml(utdf_dict: dict, filename: str = "network.nod.xml") -> bool:
+    """Generate the .nod.xml file.
+
+    Args:
+        utdf_dict (dict): A dictionary containing UTDF data.
+        filename (str): The name of the output node XML file (.nod.xml).
+
+    Example:
+        >>> from utdf2gmns.func_lib import generate_sumo_nod_xml
+        >>> generate_sumo_nod_xml(utdf_dict, filename="network.nod.xml")
+        >>> # This will generate a network.nod.xml file in the current directory.
+        True
+
+    Raises:
+        ValueError: No network_nodes found, please run geocode_utdf_intersections() first.
+
+    Returns:
+        bool: True if the XML file is generated successfully, False otherwise.
+    """
+
+    network_nodes = utdf_dict.get("network_nodes")
+
+    # TDD
+    if network_nodes is None:
+        raise ValueError("No network_nodes found, please run geocode_utdf_intersections() first.")
+
+    root = ET.Element("nodes")
+    for node_id, node in network_nodes.items():
+        node_elem = ET.SubElement(root, "node")
+        node_elem.set("id", str(node_id))
+
+        # Use real-world coordinates for SUMO and then use --proj.utm to convert to UTM
+        node_elem.set("x", str(node["x_coord"]))
+        node_elem.set("y", str(node["y_coord"]))
+
+        node_type_description = node.get("TYPE_DESC")
+        if node_type_description == "Signalized":
+            node_elem.set("type", "traffic_light")  # Default type
+
+    xml_str = xml_prettify(root)
+    with open(filename, "w") as f:
+        f.write(xml_str)
+
+    return True
+
+
+def update_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: str = "network.nod.xml") -> bool:
+    """Add additional nodes for turn bay in the .nod.xml file."""
+
+    # Get node coordinates
+    network_nodes = utdf_dict.get("network_nodes")
+    if network_nodes is None:
+        raise ValueError("No network_nodes found, please run geocode_utdf_intersections() first.")
+
+    links_df = utdf_dict.get("Links")
+    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+
+    network_links = cvt_link_df_to_dict(links_df)  # Convert links DataFrame to dictionary
+
+    # read the original .nod.xml file
+    tree = ET.parse(nod_fname)
+    root = tree.getroot()
+
+    # for each line, add additional nodes for turn bay
+    for int_id, direction_links in network_links.items():
+        for direction in direction_links:
+            link = direction_links[direction]
+            up_node = link["Up ID"]
+            up_coord = [network_nodes[str(up_node)]["x_coord"], network_nodes[str(up_node)]["y_coord"]]
+            int_id_coord = [network_nodes[str(int_id)]["x_coord"], network_nodes[str(int_id)]["y_coord"]]
+            edge_id = f"{up_node}_{int_id}"
+            turn_bay_length = cal_edge_movement_lanes(edge_id, lane_lookup_dict)["max_turn_length"]
+
+            if turn_bay_length > 0:
+                # get the coordinates of the middle point of the edge
+                middle_x, middle_y = point_coord_on_line_lonlat(int_id_coord[0],
+                                                                int_id_coord[1],
+                                                                up_coord[0],
+                                                                up_coord[1],
+                                                                turn_bay_length)
+
+                # add node in nod.xml
+                node_elem = ET.SubElement(root, "node")
+                node_elem.set("id", f"{up_node}_{int_id}_t")
+                node_elem.set("x", str(middle_x))
+                node_elem.set("y", str(middle_y))
+
+    xml_str = xml_prettify(root)
+    with open(nod_fname, "w") as f:
+        f.write(xml_str)
+    return True
+
+
+def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "network.edg.xml") -> bool:
+    """Generate the .edg.xml file.
+
+    Args:
+        utdf_dict (dict): A dictionary containing UTDF data.
+        net_unit (str): The unit of the network (e.g., "feet", "meters").
+        filename (str): The name of the output edge XML file (.edg.xml).
+
+    Raises:
+        ValueError: UTDF Links and Lanes data are required.
+
+    Example:
+        >>> from utdf2gmns.func_lib import generate_sumo_edg_xml
+        >>> generate_sumo_edg_xml(utdf_dict, net_unit="feet", filename="network.edg.xml")
+        >>> # This will generate a network.edg.xml file in the current directory.
+        True
+
+    Returns:
+        bool: True if the XML file is generated successfully, False otherwise.
+    """
+
+    links_df = utdf_dict.get("Links")
+
+    if links_df is None:
+        raise ValueError("UTDF Links and Lanes data are required. ")
+
+    network_links = cvt_link_df_to_dict(links_df)
+
+    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+
+    # save lane xml file for debugging
+    output_lane_file = Path(filename).with_suffix(".lane.xml")
+
+    lane_root = ET.Element("lanes")
+    for lane_id, lane_info in lane_lookup_dict.items():
+        lane_elem = ET.SubElement(lane_root, "lane")
+        lane_elem.set("id", lane_info["id"])
+        lane_elem.set("index", str(lane_info["index"]))
+        lane_elem.set("length", str(lane_info["length"]))
+        lane_elem.set("speed", str(lane_info["speed"]))
+        lane_elem.set("volume", str(lane_info["volume"]))
+        lane_elem.set("numDetects", str(lane_info["numDetects"]))
+        lane_elem.set("dir", lane_info["dir"])
+        lane_elem.set("shared", str(lane_info["shared"]))
+        lane_elem.set("up_node", str(lane_info["up_node"]))
+        lane_elem.set("dest_node", str(lane_info["dest_node"]))
+
+    lane_xml_str = xml_prettify(lane_root)
+    with open(output_lane_file, "w") as f:
+        f.write(lane_xml_str)
+    print("  :lane.xml file saved for debugging.")
+
+    if "feet" in net_unit:
+        unit_speed = "mph"
+        unit_distance = "feet"
+    elif "meters" in net_unit:
+        unit_speed = "km/h"
+        unit_distance = "meters"
+    else:
+        print(f"  Warning:Unknown distance and speed unit for Edge generation: {net_unit}. "
+              "Defaulting to meters and km/h.")
+        unit_speed = "km/h"
+        unit_distance = "meters"
+
+    cvt_unit_speed = {"mph": cvt_mph_to_mps, "km/h": cvt_kmh_to_mps}
+    cvt_unit_distance = {"feet": cvt_feet_to_meters, "meters": lambda x: x}
+
+    root = ET.Element("edges")
+    for int_id, direction_links in network_links.items():
+        for direction in direction_links:
+            link = direction_links[direction]
+            up_node = link["Up ID"]
+
+            edge_elem = ET.SubElement(root, "edge")
+
+            edge_id = f"{up_node}_{int_id}"
+            edge_elem.set("id", f"{edge_id}")
+            edge_elem.set("from", str(up_node))
+            edge_elem.set("to", str(int_id))
+
+            if num_lanes := link.get("Lanes"):
+                num_lanes_lst = re.findall(r"\d+", str(num_lanes))  # Extract digit group
+
+                if len(num_lanes_lst) == 1:  # only one group of digits
+                    num_lanes = int(num_lanes_lst[0])
+
+                    if (num_lanes) > 0:
+                        edge_elem.set("numLanes", str(num_lanes))  # Default lanes
+
+            # check if speed is provided
+            if link.get("Speed", None):
+                link_speed = link["Speed"]
+                link_speed = re.findall(r"\d+", str(link_speed))[0]  # Extract digit group
+                speed_in_meter_per_second = cvt_unit_speed[unit_speed](float(link_speed))
+                edge_elem.set("speed", str(speed_in_meter_per_second))
+
+            # check if length is provided
+            if link.get("Distance", None):
+                link_dist = link["Distance"]
+                link_dist = re.findall(r"\d+", str(link_dist))[0]  # Extract digit group
+                length_in_meter = cvt_unit_distance[unit_distance](float(link_dist))
+
+            # Add lane for each edge
+            for lane_id in lane_lookup_dict.keys():
+                if lane_id.startswith(f"{edge_id}_"):
+                    lane_info = lane_lookup_dict[lane_id]
+
+                    # get the lane direction
+                    # lane_dir = lane_info.get("dir")
+                    # if lane_dir in ["r", "l", "t"]:
+                    #     continue
+
+                    lane_elem = ET.SubElement(edge_elem, "lane")
+
+                    # lane_elem.set("id", f"edge{lane_info["id"]}")
+                    lane_elem.set("index", str(lane_info["index"]))
+
+                    # set lane length same as edge length at edg.xml generation
+                    # if it't turning lane, will update length in the latter processing
+                    lane_elem.set("length", str(length_in_meter))
+                    # if float(lane_info["length"]) > 0:
+                    #     lane_elem.set("length", str(lane_info["length"]))
+                    # else:
+                    #     lane_elem.set("length", str(length_in_meter))
+
+                    if float(lane_info["speed"]) > 0:
+                        lane_elem.set("speed", str(lane_info["speed"]))
+                    else:
+                        lane_elem.set("speed", str(speed_in_meter_per_second))
+
+    xml_str = xml_prettify(root)
+    with open(filename, "w") as f:
+        f.write(xml_str)
+    return True
 
 
 def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.xml") -> bool:
@@ -500,6 +769,7 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
         raise ValueError("Could not get Lane data from utdf_dict.")
 
     network_lanes = cvt_lane_df_to_dict(lanes_df)  # Convert lanes DataFrame to dictionary
+    # lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit="feet")
 
     mvt_group_base = {
         "NB": {},  # {"NBL": {},"NBT": {}, "NBR": {},"NBU": {}, ...},
@@ -790,170 +1060,6 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
     return True
 
 
-def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "network.edg.xml") -> bool:
-    """Generate the .edg.xml file.
-
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-        net_unit (str): The unit of the network (e.g., "feet", "meters").
-        filename (str): The name of the output edge XML file (.edg.xml).
-
-    Raises:
-        ValueError: UTDF Links and Lanes data are required.
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_sumo_edg_xml
-        >>> generate_sumo_edg_xml(utdf_dict, net_unit="feet", filename="network.edg.xml")
-        >>> # This will generate a network.edg.xml file in the current directory.
-        True
-
-    Returns:
-        bool: True if the XML file is generated successfully, False otherwise.
-    """
-
-    links_df = utdf_dict.get("Links")
-
-    if links_df is None:
-        raise ValueError("UTDF Links and Lanes data are required. ")
-
-    network_links = cvt_link_df_to_dict(links_df)
-
-    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
-
-    if "feet" in net_unit:
-        unit_speed = "mph"
-        unit_distance = "feet"
-    elif "meters" in net_unit:
-        unit_speed = "km/h"
-        unit_distance = "meters"
-    else:
-        print(f"  Warning:Unknown distance and speed unit for Edge generation: {net_unit}. "
-              "Defaulting to meters and km/h.")
-        unit_speed = "km/h"
-        unit_distance = "meters"
-
-    cvt_unit_speed = {
-        "mph": cvt_mph_to_mps,
-        "km/h": cvt_kmh_to_mps,
-    }
-    cvt_unit_distance = {
-        "feet": cvt_feet_to_meters,
-        "meters": lambda x: x,
-    }
-
-    root = ET.Element("edges")
-    for int_id, direction_links in network_links.items():
-        for direction in direction_links:
-            link = direction_links[direction]
-            up_node = link["Up ID"]
-
-            edge_elem = ET.SubElement(root, "edge")
-
-            edge_id = f"{up_node}_{int_id}"
-            edge_elem.set("id", f"{edge_id}")
-            edge_elem.set("from", str(up_node))
-            edge_elem.set("to", str(int_id))
-
-            # define number of lanes for the edge
-            num_lanes = link.get("Lanes")
-            if num_lanes:
-                num_lanes_lst = re.findall(r"\d+", str(num_lanes))  # Extract digit group
-
-                if len(num_lanes_lst) == 1:  # only one group of digits
-                    num_lanes = int(num_lanes_lst[0])
-
-                    if (num_lanes) > 0:
-                        edge_elem.set("numLanes", str(num_lanes))  # Default lanes
-                    elif num_lanes == 0:  # one-way street
-                        pass
-
-            # check if speed is provided
-            if link.get("Speed", None):
-                link_speed = link["Speed"]
-                link_speed = re.findall(r"\d+", str(link_speed))[0]  # Extract digit group
-                speed_in_meter_per_second = cvt_unit_speed[unit_speed](float(link_speed))
-                edge_elem.set("speed", str(speed_in_meter_per_second))
-
-            # check if length is provided
-            if link.get("Distance", None):
-                link_dist = link["Distance"]
-                link_dist = re.findall(r"\d+", str(link_dist))[0]  # Extract digit group
-                length_in_meter = cvt_unit_distance[unit_distance](float(link_dist))
-
-            # Add lane for each edge
-            for lane_id in lane_lookup_dict.keys():
-                if lane_id.startswith(f"{edge_id}_"):
-                    lane_info = lane_lookup_dict[lane_id]
-
-                    # get the lane direction
-                    # lane_dir = lane_info.get("dir")
-                    # if lane_dir in ["r", "l", "t"]:
-                    #     continue
-
-                    lane_elem = ET.SubElement(edge_elem, "lane")
-
-                    # lane_elem.set("id", f"edge{lane_info["id"]}")
-                    lane_elem.set("index", str(lane_info["index"]))
-
-                    if float(lane_info["length"]) > 0:
-                        lane_elem.set("length", str(lane_info["length"]))
-                    else:
-                        lane_elem.set("length", str(length_in_meter))
-
-                    if float(lane_info["speed"]) > 0:
-                        lane_elem.set("speed", str(lane_info["speed"]))
-                    else:
-                        lane_elem.set("speed", str(speed_in_meter_per_second))
-
-    xml_str = xml_prettify(root)
-    with open(filename, "w") as f:
-        f.write(xml_str)
-    return True
-
-
-def generate_net_link_lookup_dict(utdf_dict: dict) -> dict:
-    """Generate a lookup dictionary for edges.
-
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-
-    Raises:
-        ValueError: UTDF Links data are required in utdf_dict.
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_net_link_lookup_dict
-        >>> edge_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
-        >>> # This will generate a lookup dictionary for edges based on the provided UTDF Links data.
-        >>> print(edge_lookup_dict)  # {"edge_id": "num_lanes"}
-        {'1_2': '2', '2_3': '2', ...}
-
-    Returns:
-        dict: A dictionary containing edge information for each intersection.
-    """
-    link_df = utdf_dict.get("Links")
-
-    if link_df is None:
-        raise ValueError("UTDF Links data are required in utdf_dict.")
-
-    network_links = cvt_link_df_to_dict(link_df)  # Convert links DataFrame to dictionary
-
-    # Create a lookup dictionary for edges
-    edge_lookup_dict = {}
-    for int_id, direction_links in network_links.items():
-        for direction in direction_links:
-            num_lanes = direction_links[direction].get("Lanes")  # Default lanes
-            length = direction_links[direction].get("Distance")
-            speed = direction_links[direction].get("Speed")
-
-            up_node = direction_links[direction]["Up ID"]
-            edge_lookup_dict[f"{up_node}_{int_id}"] = {
-                "num_lanes": num_lanes,
-                "length": length,
-                "speed": speed,
-            }
-    return edge_lookup_dict
-
-
 def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **kwargs) -> bool:
     """Generate the .flow.xml file.
 
@@ -1036,36 +1142,6 @@ def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **k
     return True
 
 
-def generate_turn_bay_node_edge_con(up_node: str,
-                                    int_node: str,
-                                    length: str,
-                                    speed: str,
-                                    nod_fname: str = "network.nod.xml",
-                                    edge_fname: str = "network.edg.xml",
-                                    con_fname: str = "network.con.xml",
-                                    **kwargs) -> bool:
-    """Create dummy node and edge for turn bay"""
-
-    # Step 1: Get coordinates of up_node and int_id from the node file.
-
-    # Step 2: Generate dummy node id and calculate its coordinate.
-    # The dummy node is bay_len away from int_id along the line from int_id toward up_node.
-
-    # Step 3: Open node_fname (.nod.xml) and add the dummy node.
-
-    # Step 4: Add the bay edge into the edge file.
-    # Create a new edge that represents the bay.
-
-    # Define the lane for this edge.
-    # The lane goes from the dummy node coordinate to int_id's coordinate.
-
-    # Step 5: Add connections to the connection file.
-    # Connection from the bay edge to int_id.
-
-    # Connection from int_id to dest_node.
-    pass
-
-
 def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector_type: str = "E1",
                                         add_fname: str = "network.add.xml", sim_output_fname: str = "") -> bool:
     """""Generate the .add.xml file for SUMO and add loop detectors for each lane that has a detector.
@@ -1109,11 +1185,11 @@ def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector
 
     add_elem = ET.Element("additional")
 
-    if not str(add_fname).endswith(".add.xml"):
+    if not add_fname.endswith(".add.xml"):
         add_fname = f"{add_fname}.add.xml"
 
     if sim_output_fname:
-        if not str(sim_output_fname).endswith(".xml"):
+        if not sim_output_fname.endswith(".xml"):
             sim_output_fname = f"{sim_output_fname}.xml"
     else:
         sim_output_fname = f"output_loop_detector_{datetime.now().strftime(r'%Y%m%d%H%M')}.xml"

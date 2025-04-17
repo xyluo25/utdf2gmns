@@ -35,42 +35,84 @@ def calculate_point2point_distance_in_km(point1: list, point2: list) -> float:
     return R * c
 
 
-def point_on_line(x1, y1, x2, y2, distance):
-    """
-    Calculate the (x, y) coordinates on the line from (x1, y1) to (x2, y2)
-    at a given distance from the starting point (x1, y1).
+def point_coord_on_line_2dim(x1: float, y1: float, x2: float, y2: float, distance: float) -> tuple:
+    """Given a starting point (x1, y1) and an ending point (x2, y2) in 2D space,
+    return the coordinates of the point at a given distance from the starting point.
 
-    Parameters:
-        x1, y1 : float
-            Coordinates of the starting point.
-        x2, y2 : float
-            Coordinates of the ending point.
-        distance : float
-            The distance from the starting point at which to find the point.
+    Args:
+        x1 (float): x-coordinate of the starting point.
+        y1 (float): y-coordinate of the starting point.
+        x2 (float): x-coordinate of the ending point.
+        y2 (float): y-coordinate of the ending point.
+        distance (float): The distance from the starting point.
 
     Returns:
-        (x, y) : tuple of floats
-            The coordinates of the point along the line.
+        tuple: A tuple containing the x and y coordinates of the point at the given distance.
     """
-    # Calculate the difference in coordinates
     dx = x2 - x1
     dy = y2 - y1
-
-    # Calculate the total length of the line segment
-    line_length = math.sqrt(dx**2 + dy**2)
-
-    # If the points are identical, return the starting point
-    if line_length == 0:
+    length = math.sqrt(dx**2 + dy**2)
+    if length == 0:
         return x1, y1
-
-    # Determine the ratio of the given distance to the total length
-    ratio = distance / line_length
-
-    # Calculate the new coordinates using the ratio
+    ratio = distance / length
     x = x1 + ratio * dx
     y = y1 + ratio * dy
+    return (x, y)
 
-    return x, y
+
+def point_coord_on_line_lonlat(lon1: float, lat1: float, lon2: float, lat2: float, distance: float) -> tuple:
+    """
+    Given a start point (lon1, lat1) and end point (lon2, lat2),
+    return the longitude/latitude of the point at `distance` meters
+    from the start, following the great circle path.
+
+    Args:
+        lon1 (float): Longitude of the starting point in degrees.
+        lat1 (float): Latitude of the starting point in degrees.
+        lon2 (float): Longitude of the ending point in degrees.
+        lat2 (float): Latitude of the ending point in degrees.
+        distance (float): Distance from the start point, in meters.
+
+    Returns:
+        (lon, lat): Tuple of longitude and latitude in degrees.
+    """
+    # Convert to radians
+    φ1 = math.radians(lat1)
+    λ1 = math.radians(lon1)
+    φ2 = math.radians(lat2)
+    λ2 = math.radians(lon2)
+
+    # Earth radius (mean)
+    R = 6_371_000.0
+
+    # Compute the great-circle distance between start and end
+    Δφ = φ2 - φ1
+    Δλ = λ2 - λ1
+    a = math.sin(Δφ / 2)**2 + math.cos(φ1) * math.cos(φ2) * math.sin(Δλ / 2)**2
+    sig = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    if sig == 0 or distance == 0:
+        # coincident points or zero distance
+        return lon1, lat1
+
+    # Initial bearing from point 1 to point 2
+    θ = math.atan2(
+        math.sin(Δλ) * math.cos(φ2),
+        math.cos(φ1) * math.sin(φ2) - math.sin(φ1) * math.cos(φ2) * math.cos(Δλ))
+
+    # Angular distance along the great circle
+    δ = distance / R
+
+    # Compute the new point
+    φ3 = math.asin(math.sin(φ1) * math.cos(δ) + math.cos(φ1) * math.sin(δ) * math.cos(θ))
+    λ3 = λ1 + math.atan2(math.sin(θ) * math.sin(δ) * math.cos(φ1),
+                         math.cos(δ) - math.sin(φ1) * math.sin(φ3))
+
+    # Normalize lon to −180…+180°
+    lon3 = (math.degrees(λ3) + 540) % 360 - 180
+    lat3 = math.degrees(φ3)
+
+    return (lon3, lat3)
 
 
 def time_unit_converter(value: float, from_unit: str, to_unit: str, verbose: bool = True) -> float:
