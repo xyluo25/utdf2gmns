@@ -9941,7 +9941,7 @@ Link Is Hidden,497,,,FALSE,,,,,
 Street Name Is Hidden,497,,,FALSE,,,,,
 Up ID,498,747,376,,,,,,483
 Lanes,498,2,2,,,,,,0
-Name,498,SR 143,SR 143 SB,,,,,,SR 143 NB 
+Name,498,SR 143,SR 143 SB,,,,,,SR 143 NB
 Distance,498,705,696,,,,,,741
 Speed,498,30,30,,,,,,30
 Time,498,16,15.8,,,,,,16.8
@@ -12140,7 +12140,7 @@ Curve Pt Z,5271,,,,,,,,
 Link Is Hidden,5271,FALSE,FALSE,,,,,,
 Street Name Is Hidden,5271,FALSE,FALSE,,,,,,
 Up ID,5272,,,53,5214,,,,
-Lanes,5272,,,3,2,,,,
+Lanes,5272,,,2,2,,,,
 Name,5272,,,University Drive,University Drive,,,,
 Distance,5272,,,1640,620,,,,
 Speed,5272,,,40,40,,,,

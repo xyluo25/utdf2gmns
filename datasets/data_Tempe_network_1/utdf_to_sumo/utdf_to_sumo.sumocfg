@@ -4,6 +4,7 @@
     <input>
         <net-file value="utdf_to_sumo.net.xml"/>
         <route-files value="utdf_to_sumo.rou.xml"/>
+        <additional-files value="utdf_to_sumo.detector.xml"/>
     </input>
     <output>
         <edgedata-output value="EdgeData.xml"/>

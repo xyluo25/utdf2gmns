@@ -388,7 +388,9 @@ class UTDF2GMNS:
         print(f"  :generated SUMO node xml file: {xml_name}.nod.xml")
 
         # add additional nodes for turn bay implementation
-        add_sumo_nod_xml_for_turn_bay(self._utdf_dict, self.network_unit, output_node_file)
+        turn_nodes, link_lookup_dict, lane_lookup_dict = add_sumo_nod_xml_for_turn_bay(self._utdf_dict,
+                                                                                       self.network_unit,
+                                                                                       output_node_file)
         print(f"  :generated SUMO nodes for turn bay: {xml_name}.nod.xml")
 
         # create SUMO .edg.xml file
@@ -398,15 +400,15 @@ class UTDF2GMNS:
         print(f"  :generated SUMO edge xml file: {xml_name}.edg.xml")
 
         # Create SUMO .con.xml file
-        # output_con_file = os.path.join(sumo_output_dir, f"{xml_name}.con.xml")
-        # output_con_file = pf.path2linux(output_con_file)
-        # generate_sumo_connection_xml(self._utdf_dict, output_con_file)
-        # print(f"  :generated SUMO connection xml file: {xml_name}.con.xml")
+        output_con_file = os.path.join(sumo_output_dir, f"{xml_name}.con.xml")
+        output_con_file = pf.path2linux(output_con_file)
+        generate_sumo_connection_xml(self._utdf_dict, link_lookup_dict, output_con_file)
+        print(f"  :generated SUMO connection xml file: {xml_name}.con.xml")
 
         # Create SUMO loop detector in .add.xml file
         output_add_file = os.path.join(sumo_output_dir, f"{xml_name}.detector.xml")
         output_add_file = pf.path2linux(output_add_file)
-        generate_sumo_loop_detector_xml(self._utdf_dict, self.network_unit,
+        generate_sumo_loop_detector_xml(lane_lookup_dict,
                                         detector_type="E1",
                                         add_fname=output_add_file,
                                         sim_output_fname="")
@@ -420,7 +422,7 @@ class UTDF2GMNS:
             result = subprocess.run(["netconvert",
                                      f"--node-files={output_node_file}",
                                      f"--edge-files={output_edge_file}",
-                                    #  f"--connection-files={output_con_file}",
+                                     f"--connection-files={output_con_file}",
                                      f"--output-file={output_net_file}",
                                      "--no-warnings=true",
                                      "--proj.utm"],
@@ -462,13 +464,16 @@ class UTDF2GMNS:
             print(f"  :Error in generating SUMO network: {e}")
             return False
 
-        # update turn bay length in the SUMO network
-        update_turn_bay_length(output_net_file, self._utdf_dict, self.network_unit)
-        print(f"  :updated turn bay length to: {xml_name}.net.xml")
-
         # update SUMO signal in .net.xml file
         update_sumo_signal_from_utdf(output_net_file, self._utdf_dict, verbose=self._verbose)
         print(f"  :Updated SUMO signal xml to: {xml_name}.net.xml")
+
+        # remove U-turns in the SUMO network
+        # if disable_U_turn:
+        #     print()
+        #     remove_sumo_U_turn(output_net_file)
+        #     print("  :U-turns removed from the SUMO network")
+        #     print()
 
         # create SUMO .flow.xml file
         output_flow_file = os.path.join(sumo_output_dir, f"{xml_name}.flow.xml")
@@ -478,7 +483,7 @@ class UTDF2GMNS:
         else:
             begin_time = sim_start_time
         end_time = begin_time + sim_duration
-        generate_sumo_flow_xml(self._utdf_dict, output_flow_file,
+        generate_sumo_flow_xml(self._utdf_dict, link_lookup_dict, output_flow_file,
                                begin=begin_time,
                                end=end_time)
         print(f"  :SUMO flow file to: {xml_name}.flow.xml")
@@ -486,7 +491,7 @@ class UTDF2GMNS:
         # create SUMO .turn.xml file
         output_turn_file = os.path.join(sumo_output_dir, f"{xml_name}.turn.xml")
         output_turn_file = pf.path2linux(output_turn_file)
-        generate_sumo_turn_xml(self._utdf_dict, self.network_unit,
+        generate_sumo_turn_xml(lane_lookup_dict, self.network_unit,
                                output_turn_file,
                                begin=begin_time,
                                end=end_time)
@@ -502,7 +507,7 @@ class UTDF2GMNS:
             jtrrouter_fname = pf.path2linux(jtrrouter_fname)
             result = subprocess.run([jtrrouter_fname,
                                      f"--route-files={output_flow_file}",
-                                     f"--turn-ratio-files={output_turn_file}",
+                                    #  f"--turn-ratio-files={output_turn_file}",
                                      f"--net-file={output_net_file}",
                                      "--accept-all-destinations=false",
                                      f"--output-file={output_rou_file}",
@@ -538,12 +543,6 @@ class UTDF2GMNS:
             print(f"  :Error in generating SUMO route file: {e}")
             return False
 
-        # remove U-turns in the SUMO network
-        if disable_U_turn:
-            print()
-            remove_sumo_U_turn(output_net_file)
-            print()
-
         # create .sumocfg file for the generated network
         # will generate default .rou.xml file for the network
         sumo_cfg_file = os.path.join(sumo_output_dir, f"{xml_name}.sumocfg")
@@ -556,7 +555,7 @@ class UTDF2GMNS:
             f'    <input>\n'
             f'        <net-file value="{xml_name}.net.xml"/>\n'
             f'        <route-files value="{xml_name}.rou.xml"/>\n'
-            # f'        <additional-files value="{xml_name}.detector.xml"/>\n'
+            f'        <additional-files value="{xml_name}.detector.xml"/>\n'
             f'    </input>\n'
             f'    <output>\n'
             f'        <edgedata-output value="EdgeData.xml"/>\n'

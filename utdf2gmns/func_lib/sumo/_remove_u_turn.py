@@ -30,6 +30,9 @@ def remove_sumo_U_turn(path_net: str) -> bool:
         from_edge = connection.get('from')
         to_edge = connection.get('to')
 
+        if connection.attrib['dir'] == "t":
+            connection.attrib['dir'] = "invalid"
+
         if from_edge == to_edge:
             # change the dir attribute to "invalid" if the connection is a U-turn'
             connection.attrib['dir'] = "invalid"
@@ -44,5 +47,5 @@ def remove_sumo_U_turn(path_net: str) -> bool:
 
     # write the modified xml to the file
     tree.write(path_net, encoding='utf-8', xml_declaration=True)
-    print("  :U-turns removed from the SUMO network")
+    # print("  :U-turns removed from the SUMO network")
     return True

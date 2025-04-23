@@ -108,6 +108,23 @@ def cal_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
         "edge_length": max(R_length + T_length + L_length + U_length, default=0)}
 
 
+def delete_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
+    """Remove the lanes for each movement type in the edge."""
+    lane_index_in_edge = 0
+    lane_id = f"{edge_id}_{lane_index_in_edge}"
+    lane_id_lst = []
+    while lane_id in lane_lookup_dict:
+        lane_id_lst.append(lane_id)
+        lane_index_in_edge += 1
+        lane_id = f"{edge_id}_{lane_index_in_edge}"
+
+    # delete lanes in lane_lookup_dict
+    lane_lookup_dict_internal = copy.deepcopy(lane_lookup_dict)
+    for lane_id in lane_id_lst:
+        del lane_lookup_dict_internal[lane_id]
+    return lane_lookup_dict_internal
+
+
 def generate_net_link_lookup_dict(utdf_dict: dict) -> dict:
     """Generate a lookup dictionary for edges.
 
@@ -136,22 +153,27 @@ def generate_net_link_lookup_dict(utdf_dict: dict) -> dict:
 
     # Create a lookup dictionary for edges
     edge_lookup_dict = {}
-    for int_id, direction_links in network_links.items():
-        for direction in direction_links:
-            num_lanes = direction_links[direction].get("Lanes")  # Default lanes
-            length = direction_links[direction].get("Distance")
-            speed = direction_links[direction].get("Speed")
+    for int_id, bound_links in network_links.items():
+        for each_bound in bound_links:
+            num_lanes = bound_links[each_bound].get("Lanes")  # Default lanes
+            # get digit from num_lanes
+            num_lanes = re.findall(r"\d+", str(num_lanes))[0] if num_lanes else "0"
+            if int(num_lanes) > 0:
+                length = bound_links[each_bound].get("Distance")
+                speed = bound_links[each_bound].get("Speed")
+                name = bound_links[each_bound].get("Name")
 
-            up_node = direction_links[direction]["Up ID"]
-            edge_lookup_dict[f"{up_node}_{int_id}"] = {
-                "num_lanes": num_lanes,
-                "length": length,
-                "speed": speed,
-            }
+                up_node = bound_links[each_bound]["Up ID"]
+                edge_lookup_dict[f"{up_node}_{int_id}"] = {
+                    "num_lanes": num_lanes,
+                    "length": length,
+                    "speed": speed,
+                    "name": name,
+                }
     return edge_lookup_dict
 
 
-def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, save_lane_csv: str = "") -> dict:
+def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, link_lookup_dict, save_lane_csv: str = "") -> dict:
     """Generate the .lane.xml file.
                      int_id
                     ____|____ _____  __ ...
@@ -217,7 +239,7 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, save_lane_csv:
     mvt_type_base = {"L": [], "T": [], "R": [], "U": []}
 
     # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
-    link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+    # link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
 
     # Store lane information for each intersection
     lane_lookup_dict = {}
@@ -282,6 +304,9 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, save_lane_csv:
             if mvt_type["R"]:
                 for right_turn in mvt_type["R"]:
                     num_lanes = right_turn.get("lanes")
+                    if num_lanes and int(num_lanes) <= 0:  # shared right turn lane
+                        # Do not create lane for shared right turn lane
+                        continue
 
                     up_node = right_turn.get("up_node")
                     dest_node = right_turn.get("dest_node")
@@ -293,48 +318,44 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str, save_lane_csv:
                     distance = right_turn.get("distance")
                     num_detects = right_turn.get("num_detects")
 
-                    if int(num_lanes) == 0:  # shared right turn lane
-                        # Do not create lane for shared right turn lane
-                        pass
+                    # if int(num_lanes) > 0:  # protected right turn lane (right turn bay)
+                    for _ in range(int(num_lanes)):  # protected right turn lane (right turn bay)
+                        # Create lane for protected right turn bay
+                        if storage:
+                            storage = re.findall(r"\d+", str(storage))[0]
+                            lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
+                        elif distance:
+                            distance = re.findall(r"\d+", str(distance))[0]  # Extract digit
+                            lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
+                        else:
+                            # use length from link lookup dictionary
+                            lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
+                            lane_length = re.findall(r"\d+", str(lane_length))[0]  # Extract digit
+                            lane_length = cvt_unit_distance[unit_distance](float(lane_length))
 
-                    elif int(num_lanes) > 0:  # protected right turn lane (right turn bay)
-                        for _ in range(int(num_lanes)):
-                            # Create lane for protected right turn bay
-                            if storage:
-                                storage = re.findall(r"\d+", str(storage))[0]
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(r"\d+", str(lane_length))[0]  # Extract digit
-                                lane_length = cvt_unit_distance[unit_distance](float(lane_length))
+                        if speed:
+                            speed = re.findall(r"\d+", str(speed))[0]  # Extract digit
+                            lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
+                        else:
+                            # use speed from link lookup dictionary
+                            lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
+                            lane_speed = re.findall(r"\d+", str(lane_speed))[0]  # Extract digit
+                            lane_speed = cvt_unit_speed[unit_speed](float(lane_speed))
 
-                            if speed:
-                                speed = re.findall(r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(r"\d+", str(lane_speed))[0]  # Extract digit
-                                lane_speed = cvt_unit_speed[unit_speed](float(lane_speed))
+                        lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
+                            "id": f"{up_node}_{int_id}_{lane_index}",
+                            "index": lane_index,
+                            "length": lane_length,
+                            "speed": lane_speed,
+                            "volume": volume,
+                            "numDetects": num_detects,
+                            "dir": "r",
+                            "shared": shared,
+                            "up_node": up_node,
+                            "dest_node": dest_node,
+                        }
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
-                                "index": lane_index,
-                                "length": lane_length,
-                                "speed": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "dir": "r",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                            }
-
-                            lane_index += 1
+                        lane_index += 1
 
             # Add Through lanes
             if mvt_type["T"]:
@@ -567,9 +588,14 @@ def add_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: str
     if network_nodes is None:
         raise ValueError("No network_nodes found, please run geocode_utdf_intersections() first.")
 
-    links_df = utdf_dict.get("Links")
-    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+    link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit, link_lookup_dict)
 
+    # deep copy of lane and link lookup dictionary for updates
+    lane_lookup_dict_Copy = copy.deepcopy(lane_lookup_dict)
+    link_lookup_dict_Copy = copy.deepcopy(link_lookup_dict)
+
+    links_df = utdf_dict.get("Links")
     network_links = cvt_link_df_to_dict(links_df)  # Convert links DataFrame to dictionary
 
     # read the original .nod.xml file
@@ -601,16 +627,69 @@ def add_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: str
 
                 # add node in nod.xml
                 node_elem = ET.SubElement(root, "node")
-                node_elem.set("id", f"{up_node}_{int_id}_turn")
+                node_elem.set("id", f"{up_node}turn{int_id}")
                 node_elem.set("x", str(middle_x))
                 node_elem.set("y", str(middle_y))
+                turn_bay_nodes[f"{up_node}turn{int_id}"] = {}
 
-                turn_bay_nodes[f"{up_node}_{int_id}_turn"] = {}
+                # update link lookup dictionary
+                num_through_lanes = len(edge_info["T"])
+                num_lanes = link_lookup_dict[edge_id]["num_lanes"]
+                speed = link_lookup_dict[edge_id]["speed"]
+                link_lookup_dict_Copy[f"{up_node}_{up_node}turn{int_id}"] = {
+                    # through segment from up_node to turn_node
+                    "num_lanes": num_through_lanes,
+                    "length": edge_length - turn_bay_length,
+                    "speed": speed
+                }
+                link_lookup_dict_Copy[f"{up_node}turn{int_id}_{int_id}"] = {
+                    # turn segment from turn_node to int_id
+                    "num_lanes": num_lanes,
+                    "length": turn_bay_length,
+                    "speed": speed
+                }
+                del link_lookup_dict_Copy[edge_id]  # remove the original edge
+
+                # update lane lookup dictionary
+                lane_index = 0
+                lane_id = f"{up_node}_{int_id}_{lane_index}"
+                through_lane_id = []
+                while lane_id in lane_lookup_dict:
+                    # add turn_node to int_id lanes
+                    lane_id_end = f"{up_node}turn{int_id}_{int_id}_{lane_index}"
+                    lane_lookup_dict_Copy[lane_id_end] = copy.deepcopy(lane_lookup_dict[lane_id])
+                    lane_lookup_dict_Copy[lane_id_end]["id"] = lane_id_end
+                    lane_lookup_dict_Copy[lane_id_end]["up_node"] = f"{up_node}turn{int_id}"
+                    lane_lookup_dict_Copy[lane_id_end]["length"] = str(turn_bay_length)
+
+                    if lane_lookup_dict[lane_id]["dir"] == "s":
+                        # through lane, add to turn_node
+                        through_lane_id.append(lane_index)
+
+                    lane_index += 1
+                    lane_id = f"{up_node}_{int_id}_{lane_index}"
+
+                if through_lane_id:
+                    # add through lanes from up_node to turn_node
+                    through_lane_id_sorted = sorted(through_lane_id)
+                    for lane_index_t, lane_index_sorted in enumerate(through_lane_id_sorted):
+                        lane_id = f"{up_node}_{int_id}_{lane_index_sorted}"
+                        lane_id_front = f"{up_node}_{up_node}turn{int_id}_{lane_index_t}"
+                        lane_lookup_dict_Copy[lane_id_front] = copy.deepcopy(lane_lookup_dict[lane_id])
+                        lane_lookup_dict_Copy[lane_id_front]["id"] = lane_id_front
+                        lane_lookup_dict_Copy[lane_id_front]["index"] = lane_index_t
+                        lane_lookup_dict_Copy[lane_id_front]["dest_node"] = f"{up_node}turn{int_id}"
+                        lane_lookup_dict_Copy[lane_id_front]["numDetects"] = None
+                        lane_lookup_dict_Copy[lane_id_front]["length"] = str(edge_length - turn_bay_length)
+                        # lane_lookup_dict_Copy[lane_id_front]["volume"] = "add"   # add straight and turn volumes
+
+                # delete the original lanes in lane_lookup_dict
+                lane_lookup_dict_Copy = delete_edge_movement_lanes(edge_id, lane_lookup_dict_Copy)
 
     xml_str = xml_prettify(root)
     with open(nod_fname, "w") as f:
         f.write(xml_str)
-    return turn_bay_nodes
+    return (turn_bay_nodes, link_lookup_dict_Copy, lane_lookup_dict_Copy)
 
 
 def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "network.edg.xml") -> bool:
@@ -641,29 +720,12 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
 
     network_links = cvt_link_df_to_dict(links_df)
 
-    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+    link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit, link_lookup_dict)
 
     # save lane xml file for debugging
     output_lane_file = Path(filename).with_suffix(".lane.xml")
-
-    lane_root = ET.Element("lanes")
-    for lane_id, lane_info in lane_lookup_dict.items():
-        lane_elem = ET.SubElement(lane_root, "lane")
-        lane_elem.set("id", lane_info["id"])
-        lane_elem.set("index", str(lane_info["index"]))
-        lane_elem.set("length", str(lane_info["length"]))
-        lane_elem.set("speed", str(lane_info["speed"]))
-        lane_elem.set("volume", str(lane_info["volume"]))
-        lane_elem.set("numDetects", str(lane_info["numDetects"]))
-        lane_elem.set("dir", lane_info["dir"])
-        lane_elem.set("shared", str(lane_info["shared"]))
-        lane_elem.set("up_node", str(lane_info["up_node"]))
-        lane_elem.set("dest_node", str(lane_info["dest_node"]))
-
-    lane_xml_str = xml_prettify(lane_root)
-    with open(output_lane_file, "w") as f:
-        f.write(lane_xml_str)
-    print("  :generated lane.xml file.")
+    generate_sumo_lane_xml(lane_lookup_dict, output_lane_file)
 
     if "feet" in net_unit:
         unit_speed = "mph"
@@ -681,11 +743,15 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
     cvt_unit_distance = {"feet": cvt_feet_to_meters, "meters": lambda x: x}
 
     root = ET.Element("edges")
-    for int_id, direction_links in network_links.items():
-        for direction in direction_links:
-
+    for int_id, bound_links in network_links.items():
+        for each_bound in bound_links:
             # link level information
-            link = direction_links[direction]
+            link = bound_links[each_bound]
+
+            num_lanes = link.get("Lanes")  # Default lanes
+            num_lanes = re.findall(r"\d+", str(num_lanes))[0] if num_lanes else "0"
+            if int(num_lanes) <= 0:  # skip if no lanes
+                continue
 
             # check if speed is provided
             if link.get("Speed", None):
@@ -709,7 +775,7 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
             # if turning bay length is greater than 0 and not equal to the edge length, add new node connection
             if turn_bay_length > 0 and turn_bay_length != edge_length:  # avoid T-intersection
                 # For before left and right bay: up_node -> turn_node
-                turn_node_id = f"{up_node}_{int_id}_turn"
+                turn_node_id = f"{up_node}turn{int_id}"
                 num_through_lanes = len(edge_info["T"])
 
                 if num_through_lanes > 0:
@@ -781,7 +847,33 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
     return True
 
 
-def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.xml") -> bool:
+def generate_sumo_lane_xml(lane_lookup_dict: dict, output_lane_file: str) -> bool:
+
+    # save lane xml file for debugging
+    # output_lane_file = Path(filename).with_suffix(".lane.xml")
+
+    lane_root = ET.Element("lanes")
+    for lane_info in lane_lookup_dict.values():
+        lane_elem = ET.SubElement(lane_root, "lane")
+        lane_elem.set("id", lane_info["id"])
+        lane_elem.set("index", str(lane_info["index"]))
+        lane_elem.set("length", str(lane_info["length"]))
+        lane_elem.set("speed", str(lane_info["speed"]))
+        lane_elem.set("volume", str(lane_info["volume"]))
+        lane_elem.set("numDetects", str(lane_info["numDetects"]))
+        lane_elem.set("dir", lane_info["dir"])
+        lane_elem.set("shared", str(lane_info["shared"]))
+        lane_elem.set("up_node", str(lane_info["up_node"]))
+        lane_elem.set("dest_node", str(lane_info["dest_node"]))
+
+    lane_xml_str = xml_prettify(lane_root)
+    with open(output_lane_file, "w") as f:
+        f.write(lane_xml_str)
+    print("  :generated lane.xml file.")
+    return True
+
+
+def generate_sumo_connection_xml(utdf_dict: dict, link_lookup_dict: dict, filename: str = "network.con.xml") -> bool:
     """Generate the .lane.xml file.
                      int_id
                     ____|____ _____  __ ...
@@ -835,11 +927,11 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
         "U": [],
     }
 
-    # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
-    link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
+    # # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
+    # link_lookup_dict = generate_net_link_lookup_dict(utdf_dict)
 
     def update_lane_index(lane_index: str, edge_id: str, link_lookup_dict: dict) -> str:
-        """Update lane index based on the link lookup dictionary."""
+        """ Update lane index based on the link lookup dictionary."""
 
         lane_index_integer = int(lane_index)
         edge_lanes = link_lookup_dict.get(edge_id)["num_lanes"]
@@ -857,6 +949,7 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
 
     # create connection xml
     root_con = ET.Element("connections")
+    connection_check_set = set()  # To avoid duplicate connections
 
     # Loop through each intersection, mvt group, lane and connection
     for int_id, mvt_lanes in network_lanes.items():
@@ -922,16 +1015,38 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
 
                     up_node = right_turn.get("up_node")
                     dest_node = right_turn.get("dest_node")
+                    from_edge = f"{up_node}_{int_id}"
+                    to_edge = f"{int_id}_{dest_node}"
+
+                    # check if link exists in link_lookup_dict
+                    if from_edge not in link_lookup_dict:
+                        from_edge = f"{up_node}turn{int_id}_{int_id}"
+                        if from_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
+
+                        # add connection for up_node to turn_node
+                        if (f"{up_node}_{up_node}turn{int_id}",
+                                f"{up_node}turn{int_id}_{int_id}") not in connection_check_set:
+                            connection_check_set.add((f"{up_node}_{up_node}turn{int_id}",
+                                                      f"{up_node}turn{int_id}_{int_id}"))
+                            connection = ET.SubElement(root_con, "connection")
+                            connection.set("from", f"{up_node}_{up_node}turn{int_id}")
+                            connection.set("to", f"{up_node}turn{int_id}_{int_id}")
+
+                    if to_edge not in link_lookup_dict:
+                        to_edge = f"{int_id}_{int_id}turn{dest_node}"
+                        if to_edge not in link_lookup_dict:
+                            continue
 
                     if int(num_lanes) == 0:  # shared right turn lane
                         # Create connection for shared right turn lane
                         connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
+                        connection.set("from", from_edge)
+                        connection.set("to", to_edge)
                         connection.set("fromLane",
-                                       update_lane_index(f"{lane_index}", f"{up_node}_{int_id}", link_lookup_dict))
+                                       update_lane_index(f"{lane_index}", from_edge, link_lookup_dict))
                         connection.set("toLane",
-                                       update_lane_index(f"{lane_index}", f"{int_id}_{dest_node}", link_lookup_dict))
+                                       update_lane_index(f"{lane_index}", to_edge, link_lookup_dict))
                         connection.set("dir", "r")  # right turn
                         # connection.set("state", "o")  #
 
@@ -939,15 +1054,15 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
                         for _ in range(int(num_lanes)):
                             # Create connection for protected right turn lane
                             connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
+                            connection.set("from", from_edge)
+                            connection.set("to", to_edge)
                             connection.set("fromLane",
                                            update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
+                                                             from_edge,
                                                              link_lookup_dict))
                             connection.set("toLane",
                                            update_lane_index(f"{lane_index}",
-                                                             f"{int_id}_{dest_node}",
+                                                             to_edge,
                                                              link_lookup_dict))
                             connection.set("dir", "r")  # right turn
                             # connection.set("state", "o")
@@ -961,23 +1076,45 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
 
                     up_node = through.get("up_node")
                     dest_node = through.get("dest_node")
+                    from_edge = f"{up_node}_{int_id}"
+                    to_edge = f"{int_id}_{dest_node}"
+
+                    # check if link exists in link_lookup_dict
+                    if from_edge not in link_lookup_dict:
+                        from_edge = f"{up_node}turn{int_id}_{int_id}"
+                        if from_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
+
+                        # add connection for up_node to turn_node
+                        if (f"{up_node}_{up_node}turn{int_id}",
+                                f"{up_node}turn{int_id}_{int_id}") not in connection_check_set:
+                            connection_check_set.add((f"{up_node}_{up_node}turn{int_id}",
+                                                      f"{up_node}turn{int_id}_{int_id}"))
+                            connection = ET.SubElement(root_con, "connection")
+                            connection.set("from", f"{up_node}_{up_node}turn{int_id}")
+                            connection.set("to", f"{up_node}turn{int_id}_{int_id}")
+
+                    if to_edge not in link_lookup_dict:
+                        to_edge = f"{int_id}_{int_id}turn{dest_node}"
+                        if to_edge not in link_lookup_dict:
+                            continue
 
                     if int(num_lanes) > 0:
                         for through_index in range(int(num_lanes)):
                             # create connection for through lane
                             connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
+                            connection.set("from", from_edge)
+                            connection.set("to", to_edge)
                             # connection.set("fromLane", str(lane_index))
                             # connection.set("toLane", str(through_index))
 
                             connection.set("fromLane",
                                            update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
+                                                             from_edge,
                                                              link_lookup_dict))
                             connection.set("toLane",
                                            update_lane_index(f"{through_index}",
-                                                             f"{int_id}_{dest_node}",
+                                                             to_edge,
                                                              link_lookup_dict))
                             connection.set("dir", "s")  # straight lane
                             # connection.set("state", "M")  # open lane
@@ -991,20 +1128,42 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
 
                     up_node = left_turn.get("up_node")
                     dest_node = left_turn.get("dest_node")
+                    from_edge = f"{up_node}_{int_id}"
+                    to_edge = f"{int_id}_{dest_node}"
+
+                    # check if link exists in link_lookup_dict
+                    if from_edge not in link_lookup_dict:
+                        from_edge = f"{up_node}turn{int_id}_{int_id}"
+                        if from_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
+
+                        # add connection for up_node to turn_node
+                        if (f"{up_node}_{up_node}turn{int_id}",
+                                f"{up_node}turn{int_id}_{int_id}") not in connection_check_set:
+                            connection_check_set.add((f"{up_node}_{up_node}turn{int_id}",
+                                                      f"{up_node}turn{int_id}_{int_id}"))
+                            connection = ET.SubElement(root_con, "connection")
+                            connection.set("from", f"{up_node}_{up_node}turn{int_id}")
+                            connection.set("to", f"{up_node}turn{int_id}_{int_id}")
+
+                    if to_edge not in link_lookup_dict:
+                        to_edge = f"{int_id}_{int_id}turn{dest_node}"
+                        if to_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
 
                     if int(num_lanes) == 0:  # shared left turn lane
                         # Create connection for shared left turn lane
                         connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
+                        connection.set("from", from_edge)
+                        connection.set("to", to_edge)
                         # connection.set("fromLane", str(lane_index))
 
                         connection.set("fromLane",
                                        update_lane_index(f"{lane_index}",
-                                                         f"{up_node}_{int_id}",
+                                                         from_edge,
                                                          link_lookup_dict))
 
-                        num_lanes_for_to_link = link_lookup_dict.get(f"{int_id}_{dest_node}")["num_lanes"]
+                        num_lanes_for_to_link = link_lookup_dict.get(to_edge)["num_lanes"]
                         # extract digit group from num_lanes_for_to_link
                         num_lanes_for_to_link = re.findall(r"\d+", str(num_lanes_for_to_link))[0]  # Extract digit
 
@@ -1020,15 +1179,15 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
                         for left_turn_index in range(int(num_lanes))[::-1]:  # reverse order for left turn lane
                             # Create connection for protected left turn lane
                             connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
+                            connection.set("from", from_edge)
+                            connection.set("to", to_edge)
                             # connection.set("fromLane", str(lane_index))
                             connection.set("fromLane",
                                            update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
+                                                             from_edge,
                                                              link_lookup_dict))
 
-                            num_lanes_for_to_link = link_lookup_dict.get(f"{int_id}_{dest_node}")["num_lanes"]
+                            num_lanes_for_to_link = link_lookup_dict.get(to_edge)["num_lanes"]
 
                             # extract digit group from num_lanes_for_to_link
                             num_lanes_for_to_link = re.findall(r"\d+", str(num_lanes_for_to_link))[0]  # Extract digit
@@ -1050,19 +1209,41 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
 
                     up_node = u_turn.get("up_node")
                     dest_node = u_turn.get("dest_node")
+                    from_edge = f"{up_node}_{int_id}"
+                    to_edge = f"{int_id}_{dest_node}"
+
+                    # check if link exists in link_lookup_dict
+                    if from_edge not in link_lookup_dict:
+                        from_edge = f"{up_node}turn{int_id}_{int_id}"
+                        if from_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
+
+                        # add connection for up_node to turn_node
+                        if (f"{up_node}_{up_node}turn{int_id}",
+                                f"{up_node}turn{int_id}_{int_id}") not in connection_check_set:
+                            connection_check_set.add((f"{up_node}_{up_node}turn{int_id}",
+                                                      f"{up_node}turn{int_id}_{int_id}"))
+                            connection = ET.SubElement(root_con, "connection")
+                            connection.set("from", f"{up_node}_{up_node}turn{int_id}")
+                            connection.set("to", f"{up_node}turn{int_id}_{int_id}")
+
+                    if to_edge not in link_lookup_dict:
+                        to_edge = f"{int_id}_{int_id}turn{dest_node}"
+                        if to_edge not in link_lookup_dict:  # the edge not exist, skip
+                            continue
 
                     if int(num_lanes) == 0:  # shared U-turn lane
                         # Create connection for shared U-turn lane
                         connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
+                        connection.set("from", from_edge)
+                        connection.set("to", to_edge)
 
                         from_lane_val = lane_index - 1
                         if from_lane_val < 0:
                             from_lane_val = 0
                         connection.set("fromLane", str(from_lane_val))
 
-                        num_lanes_for_to_link = link_lookup_dict.get(f"{int_id}_{dest_node}")["num_lanes"]
+                        num_lanes_for_to_link = link_lookup_dict.get(to_edge)["num_lanes"]
                         # extract digit group from num_lanes_for_to_link
                         num_lanes_for_to_link = re.findall(r"\d+", str(num_lanes_for_to_link))[0]  # Extract digit
 
@@ -1078,15 +1259,15 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
                         for u_turn_index in range(int(num_lanes))[::-1]:
                             # Create connection for protected U-turn lane
                             connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
+                            connection.set("from", from_edge)
+                            connection.set("to", to_edge)
 
                             from_lane_val = lane_index - 1
                             if from_lane_val < 0:
                                 from_lane_val = 0
                             connection.set("fromLane", str(from_lane_val))
 
-                            num_lanes_for_to_link = link_lookup_dict.get(f"{int_id}_{dest_node}")["num_lanes"]
+                            num_lanes_for_to_link = link_lookup_dict.get(to_edge)["num_lanes"]
                             # extract digit group from num_lanes_for_to_link
                             num_lanes_for_to_link = re.findall(r"\d+", str(num_lanes_for_to_link))[0]  # Extract digit
 
@@ -1106,7 +1287,7 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
     return True
 
 
-def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **kwargs) -> bool:
+def generate_sumo_flow_xml(utdf_dict: dict, link_lookup_dict: dict, fname: str = "network.flow.xml", **kwargs) -> bool:
     """Generate the .flow.xml file.
 
     Args:
@@ -1172,9 +1353,20 @@ def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **k
                 if flow_id not in flow_id_lst:
                     flow_id_lst.append(flow_id)
                     flow_elem = ET.SubElement(root, "flow")
+
+                    from_edge = f"{up_node}_{int_id}"
+                    to_edge = f"{int_id}_{dest_node}"
+
+                    # check if link exists in link_lookup_dict
+                    if from_edge not in link_lookup_dict:
+                        from_edge = f"{up_node}_{up_node}turn{int_id}"
+
+                    if to_edge not in link_lookup_dict:
+                        to_edge = f"{int_id}turn{dest_node}_{dest_node}"
+
                     flow_elem.set("id", f"{up_node}_{dest_node}")
-                    flow_elem.set("from", f"{up_node}_{int_id}")
-                    flow_elem.set("to", f"{int_id}_{dest_node}")
+                    flow_elem.set("from", from_edge)
+                    flow_elem.set("to", to_edge)
                     flow_elem.set("number", f"{volume}")
                     flow_elem.set("type", "car")
                     if begin_time:
@@ -1188,10 +1380,10 @@ def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **k
     return True
 
 
-def generate_sumo_turn_xml(utdf_dict: dict, net_unit: dict, fname: str = "network.turn.xml", **kwargs) -> bool:
+def generate_sumo_turn_xml(lane_lookup_dict: dict, net_unit: dict, fname: str = "network.turn.xml", **kwargs) -> bool:
     """Generate the .turn.xml file from lane movement volumes"""
 
-    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+    # lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
 
     # check if begin and end time is provided
     begin_time = kwargs.get("begin")
@@ -1212,6 +1404,9 @@ def generate_sumo_turn_xml(utdf_dict: dict, net_unit: dict, fname: str = "networ
         count = lane_info["volume"]
         edge_total_volume = cal_edge_movement_lanes(f"{up_node}_{intersection_id}", lane_lookup_dict)["total_volume"]
         ratio = float(count) / edge_total_volume if edge_total_volume > 0 else 0.0
+        # if ratio >= 1.0:
+        #     continue
+
         from_edge = f"{up_node}_{intersection_id}"
         to_edge = f"{intersection_id}_{dest_node}"
 
@@ -1232,7 +1427,7 @@ def generate_sumo_turn_xml(utdf_dict: dict, net_unit: dict, fname: str = "networ
     return True
 
 
-def generate_sumo_loop_detector_xml(utdf_dict: dict, net_unit: str, detector_type: str = "E1",
+def generate_sumo_loop_detector_xml(lane_lookup_dict: dict, detector_type: str = "E1",
                                     add_fname: str = "network.detector.xml", sim_output_fname: str = "") -> bool:
     """""Generate the .add.xml file for SUMO and add loop detectors for each lane that has a detector.
 
@@ -1261,7 +1456,7 @@ def generate_sumo_loop_detector_xml(utdf_dict: dict, net_unit: str, detector_typ
     """
 
     # get lane_lookup_dict from utdf_dict and net_unit
-    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+    # lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
 
     # get detector tag
     if detector_type == "E1":
@@ -1291,7 +1486,7 @@ def generate_sumo_loop_detector_xml(utdf_dict: dict, net_unit: str, detector_typ
             detector = ET.SubElement(add_elem, detector_tag)
             detector.set("id", f"{lane_id}_detector")
             detector.set("lane", f"{lane_id}")
-            detector.set("pos", "-8")  # must assigned, backward of the lane
+            detector.set("pos", "-3")  # must assigned, backward of the lane
             detector.set("friendlyPos", "true")
             # detector.set("vTypes", "")
             detector.set("file", f"{sim_output_fname}")  # output file name
