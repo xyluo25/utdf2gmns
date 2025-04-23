@@ -69,6 +69,7 @@ def cal_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
     L_length = []
     num_U_turn = 0
     U_length = []
+    total_volume = 0
 
     lane_index_in_edge = 0
     lane_id = f"{edge_id}_{lane_index_in_edge}"
@@ -79,15 +80,19 @@ def cal_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
         if lane_info["dir"] == "r":
             num_R_turn += 1
             R_length.append(lane_length)
+            total_volume += float(lane_info["volume"]) if len(R_length) == 1 else 0
         elif lane_info["dir"] == "s":
             num_T_turn += 1
             T_length.append(lane_length)
+            total_volume += float(lane_info["volume"]) if len(T_length) == 1 else 0
         elif lane_info["dir"] == "l":
             num_L_turn += 1
             L_length.append(lane_length)
+            total_volume += float(lane_info["volume"]) if len(L_length) == 1 else 0
         elif lane_info["dir"] == "t":
             num_U_turn += 1
             U_length.append(lane_length)
+            total_volume += float(lane_info["volume"]) if len(U_length) == 1 else 0
 
         lane_index_in_edge += 1
         lane_id = f"{edge_id}_{lane_index_in_edge}"
@@ -98,7 +103,9 @@ def cal_edge_movement_lanes(edge_id: str, lane_lookup_dict: dict) -> dict:
         "L": [num_L_turn, L_length],
         "U": [num_U_turn, U_length],
         # calculate the maximum length of left and right turn bays
-        "max_turn_length": max([max(R_length, default=0), max(L_length, default=0)])}
+        "max_turn_length": max([max(R_length, default=0), max(L_length, default=0)]),
+        "total_volume": total_volume,
+        "edge_length": max(R_length + T_length + L_length + U_length, default=0)}
 
 
 def generate_net_link_lookup_dict(utdf_dict: dict) -> dict:
@@ -552,7 +559,7 @@ def generate_sumo_nod_xml(utdf_dict: dict, filename: str = "network.nod.xml") ->
     return True
 
 
-def update_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: str = "network.nod.xml") -> bool:
+def add_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: str = "network.nod.xml") -> dict:
     """Add additional nodes for turn bay in the .nod.xml file."""
 
     # Get node coordinates
@@ -569,6 +576,7 @@ def update_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: 
     tree = ET.parse(nod_fname)
     root = tree.getroot()
 
+    turn_bay_nodes = {}
     # for each line, add additional nodes for turn bay
     for int_id, direction_links in network_links.items():
         for direction in direction_links:
@@ -577,9 +585,13 @@ def update_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: 
             up_coord = [network_nodes[str(up_node)]["x_coord"], network_nodes[str(up_node)]["y_coord"]]
             int_id_coord = [network_nodes[str(int_id)]["x_coord"], network_nodes[str(int_id)]["y_coord"]]
             edge_id = f"{up_node}_{int_id}"
-            turn_bay_length = cal_edge_movement_lanes(edge_id, lane_lookup_dict)["max_turn_length"]
 
-            if turn_bay_length > 0:
+            edge_info = cal_edge_movement_lanes(edge_id, lane_lookup_dict)
+            turn_bay_length = edge_info["max_turn_length"]
+            edge_length = edge_info["edge_length"]
+
+            # if turning bay length is greater than 0 and not equal to the edge length, add new node connection
+            if turn_bay_length > 0 and turn_bay_length != edge_length:  # avoid T-intersection
                 # get the coordinates of the middle point of the edge
                 middle_x, middle_y = point_coord_on_line_lonlat(int_id_coord[0],
                                                                 int_id_coord[1],
@@ -589,14 +601,16 @@ def update_sumo_nod_xml_for_turn_bay(utdf_dict: dict, net_unit: str, nod_fname: 
 
                 # add node in nod.xml
                 node_elem = ET.SubElement(root, "node")
-                node_elem.set("id", f"{up_node}_{int_id}_t")
+                node_elem.set("id", f"{up_node}_{int_id}_turn")
                 node_elem.set("x", str(middle_x))
                 node_elem.set("y", str(middle_y))
+
+                turn_bay_nodes[f"{up_node}_{int_id}_turn"] = {}
 
     xml_str = xml_prettify(root)
     with open(nod_fname, "w") as f:
         f.write(xml_str)
-    return True
+    return turn_bay_nodes
 
 
 def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "network.edg.xml") -> bool:
@@ -649,7 +663,7 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
     lane_xml_str = xml_prettify(lane_root)
     with open(output_lane_file, "w") as f:
         f.write(lane_xml_str)
-    print("  :lane.xml file saved for debugging.")
+    print("  :generated lane.xml file.")
 
     if "feet" in net_unit:
         unit_speed = "mph"
@@ -669,9 +683,52 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
     root = ET.Element("edges")
     for int_id, direction_links in network_links.items():
         for direction in direction_links:
+
+            # link level information
             link = direction_links[direction]
+
+            # check if speed is provided
+            if link.get("Speed", None):
+                link_speed = link["Speed"]
+                link_speed = re.findall(r"\d+", str(link_speed))[0]  # Extract digit group
+                speed_in_meter_per_second = cvt_unit_speed[unit_speed](float(link_speed))
+
+            # check if length is provided
+            if link.get("Distance", None):
+                link_dist = link["Distance"]
+                link_dist = re.findall(r"\d+", str(link_dist))[0]  # Extract digit group
+                length_in_meter = cvt_unit_distance[unit_distance](float(link_dist))
+
             up_node = link["Up ID"]
 
+            edge_id = f"{up_node}_{int_id}"
+            edge_info = cal_edge_movement_lanes(edge_id, lane_lookup_dict)
+            turn_bay_length = edge_info["max_turn_length"]
+            edge_length = edge_info["edge_length"]
+
+            # if turning bay length is greater than 0 and not equal to the edge length, add new node connection
+            if turn_bay_length > 0 and turn_bay_length != edge_length:  # avoid T-intersection
+                # For before left and right bay: up_node -> turn_node
+                turn_node_id = f"{up_node}_{int_id}_turn"
+                num_through_lanes = len(edge_info["T"])
+
+                if num_through_lanes > 0:
+                    edge_upNode_turn = ET.SubElement(root, "edge")
+                    edge_upNode_turn.set("id", f"{up_node}_{turn_node_id}")
+                    edge_upNode_turn.set("from", str(up_node))
+                    edge_upNode_turn.set("to", str(turn_node_id))
+                    edge_upNode_turn.set("numLanes", str(num_through_lanes))
+                    edge_upNode_turn.set("speed", str(speed_in_meter_per_second))
+
+                    for lane_id in range(num_through_lanes):
+                        lane_elem = ET.SubElement(edge_upNode_turn, "lane")
+                        lane_elem.set("index", str(lane_id))
+                        lane_elem.set("length", str(turn_bay_length))
+                        lane_elem.set("speed", str(speed_in_meter_per_second))
+
+                    up_node = turn_node_id  # update up_node to turn_node_id
+
+            # for generate edge creation
             edge_elem = ET.SubElement(root, "edge")
 
             edge_id = f"{up_node}_{int_id}"
@@ -688,18 +745,7 @@ def generate_sumo_edg_xml(utdf_dict: dict, net_unit: str, filename: str = "netwo
                     if (num_lanes) > 0:
                         edge_elem.set("numLanes", str(num_lanes))  # Default lanes
 
-            # check if speed is provided
-            if link.get("Speed", None):
-                link_speed = link["Speed"]
-                link_speed = re.findall(r"\d+", str(link_speed))[0]  # Extract digit group
-                speed_in_meter_per_second = cvt_unit_speed[unit_speed](float(link_speed))
-                edge_elem.set("speed", str(speed_in_meter_per_second))
-
-            # check if length is provided
-            if link.get("Distance", None):
-                link_dist = link["Distance"]
-                link_dist = re.findall(r"\d+", str(link_dist))[0]  # Extract digit group
-                length_in_meter = cvt_unit_distance[unit_distance](float(link_dist))
+            edge_elem.set("speed", str(speed_in_meter_per_second))
 
             # Add lane for each edge
             for lane_id in lane_lookup_dict.keys():
@@ -869,7 +915,7 @@ def generate_sumo_connection_xml(utdf_dict: dict, filename: str = "network.con.x
             # For each mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
             lane_index = 0
 
-            # Add Right Turn lanes
+            # Add Right Turn lane connections
             if mvt_type["R"]:
                 for right_turn in mvt_type["R"]:
                     num_lanes = right_turn.get("lanes")
@@ -1142,8 +1188,52 @@ def generate_sumo_flow_xml(utdf_dict: dict, fname: str = "network.flow.xml", **k
     return True
 
 
-def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector_type: str = "E1",
-                                        add_fname: str = "network.add.xml", sim_output_fname: str = "") -> bool:
+def generate_sumo_turn_xml(utdf_dict: dict, net_unit: dict, fname: str = "network.turn.xml", **kwargs) -> bool:
+    """Generate the .turn.xml file from lane movement volumes"""
+
+    lane_lookup_dict = generate_net_lane_lookup_dict(utdf_dict, net_unit)
+
+    # check if begin and end time is provided
+    begin_time = kwargs.get("begin")
+    end_time = kwargs.get("end")
+
+    root = ET.Element("turns")
+    interval = ET.SubElement(root, "interval", begin=f"{begin_time}", end=f"{end_time}")
+
+    # crate edgeRelation set to avoid duplicate edgeRelation in the turn.xml file
+    edge_relation_set = set()
+
+    # add edgeRelation for each lane to interval
+    for lane_id, lane_info in lane_lookup_dict.items():
+
+        up_node = lane_info["up_node"]
+        dest_node = lane_info["dest_node"]
+        intersection_id = lane_info["id"].split("_")[1]
+        count = lane_info["volume"]
+        edge_total_volume = cal_edge_movement_lanes(f"{up_node}_{intersection_id}", lane_lookup_dict)["total_volume"]
+        ratio = float(count) / edge_total_volume if edge_total_volume > 0 else 0.0
+        from_edge = f"{up_node}_{intersection_id}"
+        to_edge = f"{intersection_id}_{dest_node}"
+
+        # check if edgeRelation already exists in the set
+        if (from_edge, to_edge, ratio) in edge_relation_set:
+            continue
+        edge_relation_set.add((from_edge, to_edge, ratio))
+
+        edge_relation = ET.SubElement(interval, "edgeRelation")
+        edge_relation.set("from", from_edge)
+        edge_relation.set("to", to_edge)
+        # edge_relation.set("count", f"{count}")
+        edge_relation.set("probability", f"{ratio:.6f}")
+
+    xml_str = xml_prettify(root)
+    with open(fname, "w") as f:
+        f.write(xml_str)
+    return True
+
+
+def generate_sumo_loop_detector_xml(utdf_dict: dict, net_unit: str, detector_type: str = "E1",
+                                    add_fname: str = "network.detector.xml", sim_output_fname: str = "") -> bool:
     """""Generate the .add.xml file for SUMO and add loop detectors for each lane that has a detector.
 
     Args:
@@ -1183,10 +1273,10 @@ def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector
     else:
         raise ValueError(f"Unknown detector type: {detector_type}. Accepted types are E1, E2, E0.")
 
-    add_elem = ET.Element("additional")
+    add_elem = ET.Element("detectors")
 
-    if not add_fname.endswith(".add.xml"):
-        add_fname = f"{add_fname}.add.xml"
+    if not add_fname.endswith("detector.xml"):
+        add_fname = f"{add_fname}.detector.xml"
 
     if sim_output_fname:
         if not sim_output_fname.endswith(".xml"):
@@ -1207,7 +1297,7 @@ def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector
             detector.set("file", f"{sim_output_fname}")  # output file name
 
             # Add the detector to the root element
-            root = ET.Element("additional")
+            root = ET.Element("detectors")
             root.append(detector)
 
     xml_str = xml_prettify(add_elem)

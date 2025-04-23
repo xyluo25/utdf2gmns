@@ -12,7 +12,7 @@ from .gmns2sumo import (generate_net_link_lookup_dict,
                         generate_sumo_edg_xml,
                         generate_sumo_connection_xml,
                         generate_sumo_flow_xml,
-                        generate_sumo_loop_detector_add_xml)
+                        generate_sumo_loop_detector_xml)
 from .signal_read_sumo import ReadSUMO
 from ._remove_u_turn import remove_sumo_U_turn
 from .signal_intersections import (parse_signal_control,
@@ -34,7 +34,7 @@ __all__ = [
     "generate_sumo_edg_xml",
     "generate_sumo_connection_xml",
     "generate_sumo_flow_xml",
-    "generate_sumo_loop_detector_add_xml",
+    "generate_sumo_loop_detector_xml",
 
     # read_sumo.py
     'ReadSUMO',

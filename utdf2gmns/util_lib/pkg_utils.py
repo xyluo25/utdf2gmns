@@ -115,6 +115,38 @@ def point_coord_on_line_lonlat(lon1: float, lat1: float, lon2: float, lat2: floa
     return (lon3, lat3)
 
 
+def distance_on_line_lonlat(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
+    """
+    Given a start point (lon1, lat1) and end point (lon2, lat2),
+    return the total distance between the two points in meters.
+
+    Args:
+        lon1 (float): Longitude of the starting point in degrees.
+        lat1 (float): Latitude of the starting point in degrees.
+        lon2 (float): Longitude of the ending point in degrees.
+        lat2 (float): Latitude of the ending point in degrees.
+
+    Returns:
+        float: Distance in meters between the two longitude/latitude points.
+    """
+    # Convert to radians
+    φ1 = math.radians(lat1)
+    λ1 = math.radians(lon1)
+    φ2 = math.radians(lat2)
+    λ2 = math.radians(lon2)
+
+    # Earth radius (mean)
+    R = 6_371_000.0
+
+    # Compute the great-circle distance between start and end
+    Δφ = φ2 - φ1
+    Δλ = λ2 - λ1
+    a = math.sin(Δφ / 2)**2 + math.cos(φ1) * math.cos(φ2) * math.sin(Δλ / 2)**2
+    sig = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * sig
+
+
 def time_unit_converter(value: float, from_unit: str, to_unit: str, verbose: bool = True) -> float:
     """ Convert a time value between seconds, minutes, hours, days, years
 

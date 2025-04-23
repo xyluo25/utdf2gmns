@@ -136,8 +136,8 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
             sumo_net.replace_tl_logic_xml(int_id, ret, linkDur, types, int(float(offsets)))
             valid_ids[int_id] = int_id
             valid += 1
-    print(f"  :Total signal intersections: {len(signalized_int_ids)}"
-          f", valid intersections: {valid}\n")
+    print(f"\n  :Total signal intersections: {len(signalized_int_ids)}"
+          f", valid intersections: {valid}")
 
     # update sumo.net.xml
     sumo_net.write_xml()
