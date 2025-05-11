@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<connections>
+    <connection from="14_14turn2" to="14turn2_2"/>
+    <connection from="14turn2_2" to="2_2turn33" fromLane="0" toLane="0" dir="r"/>
+    <connection from="14turn2_2" to="2_1" fromLane="0" toLane="0" dir="s"/>
+    <connection from="14turn2_2" to="2_3" fromLane="1" toLane="1" dir="l"/>
+    <connection from="1_1turn2" to="1turn2_2"/>
+    <connection from="1turn2_2" to="2_3" fromLane="0" toLane="0" dir="r"/>
+    <connection from="1turn2_2" to="2_14" fromLane="0" toLane="0" dir="s"/>
+    <connection from="1turn2_2" to="2_2turn33" fromLane="1" toLane="1" dir="l"/>
+    <connection from="3_3turn2" to="3turn2_2"/>
+    <connection from="3turn2_2" to="2_14" fromLane="0" toLane="0" dir="r"/>
+    <connection from="3turn2_2" to="2_2turn33" fromLane="0" toLane="0" dir="s"/>
+    <connection from="3turn2_2" to="2_2turn33" fromLane="1" toLane="1" dir="s"/>
+    <connection from="3turn2_2" to="2_1" fromLane="2" toLane="0" dir="l"/>
+    <connection from="33_33turn2" to="33turn2_2"/>
+    <connection from="33turn2_2" to="2_1" fromLane="0" toLane="0" dir="r"/>
+    <connection from="33turn2_2" to="2_3" fromLane="0" toLane="0" dir="s"/>
+    <connection from="33turn2_2" to="2_3" fromLane="1" toLane="1" dir="s"/>
+    <connection from="33turn2_2" to="2_14" fromLane="2" toLane="0" dir="l"/>
+    <connection from="7_7turn4" to="7turn4_4"/>
+    <connection from="7turn4_4" to="4_8" fromLane="0" toLane="0" dir="r"/>
+    <connection from="7turn4_4" to="4_6" fromLane="1" toLane="0" dir="s"/>
+    <connection from="7turn4_4" to="4_4turn33" fromLane="1" toLane="1" dir="l"/>
+    <connection from="6_4" to="4_4turn33" fromLane="0" toLane="0" dir="r"/>
+    <connection from="6_4" to="4_7" fromLane="0" toLane="0" dir="s"/>
+    <connection from="6_4" to="4_8" fromLane="1" toLane="1" dir="l"/>
+    <connection from="33_33turn4" to="33turn4_4"/>
+    <connection from="33turn4_4" to="4_7" fromLane="0" toLane="0" dir="r"/>
+    <connection from="33turn4_4" to="4_8" fromLane="0" toLane="0" dir="s"/>
+    <connection from="33turn4_4" to="4_8" fromLane="1" toLane="1" dir="s"/>
+    <connection from="33turn4_4" to="4_6" fromLane="2" toLane="0" dir="l"/>
+    <connection from="8_8turn4" to="8turn4_4"/>
+    <connection from="8turn4_4" to="4_6" fromLane="0" toLane="0" dir="r"/>
+    <connection from="8turn4_4" to="4_4turn33" fromLane="0" toLane="0" dir="s"/>
+    <connection from="8turn4_4" to="4_4turn33" fromLane="1" toLane="1" dir="s"/>
+    <connection from="8turn4_4" to="4_7" fromLane="2" toLane="0" dir="l"/>
+    <connection from="9_8" to="8_8turn4" fromLane="0" toLane="0" dir="r"/>
+    <connection from="9_8" to="8_10" fromLane="1" toLane="0" dir="s"/>
+    <connection from="9_8" to="8_8turn11" fromLane="2" toLane="1" dir="l"/>
+    <connection from="4_8" to="8_10" fromLane="0" toLane="0" dir="r"/>
+    <connection from="4_8" to="8_8turn11" fromLane="0" toLane="0" dir="s"/>
+    <connection from="4_8" to="8_8turn11" fromLane="1" toLane="1" dir="s"/>
+    <connection from="11_11turn8" to="11turn8_8"/>
+    <connection from="11turn8_8" to="8_8turn4" fromLane="0" toLane="0" dir="s"/>
+    <connection from="11turn8_8" to="8_8turn4" fromLane="1" toLane="1" dir="s"/>
+    <connection from="11turn8_8" to="8_10" fromLane="2" toLane="0" dir="l"/>
+    <connection from="11turn8_8" to="8_10" fromLane="3" toLane="1" dir="l"/>
+    <connection from="8_8turn11" to="8turn11_11"/>
+    <connection from="8turn11_11" to="11_22" fromLane="0" toLane="0" dir="s"/>
+    <connection from="8turn11_11" to="11_22" fromLane="1" toLane="1" dir="s"/>
+    <connection from="8turn11_11" to="11_12" fromLane="2" toLane="1" dir="l"/>
+    <connection from="22_11" to="11_12" fromLane="0" toLane="0" dir="r"/>
+    <connection from="22_11" to="11_11turn8" fromLane="1" toLane="0" dir="s"/>
+    <connection from="22_11" to="11_11turn8" fromLane="2" toLane="1" dir="s"/>
+    <connection from="22_11" to="11_11turn8" fromLane="3" toLane="1" dir="s"/>
+    <connection from="13_11" to="11_22" fromLane="0" toLane="0" dir="r"/>
+    <connection from="13_11" to="11_22" fromLane="1" toLane="1" dir="r"/>
+    <connection from="13_11" to="11_22" fromLane="2" toLane="2" dir="r"/>
+    <connection from="13_11" to="11_11turn8" fromLane="3" toLane="1" dir="l"/>
+    <connection from="13_11" to="11_12" fromLane="3" toLane="1" dir="l"/>
+    <connection from="18_18turn16" to="18turn16_16"/>
+    <connection from="18turn16_16" to="16_15" fromLane="0" toLane="0" dir="r"/>
+    <connection from="18turn16_16" to="16_17" fromLane="0" toLane="0" dir="s"/>
+    <connection from="18turn16_16" to="16_16turn19" fromLane="1" toLane="0" dir="l"/>
+    <connection from="18turn16_16" to="16_16turn19" fromLane="2" toLane="1" dir="l"/>
+    <connection from="17_17turn16" to="17turn16_16"/>
+    <connection from="17turn16_16" to="16_16turn19" fromLane="0" toLane="0" dir="r"/>
+    <connection from="17turn16_16" to="16_18" fromLane="0" toLane="0" dir="s"/>
+    <connection from="17turn16_16" to="16_18" fromLane="1" toLane="1" dir="s"/>
+    <connection from="17turn16_16" to="16_15" fromLane="2" toLane="1" dir="l"/>
+    <connection from="19_19turn16" to="19turn16_16"/>
+    <connection from="19turn16_16" to="16_18" fromLane="0" toLane="0" dir="r"/>
+    <connection from="19turn16_16" to="16_15" fromLane="1" toLane="0" dir="s"/>
+    <connection from="19turn16_16" to="16_15" fromLane="2" toLane="1" dir="s"/>
+    <connection from="19turn16_16" to="16_17" fromLane="3" toLane="0" dir="l"/>
+    <connection from="15_15turn16" to="15turn16_16"/>
+    <connection from="15turn16_16" to="16_17" fromLane="0" toLane="0" dir="r"/>
+    <connection from="15turn16_16" to="16_16turn19" fromLane="0" toLane="0" dir="s"/>
+    <connection from="15turn16_16" to="16_16turn19" fromLane="1" toLane="1" dir="s"/>
+    <connection from="15turn16_16" to="16_18" fromLane="2" toLane="1" dir="l"/>
+    <connection from="21_21turn19" to="21turn19_19"/>
+    <connection from="21turn19_19" to="19_19turn16" fromLane="0" toLane="0" dir="r"/>
+    <connection from="21turn19_19" to="19_20" fromLane="1" toLane="0" dir="s"/>
+    <connection from="21turn19_19" to="19_19turn22" fromLane="1" toLane="1" dir="l"/>
+    <connection from="20_20turn19" to="20turn19_19"/>
+    <connection from="20turn19_19" to="19_19turn22" fromLane="0" toLane="0" dir="r"/>
+    <connection from="20turn19_19" to="19_21" fromLane="0" toLane="0" dir="s"/>
+    <connection from="20turn19_19" to="19_19turn16" fromLane="1" toLane="1" dir="l"/>
+    <connection from="22_22turn19" to="22turn19_19"/>
+    <connection from="22turn19_19" to="19_21" fromLane="0" toLane="0" dir="r"/>
+    <connection from="22turn19_19" to="19_19turn16" fromLane="0" toLane="0" dir="s"/>
+    <connection from="22turn19_19" to="19_19turn16" fromLane="1" toLane="1" dir="s"/>
+    <connection from="22turn19_19" to="19_20" fromLane="2" toLane="0" dir="l"/>
+    <connection from="16_16turn19" to="16turn19_19"/>
+    <connection from="16turn19_19" to="19_20" fromLane="0" toLane="0" dir="r"/>
+    <connection from="16turn19_19" to="19_19turn22" fromLane="0" toLane="0" dir="s"/>
+    <connection from="16turn19_19" to="19_19turn22" fromLane="1" toLane="1" dir="s"/>
+    <connection from="16turn19_19" to="19_21" fromLane="2" toLane="0" dir="l"/>
+    <connection from="24_22" to="22_22turn19" fromLane="0" toLane="0" dir="r"/>
+    <connection from="24_22" to="22_23" fromLane="1" toLane="0" dir="s"/>
+    <connection from="24_22" to="22_11" fromLane="2" toLane="3" dir="l"/>
+    <connection from="23_22" to="22_11" fromLane="0" toLane="0" dir="r"/>
+    <connection from="23_22" to="22_24" fromLane="0" toLane="0" dir="s"/>
+    <connection from="23_22" to="22_22turn19" fromLane="1" toLane="1" dir="l"/>
+    <connection from="11_22" to="22_24" fromLane="0" toLane="0" dir="r"/>
+    <connection from="11_22" to="22_24" fromLane="1" toLane="1" dir="r"/>
+    <connection from="11_22" to="22_22turn19" fromLane="2" toLane="0" dir="s"/>
+    <connection from="11_22" to="22_22turn19" fromLane="3" toLane="1" dir="s"/>
+    <connection from="11_22" to="22_23" fromLane="4" toLane="0" dir="l"/>
+    <connection from="19_19turn22" to="19turn22_22"/>
+    <connection from="19turn22_22" to="22_23" fromLane="0" toLane="0" dir="r"/>
+    <connection from="19turn22_22" to="22_11" fromLane="0" toLane="0" dir="s"/>
+    <connection from="19turn22_22" to="22_11" fromLane="1" toLane="1" dir="s"/>
+    <connection from="19turn22_22" to="22_24" fromLane="2" toLane="1" dir="l"/>
+    <connection from="2_2turn33" to="2turn33_33"/>
+    <connection from="2turn33_33" to="33_25" fromLane="0" toLane="0" dir="r"/>
+    <connection from="2turn33_33" to="33_33turn4" fromLane="1" toLane="0" dir="s"/>
+    <connection from="2turn33_33" to="33_33turn4" fromLane="2" toLane="1" dir="s"/>
+    <connection from="2turn33_33" to="33_58" fromLane="3" toLane="0" dir="l"/>
+    <connection from="2turn33_33" to="33_58" fromLane="4" toLane="1" dir="l"/>
+    <connection from="4_4turn33" to="4turn33_33"/>
+    <connection from="4turn33_33" to="33_58" fromLane="0" toLane="0" dir="r"/>
+    <connection from="4turn33_33" to="33_33turn2" fromLane="1" toLane="0" dir="s"/>
+    <connection from="4turn33_33" to="33_33turn2" fromLane="2" toLane="1" dir="s"/>
+    <connection from="4turn33_33" to="33_25" fromLane="3" toLane="0" dir="l"/>
+    <connection from="4turn33_33" to="33_25" fromLane="4" toLane="1" dir="l"/>
+    <connection from="25_25turn33" to="25turn33_33"/>
+    <connection from="25turn33_33" to="33_33turn4" fromLane="0" toLane="0" dir="r"/>
+    <connection from="25turn33_33" to="33_33turn4" fromLane="1" toLane="1" dir="r"/>
+    <connection from="25turn33_33" to="33_58" fromLane="2" toLane="0" dir="s"/>
+    <connection from="25turn33_33" to="33_58" fromLane="3" toLane="1" dir="s"/>
+    <connection from="25turn33_33" to="33_33turn2" fromLane="4" toLane="1" dir="l"/>
+    <connection from="58_58turn33" to="58turn33_33"/>
+    <connection from="58turn33_33" to="33_33turn2" fromLane="0" toLane="0" dir="r"/>
+    <connection from="58turn33_33" to="33_25" fromLane="1" toLane="0" dir="s"/>
+    <connection from="58turn33_33" to="33_25" fromLane="2" toLane="1" dir="s"/>
+    <connection from="58turn33_33" to="33_33turn4" fromLane="3" toLane="1" dir="l"/>
+</connections>
