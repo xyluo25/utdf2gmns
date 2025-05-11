@@ -388,7 +388,7 @@ class UTDF2GMNS:
         print(f"  :generated SUMO node xml file: {xml_name}.nod.xml")
 
         # add additional nodes for turn bay implementation
-        add_sumo_nod_xml_for_turn_bay(self._utdf_dict, self.network_unit, output_node_file)
+        turn_node_dict = add_sumo_nod_xml_for_turn_bay(self._utdf_dict, self.network_unit, output_node_file)
         print(f"  :generated SUMO nodes for turn bay: {xml_name}.nod.xml")
 
         # create SUMO .edg.xml file
