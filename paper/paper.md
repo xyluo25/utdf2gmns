@@ -17,18 +17,13 @@ affiliations:
 date: 11 April 2025
 bibliography: paper.bib
 ---
-
 # Summary
 
-utdf2gmns explored an automatic process of network coordinating, traffic signal integration, traffic flow conversion from Synchro to SUMO, identifying both the feasibility and challenges involved. The approach began with a comparative analysis of traffic network features, data formats, and signal timing schemas between the two platforms. Key challenges in converting Synchro UTDF data into microsimulation-ready networks focusing on signal integration, spatial conversion, and turning flow accuracy. Signal conversion remains a critical bottleneck, requiring precise alignment of phasing, timing, and coordination data to ensure reliable simulation outcomes. Network conversion also presents difficulties, particularly in translating Synchro’s relative coordinate system into georeferenced formats compatible with GIS tools. Additionally, accurately transforming turning movement data is essential for modeling realistic intersection behavior but often involves tedious manual preprocessing.
+utdf2gmns[^1] explored an automatic process of network coordinating, traffic signal integration, traffic flow conversion from Synchro to SUMO, identifying both the feasibility and challenges involved. The approach began with a comparative analysis of traffic network features, data formats, and signal timing schemas between the two platforms. Key challenges in converting Synchro UTDF data into microsimulation-ready networks focusing on signal integration, spatial conversion, and turning flow accuracy. Signal conversion remains a critical bottleneck, requiring precise alignment of phasing, timing, and coordination data to ensure reliable simulation outcomes. Network conversion also presents difficulties, particularly in translating Synchro’s relative coordinate system into georeferenced formats compatible with GIS tools. Additionally, accurately transforming turning movement data is essential for modeling realistic intersection behavior but often involves tedious manual preprocessing.
 
 While previous efforts have made progress in isolated aspects of the conversion process, none offer a fully automated and scalable end-to-end solution. To fill this gap, we introduce [utdf2gmns](https://pypi.org/project/utdf2gmns/), an open-source Python tool designed to automate the transformation of Synchro UTDF files into GMNS-compliant networks for SUMO simulation. The tool supports automatic geocoding, integration with the Sigma-X engine for intersection analysis, robust SUMO network generation, and extendibility to other microsimulation platforms. Future work will focus on expanding support for adaptive signal systems, incorporating real-time data inputs, and enhancing interoperability with additional simulation frameworks to promote reproducibility and collaborative research in traffic modeling.
 
----
-
-This manuscript has been authored in part by UT-Battelle, LLC, under contract DE-AC05-00OR22725 with the US Department of Energy (DOE). The publisher acknowledges the US government license to provide public access under the [DOE Public Access Plan](https://www.energy.gov/doe-public-access-plan)
-
----
+[^1]: This manuscript has been authored in part by UT-Battelle, LLC, under contract DE-AC05-00OR22725 with the US Department of Energy (DOE). The publisher acknowledges the US government license to provide public access under the [DOE Public Access Plan](https://www.energy.gov/doe-public-access-plan)
 
 # Statement of need
 
