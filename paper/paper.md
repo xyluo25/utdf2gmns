@@ -37,7 +37,7 @@ To address these gaps, we present utdf2gmns ([Luo and Zhou 2022](https://github.
 
 Prof.Xuesong Simon Zhou from Arizona State University, for his valueable feedback and suggestions during the development of the project. His insights on traffic simulation and data formats were instrumental in shaping the direction of this library. Prof. Milan Zlatkovic from University of Wyoming, for the power of sigma-x engine to visualize signalized intersections and his expertise in traffic modeling and simulation has been invaluable. Yiran Zhang from University of Washington, for her valuable feedback and debuging of signal conversation during the early development of the project.
 
-Additional support was provided by the U.S. Department of Energy (DOE), Office of Energy 2Efficiency and Renewable Energy (EERE), Vehicle Technologies Office. Any opinions, findings, 3and conclusions or recommendations expressed in this material are those of the author(s) and do 4not necessarily reflect the views of the USDOT, DOE, and the U.S. Government assumes no 5liability for the contents or use thereof.
+Additional support was provided by the U.S. Department of Energy (DOE), Office of Energy Efficiency and Renewable Energy (EERE), Vehicle Technologies Office. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the USDOT, DOE, and the U.S. Government assumes no liability for the contents or use thereof.
 
 # References
 
