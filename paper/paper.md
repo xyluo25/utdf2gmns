@@ -11,7 +11,7 @@ authors:
     orcid: 0009-0003-1290-9983
     affiliation: "1" # (Multiple affiliations must be quoted)
   - name: Yiran Zhang
-    orcid:
+    orcid: 0000-0002-7392-8841
     affiliation: "2"
   - name: Chieh (Ross) Wang
     orcid: 0000-0001-8073-7683
