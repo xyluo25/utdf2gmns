@@ -11,9 +11,21 @@ authors:
     orcid: 0009-0003-1290-9983
     affiliation: "1" # (Multiple affiliations must be quoted)
 
+  - name: Chieh (Ross) Wang
+    orcid: 0000-0001-8073-7683
+    affiliation: "1"
+
+  - name: Xuesong (Simon) Zhou
+    orcid: 0000-0002-9963-5369
+    affiliation: "2"
+
 affiliations:
   - name: Oak Ridge National Laboratory, United States
     index: 1
+
+  - name: Arizona State University, Tempe, AZ, United States
+    index: 2
+
 date: 11 April 2025
 bibliography: paper.bib
 ---
