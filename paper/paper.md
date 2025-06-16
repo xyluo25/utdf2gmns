@@ -10,21 +10,23 @@ authors:
   - name: Xiangyong Luo
     orcid: 0009-0003-1290-9983
     affiliation: "1" # (Multiple affiliations must be quoted)
-
+  - name: Yiran Zhang
+    orcid:
+    affiliation: "2"
   - name: Chieh (Ross) Wang
     orcid: 0000-0001-8073-7683
     affiliation: "1"
-
   - name: Xuesong (Simon) Zhou
     orcid: 0000-0002-9963-5369
-    affiliation: "2"
+    affiliation: "3"
 
 affiliations:
   - name: Oak Ridge National Laboratory, United States
     index: 1
-
-  - name: Arizona State University, Tempe, AZ, United States
+  - name: University of Washington, Seattle, WA, United States
     index: 2
+  - name: Arizona State University, Tempe, AZ, United States
+    index: 3
 
 date: 11 April 2025
 bibliography: paper.bib
