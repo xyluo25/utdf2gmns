@@ -42,7 +42,7 @@ Several critical challenges remain when converting Synchro UTDF data into micros
 
 To address these gaps[@zhang2024integration;@ban2022multiscale;@coogan2021coordinated;@udomsilp2017traffic;@singh2017impact], we present utdf2gmns ([Luo and Zhou 2022](https://github.com/xyluo25/utdf2gmns)), an open-source Python tool that automates the conversion of Synchro UTDF files into GMNS-compliant networks [@smith2020general] and generates simulation-ready inputs for SUMO. By leveraging the GMNS, a robust framework for standardized network representation [@berg2022gmns; @lu2023virtual; @luo2024strategic; @luo2024innovation], utdf2gmns enhances data consistency, reproducibility, and collaboration through four core capabilities: it automates geocoding of Synchro’s relative coordinates into accurate longitude–latitude pairs; integrates with the Sigma-X engine ([Milan 2022](https://github.com/milan1981/Sigma-X)) to extract and optimize key intersection metrics (phasing diagrams, turning volumes, movement capacities, volume-to-capacity ratios, and control delays); generates GMNS-compliant SUMO networks that fully preserve signal coordination, traffic flows, and turning movements; and provides a modular architecture for extension to additional microsimulation platforms, thereby promoting broader standardization and community-driven development.
 
-Hands-On Tutorial
+# Hands-On Tutorial
 
 ```python
 
