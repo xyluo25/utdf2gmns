@@ -40,13 +40,44 @@ Traffic microsimulation is essential for evaluating and improving urban transpor
 
 Several critical challenges remain when converting Synchro UTDF data into microsimulation-compatible networks, such as those required by Simulation of Urban Mobility (SUMO) [@lopez2018microscopic]. First, accurate signal conversion demands detailed extraction and mapping of phasing, timing, and coordination parameters into standardized control formats; errors here can substantially degrade simulation fidelity. Second, network conversion requires transforming Synchro’s relative coordinate system into georeferenced longitude–latitude coordinates for seamless GIS integration, a labor-intensive and error-prone process that limits scalability. Third, realistic intersection dynamics hinge on precise turning movement conversion, which typically involves extensive manual preprocessing; inaccuracies at this stage can propagate through the simulation, undermining the validity of subsequent analyses.
 
-Prior efforts have addressed individual aspects of Synchro‐to‐SUMO conversion but have not yielded a unified, automated workflow. @zhang2024integration convert Synchro signal data into a SUMO network but require separate preprocessing of UTDF files and SUMO inputs. @ban2022multiscale integrate Synchro signals within a vehicle‐traffic‐demand platform, yet their Synchro and SUMO networks are independently prepared. @coogan2021coordinated focus on geometry and phasing conversion but rely on relative coordinates and scale only to a few intersections. @udomsilp2017traffic and @singh2017impact optimize signal timings in Synchro and then import cycle lengths or green times into SUMO to evaluate performance. Despite these advances, no existing method delivers a fully automated, end-to-end solution.
+To address these gaps[@zhang2024integration;@ban2022multiscale;@coogan2021coordinated;@udomsilp2017traffic;@singh2017impact], we present utdf2gmns ([Luo and Zhou 2022](https://github.com/xyluo25/utdf2gmns)), an open-source Python tool that automates the conversion of Synchro UTDF files into GMNS-compliant networks [@smith2020general] and generates simulation-ready inputs for SUMO. By leveraging the GMNS, a robust framework for standardized network representation [@berg2022gmns; @lu2023virtual; @luo2024strategic; @luo2024innovation], utdf2gmns enhances data consistency, reproducibility, and collaboration through four core capabilities: it automates geocoding of Synchro’s relative coordinates into accurate longitude–latitude pairs; integrates with the Sigma-X engine ([Milan 2022](https://github.com/milan1981/Sigma-X)) to extract and optimize key intersection metrics (phasing diagrams, turning volumes, movement capacities, volume-to-capacity ratios, and control delays); generates GMNS-compliant SUMO networks that fully preserve signal coordination, traffic flows, and turning movements; and provides a modular architecture for extension to additional microsimulation platforms, thereby promoting broader standardization and community-driven development.
 
-To address these gaps, we present utdf2gmns ([Luo and Zhou 2022](https://github.com/xyluo25/utdf2gmns)), an open-source Python tool that automates the conversion of Synchro UTDF files into GMNS-compliant networks [@smith2020general] and generates simulation-ready inputs for SUMO. By leveraging the GMNS, a robust framework for standardized network representation [@berg2022gmns; @lu2023virtual; @luo2024strategic; @luo2024innovation], utdf2gmns enhances data consistency, reproducibility, and collaboration through four core capabilities: it automates geocoding of Synchro’s relative coordinates into accurate longitude–latitude pairs; integrates with the Sigma-X engine ([Milan 2022](https://github.com/milan1981/Sigma-X)) to extract and optimize key intersection metrics (phasing diagrams, turning volumes, movement capacities, volume-to-capacity ratios, and control delays); generates GMNS-compliant SUMO networks that fully preserve signal coordination, traffic flows, and turning movements; and provides a modular architecture for extension to additional microsimulation platforms, thereby promoting broader standardization and community-driven development.
+Hands-On Tutorial
+
+```python
+
+import utdf2gmns as ug
+
+
+if __name__ == "__main__":
+
+    region_name = "Region-name"  # e.g. " Tempe, AZ"
+    path_utdf = "Path-to-UTDF.csv"  # e.g "datasets/data_bullhead_seg4/UTDF.csv
+
+    # Step 1: Initialize the UTDF2GMNS
+    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
+
+    # Step 2: Geocode intersection
+    net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
+
+    # Step 3: convert UTDF network to GMNS format (csv)
+    net.utdf_to_gmns(incl_utdf=True)
+
+    # Step 4: convert UTDF network to SUMO
+    net.utdf_to_sumo(sim_name="", show_warning_message=True, disable_U_turn=True, sim_duration=7200)
+
+    # Step 5 (optional): visualize the network
+    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=f"{region_name}.png")
+    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=f"{region_name}.html")
+
+    # Step 6: Sigma-X visualize signalized intersection
+    # net.utdf_to_gmns_signal_ints()
+
+```
 
 # Acknowledgements
 
-Prof.Xuesong Simon Zhou from Arizona State University, for his valueable feedback and suggestions during the development of the project. His insights on traffic simulation and data formats were instrumental in shaping the direction of this library. Prof. Milan Zlatkovic from University of Wyoming, for the power of sigma-x engine to visualize signalized intersections and his expertise in traffic modeling and simulation has been invaluable. Yiran Zhang from University of Washington, for her valuable feedback and debuging of signal conversation during the early development of the project.
+Prof.Xuesong Simon Zhou from Arizona State University, for his valuable feedback and suggestions during the development of the project. Prof. Milan Zlatkovic from University of Wyoming, for the power of sigma-x engine to visualize signalized intersections. Yiran Zhang from University of Washington, for her valuable feedback and debugging of signal conversation during the early development of the project.
 
 Additional support was provided by the U.S. Department of Energy (DOE), Office of Energy Efficiency and Renewable Energy (EERE), Vehicle Technologies Office. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the USDOT, DOE, and the U.S. Government assumes no liability for the contents or use thereof.
 
