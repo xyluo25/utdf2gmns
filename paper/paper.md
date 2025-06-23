@@ -44,6 +44,8 @@ To address these gaps[@zhang2024integration;@ban2022multiscale;@coogan2021coordi
 
 # Hands-On Tutorial
 
+Official Documentation: https://utdf2gmns.readthedocs.io/en/latest/
+
 ```python
 
 import utdf2gmns as ug
