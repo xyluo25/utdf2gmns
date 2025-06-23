@@ -55,20 +55,22 @@ if __name__ == "__main__":
     path_utdf = "Path-to-UTDF.csv"  # e.g "datasets/data_bullhead_seg4/UTDF.csv
 
     # Step 1: Initialize the UTDF2GMNS
-    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
+    net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name)
 
     # Step 2: Geocode intersection
-    net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
+    net.geocode_utdf_intersections()
 
     # Step 3: convert UTDF network to GMNS format (csv)
     net.utdf_to_gmns(incl_utdf=True)
 
     # Step 4: convert UTDF network to SUMO
-    net.utdf_to_sumo(sim_name="", show_warning_message=True, disable_U_turn=True, sim_duration=7200)
+    net.utdf_to_sumo(sim_name="", disable_U_turn=True, sim_duration=7200)
 
     # Step 5 (optional): visualize the network
     net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=f"{region_name}.png")
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=f"{region_name}.html")
+    net_map = ug.plot_net_keplergl(net,
+                                   save_fig=True,
+                                   fig_name=f"{region_name}.html")
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()
