@@ -1,5 +1,5 @@
 ---
-title: "utdf2gmns: A Python Package for Automating Synchro UTDF to SUMO Simulation"
+title: "utdf2gmns: A Python Package for Mobility Simulation from UTDF to SUMO"
 tags:
   - Python
   - UTDF
@@ -28,6 +28,7 @@ affiliations:
 date: 11 April 2025
 bibliography: paper.bib
 ---
+
 # Summary
 
 UTDF2GMNS[^1] implements an automated workflow for network coordination, traffic signal integration, and traffic flow conversion from Synchro to SUMO. The process begins with a comparative analysis of network topologies, data representations, and signal timing schemas in both environments. Converting Synchro UTDF data to a network ready for microsimulation poses several challenges, including accurate signal integration, spatial transformation, and preservation of turning flow fidelity. Signal conversion represents a primary bottleneck, as it demands precise mapping of phasing plans, timing parameters, and coordination strategies to ensure valid simulation results. Network conversion is further complicated by translating Synchro’s relative coordinate system into georeferenced formats compatible with geographic information system tools. Furthermore, accurate transformation of turning movement data is essential for realistic intersection modeling.
