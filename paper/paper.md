@@ -28,7 +28,6 @@ affiliations:
 date: 11 April 2025
 bibliography: paper.bib
 ---
-
 # Summary
 
 UTDF2GMNS[^1] implements an automated workflow for network coordination, traffic signal integration, and traffic flow conversion from Synchro to SUMO. The process begins with a comparative analysis of network topologies, data representations, and signal timing schemas in both environments. Converting Synchro UTDF data to a network ready for microsimulation poses several challenges, including accurate signal integration, spatial transformation, and preservation of turning flow fidelity. Signal conversion represents a primary bottleneck, as it demands precise mapping of phasing plans, timing parameters, and coordination strategies to ensure valid simulation results. Network conversion is further complicated by translating Synchro’s relative coordinate system into georeferenced formats compatible with geographic information system tools. Furthermore, accurate transformation of turning movement data is essential for realistic intersection modeling.
@@ -82,7 +81,7 @@ if __name__ == "__main__":
 
 # Acknowledgements
 
-Prof.Xuesong Simon Zhou from Arizona State University, for his valuable feedback and suggestions during the development of the project. Prof. Milan Zlatkovic from University of Wyoming, for the power of sigma-x engine to visualize signalized intersections. Yiran Zhang from University of Washington, for her valuable feedback and debugging of signal conversation during the early development of the project.
+Prof. Milan Zlatkovic from University of Wyoming, for the power of sigma-x engine to visualize signalized intersections.
 
 Additional support was provided by the U.S. Department of Energy (DOE), Office of Energy Efficiency and Renewable Energy (EERE), Vehicle Technologies Office. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the USDOT, DOE, and the U.S. Government assumes no liability for the contents or use thereof.
 
