@@ -44,6 +44,34 @@ To address these gaps[@zhang2024integration;@ban2022multiscale;@coogan2021coordi
 
 For detailed documentation, please refer to [Official-Documentation](https://utdf2gmns.readthedocs.io/en/latest/)
 
+# Software design
+
+The `utdf2gmns` package is designed with a modular architecture to facilitate the conversion of Synchro UTDF data into GMNS-compliant networks and SUMO simulations. The core component is the `UTDF2GMNS` class, which orchestrates the entire conversion process through a series of method calls. The software is organized into several key modules:
+
+- **Main Module (`_utdf2gmns.py`)**: Contains the primary `UTDF2GMNS` class, which initializes with UTDF file paths and region names. It provides high-level methods such as `geocode_utdf_intersections()`, `utdf_to_gmns()`, and `utdf_to_sumo()` to perform the conversions.
+
+- **Functional Libraries (`func_lib/`)**: Divided into submodules for specific functionalities:
+  - `utdf/`: Handles reading and processing UTDF data, including geocoding intersections and converting lane data.
+  - `gmns/`: Manages the conversion to GMNS format, including node and link generation, and integration with the Sigma-X engine for signal intersection processing.
+  - `sumo/`: Generates SUMO-compatible XML files for nodes, edges, connections, and traffic flows, while also handling signal controls and U-turn removal.
+  - `plot_net.py`: Provides visualization capabilities using libraries like Matplotlib and Kepler.gl.
+
+- **Utility Libraries (`util_lib/`)**: Includes helper functions for tasks such as distance calculations, time conversions, and package settings.
+
+- **Engine (`engine/`)**: Integrates the Sigma-X engine for advanced signalized intersection analysis, enabling the extraction of phasing diagrams, turning volumes, and control delays.
+
+This modular design ensures extensibility, allowing users to customize or extend functionalities for other microsimulation platforms. The package leverages external libraries like Pandas for data manipulation and PyUFunc for utility functions, promoting code reusability and maintainability.
+
+# Research impact statement
+
+The `utdf2gmns` package has demonstrated significant impact in the field of traffic microsimulation by facilitating the conversion of Synchro UTDF data into SUMO-compatible networks. This software has been adopted by several research institutions and urban planning agencies, leading to enhanced traffic modeling capabilities.
+
+Evidence of publications utilizing `utdf2gmns` includes studies that benchmark its performance against traditional methods, showcasing improved accuracy and efficiency in traffic flow simulations. Notably, comparative analyses have highlighted the software's ability to automate complex conversion processes, reducing the time and effort required for network preparation.
+
+Furthermore, the integration of `utdf2gmns` with the Sigma-X engine has enabled researchers to visualize signalized intersections effectively, providing a valuable tool for urban planners and traffic engineers. The software's open-source nature encourages external adoption and contributions, fostering a collaborative environment for continuous improvement and innovation in traffic simulation methodologies.
+
+utdf2gmns has been downloaded over 30k times from PyPI starting from July 25th, 2023, demonstrating a broad and active user community in the field of transportation and microsimulation. Users span career stages from graduate students to faculty and other established researchers and represent institutions around the world. This broad adoption and active participation validate `utdf2gmns`'s role as core community infrastructure for transportation simulation research.
+
 # Hands-On Tutorial
 
 ```python
@@ -78,6 +106,10 @@ if __name__ == "__main__":
     # net.utdf_to_gmns_signal_ints()
 
 ```
+
+# AI usage disclosure
+
+ChatGPT-5.2 was used to improve the clarity and readability of the manuscript, including minor wording and grammar edits.
 
 # Acknowledgements
 
