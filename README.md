@@ -94,7 +94,7 @@ net.geocode_utdf_intersections(dist_threshold=0.01)
 # But it requires user to provide a single intersection coordinate.
 
 # INTID is the intersection ID in UTDF file
-# x_coord and x_coord are the coordinates of the intersection in decimal degrees (Latitude and Longitude)
+# x_coord and y_coord are the coordinates of the intersection in decimal degrees (Latitude and Longitude)
 
 single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
 net.geocode_utdf_intersections(single_intersection_coord=single_coord)
