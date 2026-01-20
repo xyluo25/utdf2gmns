@@ -100,7 +100,7 @@ single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
 net.geocode_utdf_intersections(single_intersection_coord=single_coord)
 ```
 
-### Create GMNS links
+### Create GMNS links (Optional)
 
 ```python
 # Create GMNS links (polygon-link or line-link)
