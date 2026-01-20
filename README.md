@@ -10,7 +10,7 @@
     - [Signalized Intersection Calculation and Visualization (Optional)](#signalized-intersection-calculation-and-visualization-optional)
     - [Geocoding Intersections (Use Automatic Geocoding)](#geocoding-intersections-use-automatic-geocoding)
     - [Geocoding Intersections (Use Manual Geocoding)](#geocoding-intersections-use-manual-geocoding)
-    - [Create GMNS links](#create-gmns-links)
+    - [Create GMNS links (Optional)](#create-gmns-links-optional)
     - [Save GMNS Network](#save-gmns-network)
     - [Convert UTDF Network to SUMO](#convert-utdf-network-to-sumo)
     - [Visualize the Network](#visualize-the-network)
