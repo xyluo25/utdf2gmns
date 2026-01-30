@@ -44,20 +44,28 @@ To address these gaps[@zhang2024integration;@ban2022multiscale;@coogan2021coordi
 
 For detailed documentation, please refer to [Official-Documentation](https://utdf2gmns.readthedocs.io/en/latest/)
 
+# State of the field
+
+Traffic microsimulation scenarios are commonly created from open GIS/map data, built directly in a simulator’s native formats, or derived from proprietary planning and operations tools. GIS-based pipelines scale well for network geometry, but key operational inputs (turning movements, lane connectivity, detectors, and signal timing) are typically added manually. When a study starts from Synchro exports, UTDF provides many of these operational details, but they are not available in an open-source simulator-ready representation.
+
+SUMO offers flexible signal control modeling and is widely used for research on controller representation and validation [@halbach2022high; @schrader2022extension]. These capabilities primarily address how to represent and execute control once a scenario is specified; they do not provide a standard, reusable pathway for translating Synchro’s phasing, timing, and coordination plans from UTDF into consistent, reproducible simulation inputs.
+
+To our knowledge, there is no commonly used research software package that converts Synchro UTDF directly into a complete, SUMO-ready simulation scenario (network, flows, and signal control). Instead, published and practical workflows are typically assembled from project-specific scripts and manual steps, and they often cover only subsets of the required information (e.g., geometry, turning counts, or a subset of timing). Extending general-purpose GIS/OSM import utilities is therefore insufficient: supporting UTDF requires a dedicated parser and a semantics-preserving mapping of signal control and demand, plus validation tooling to ensure fidelity across intersections and time plans.
+
+`utdf2gmns` provides this missing conversion layer as an end-to-end workflow from Synchro UTDF to a standardized intermediate representation (GMNS) and then to simulation-ready SUMO artifacts. The software’s contribution is a reproducible translation of UTDF operational semantics (signal structure, timing/coordination plans, and turning movement demand) into open outputs suitable for large-scale scenario generation and comparative experiments, with optional Sigma-X integration to support intersection-level diagnostics and auditing.
+
 # Software design
 
 The `utdf2gmns` package is designed with a modular architecture to facilitate the conversion of Synchro UTDF data into GMNS-compliant networks and SUMO simulations. The core component is the `UTDF2GMNS` class, which orchestrates the entire conversion process through a series of method calls. The software is organized into several key modules:
 
 - **Main Module (`_utdf2gmns.py`)**: Contains the primary `UTDF2GMNS` class, which initializes with UTDF file paths and region names. It provides high-level methods such as `geocode_utdf_intersections()`, `utdf_to_gmns()`, and `utdf_to_sumo()` to perform the conversions.
-
 - **Functional Libraries (`func_lib/`)**: Divided into submodules for specific functionalities:
+
   - `utdf/`: Handles reading and processing UTDF data, including geocoding intersections and converting lane data.
   - `gmns/`: Manages the conversion to GMNS format, including node and link generation, and integration with the Sigma-X engine for signal intersection processing.
   - `sumo/`: Generates SUMO-compatible XML files for nodes, edges, connections, and traffic flows, while also handling signal controls and U-turn removal.
   - `plot_net.py`: Provides visualization capabilities using libraries like Matplotlib and Kepler.gl.
-
 - **Utility Libraries (`util_lib/`)**: Includes helper functions for tasks such as distance calculations, time conversions, and package settings.
-
 - **Engine (`engine/`)**: Integrates the Sigma-X engine for advanced signalized intersection analysis, enabling the extraction of phasing diagrams, turning volumes, and control delays.
 
 This modular design ensures extensibility, allowing users to customize or extend functionalities for other microsimulation platforms. The package leverages external libraries like Pandas for data manipulation and pyufunc for utility functions, promoting code reusability and maintainability.
@@ -107,7 +115,7 @@ if __name__ == "__main__":
 
 # AI usage disclosure
 
-No generative AI tools were used in the development of this software, ChatGPT-5.2 was used to improve the clarity and readability of the manuscript, including minor wording and grammar edits.
+No generative AI tools were used in the development of this software, ChatGPT-5.2 was used to improve the clarity and readability of the manuscript.
 
 # Acknowledgements
 
