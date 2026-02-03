@@ -1,24 +1,30 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-type: conference-paper
+type: software
 title: "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO"
-authors:
-  - family-names: Luo
-    given-names: Xiangyong
-  - family-names: Zhang
-    given-names: Yiran
-  - family-names: Xu
-    given-names: Guanhao
-  - family-names: Li
-    given-names: Wan
-  - family-names: Wang
-    given-names: Ross
-  - family-names: Zhou
-    given-names: Xuesong Simon
-conference:
-  name: "Winter Simulation Conference (WSC)"
+preferred-citation:
+  type: conference-paper
+  title: "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO"
+  authors:
+    - family-names: Luo
+      given-names: Xiangyong
+      orcid: 0009-0003-1290-9983
+    - family-names: Zhang
+      given-names: Yiran
+    - family-names: Xu
+      given-names: Guanhao
+    - family-names: Li
+      given-names: Wan
+    - family-names: Wang
+      given-names: Ross
+    - family-names: Zhou
+      given-names: Xuesong Simon
   year: 2025
-publisher:
-  name: IEEE
-year: 2025
-pages: "2320-2331"
+  doi: "10.1109/WSC68292.2025.11338949"
+  conference:
+    name: "2025 Winter Simulation Conference (WSC)"
+  publisher:
+    name: IEEE
+  start: 2320
+  end: 2331
+
