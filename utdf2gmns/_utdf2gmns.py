@@ -299,10 +299,30 @@ class UTDF2GMNS:
             self.create_signal_control()
 
         # Save the GMNS data to the output directory
-        pd.DataFrame(self.network_nodes.values()).to_csv(
-            os.path.join(gmns_output_dir, "node.csv"), index=False)
-        pd.DataFrame(self.network_links.values()).to_csv(
-            os.path.join(gmns_output_dir, "link.csv"), index=False)
+        # add column "node_id" by copying "INTID", add "node_type" by copying "TYPE_DESC"
+        # move these columns to the front
+        df_gmns_node = pd.DataFrame(self.network_nodes.values())
+        df_gmns_node["node_id"] = df_gmns_node["INTID"]
+        df_gmns_node["node_type"] = df_gmns_node["TYPE_DESC"]
+        front_cols = ["node_id", "x_coord", "y_coord", "node_type"]
+        other_cols = [col for col in df_gmns_node.columns if col not in front_cols]
+        df_gmns_node = df_gmns_node[front_cols + other_cols]
+        df_gmns_node.to_csv(os.path.join(gmns_output_dir, "node.csv"), index=False)
+
+        # rename "Link_ID" to "link_id", add "from_node_id" and "to_node_id" by splitting "Link_ID"
+        # move these columns to the front
+        df_gmns_link = pd.DataFrame(self.network_links.values())
+        df_gmns_link = df_gmns_link.rename(columns={"Link_ID": "link_id",
+                                                    "Lanes": "lanes",
+                                                    "Name": "name",
+                                                    "Distance": "length",
+                                                    "Speed": "free_speed"})
+        df_gmns_link["from_node_id"] = df_gmns_link["link_id"].apply(lambda x: x.split("_")[0])
+        df_gmns_link["to_node_id"] = df_gmns_link["link_id"].apply(lambda x: x.split("_")[1])
+        front_cols = ["link_id", "from_node_id", "to_node_id", "lanes", "name", "length", "free_speed"]
+        other_cols = [col for col in df_gmns_link.columns if col not in front_cols]
+        df_gmns_link = df_gmns_link[front_cols + other_cols]
+        df_gmns_link.to_csv(os.path.join(gmns_output_dir, "link.csv"), index=False)
 
         with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
             json.dump(self.network_signal_control, f)
