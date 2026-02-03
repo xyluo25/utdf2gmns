@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-type: software
+type: article
 title: "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO"
 preferred-citation:
-  type: conference-paper
+  type: article
   title: "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO"
   authors:
     - family-names: Luo
