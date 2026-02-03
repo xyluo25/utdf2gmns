@@ -17,4 +17,5 @@ xlwings
 sumolib
 matplotlib
 keplergl
+sumolib
 
