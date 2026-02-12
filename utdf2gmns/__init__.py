@@ -39,3 +39,5 @@ __all__ = [
     "time_unit_converter",
     "time_str_to_seconds",
 ]
+
+__version__ = "1.1.3"
