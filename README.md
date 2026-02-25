@@ -44,11 +44,11 @@ Previous Development: https://github.com/asu-trans-ai-lab/utdf2gmns ([Initial co
 
 ## Quick Python Example
 
-Notes:
-
-* This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
-* The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
-* The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: automatic_geociding or manually ::ref:: manual_geocoding as per your requirement.
+> Notes:
+>
+> * This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
+> * The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
+> * The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: automatic_geociding or manually ::ref:: manual_geocoding as per your requirement.
 
 ### Prepare your UTDF File
 
