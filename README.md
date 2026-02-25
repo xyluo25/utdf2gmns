@@ -159,7 +159,7 @@ net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
 net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
 ```
 
-Another way to visualize the network is to open generate .sumocfg file (Open use sumo-gui).
+Another way to visualize the network is to open .sumocfg file (Open use sumo-gui).
 
 ### Quick Example (Full Code)
 
@@ -224,5 +224,5 @@ For more information about the ways you can contribute to utdf2gmns, visit [our 
 If you use utdf2gmns in your work or research, please use the following entry:
 
 ```plaintext
-Xiangyong, Luo and Xuesong Simon，Zhou. “xyluo25/utdf2gmns: V1.0.0”. Zenodo, December 17, 2022. https://doi.org/10.5281/zenodo.14825686.
+Luo, X., Zhang, Y., Xu, G., Li, W., Wang, R., & Zhou, X. S. (2025, December). Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO. In 2025 Winter Simulation Conference (WSC) (pp. 2320-2331). IEEE.
 ```
