@@ -179,9 +179,73 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                     print(
                         f"Warning: Unknown movement type {mvt_turn} in node: {int_id}.")
 
-            # Ordering lane index from the sequence of Right -> Through -> Left -> U-Turn
+            # Ordering lane index from the sequence of Right -> Through -> Left -> U-Turn  (SUMO)
+            # Ordering lane index from the sequence of Through -> Right -> Left -> U-Turn  (GMNS)
             # For each mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
-            lane_index = 0
+            lane_index = 1
+            lane_index_left = -1
+
+            # Add Through lanes
+            if mvt_type["T"]:
+                for through in mvt_type["T"]:
+                    num_lanes = through.get("lanes")
+
+                    up_node = through.get("up_node")
+                    dest_node = through.get("dest_node")
+                    shared = through.get("shared")
+                    storage = through.get("storage")
+                    # taper = through.get("taper")
+                    speed = through.get("speed")
+                    volume = through.get("volume")
+                    distance = through.get("distance")
+                    num_detects = through.get("num_detects")
+
+                    if int(num_lanes) > 0:
+                        for _ in range(int(num_lanes)):
+                            if storage:
+                                storage = re.findall(r"\d+", str(storage))[0]
+                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
+                            elif distance:
+                                distance = re.findall(
+                                    r"\d+", str(distance))[0]  # Extract digit
+                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
+                            else:
+                                # use length from link lookup dictionary
+                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
+                                lane_length = re.findall(
+                                    # Extract digit
+                                    r"\d+", str(lane_length))[0]
+                                lane_length = cvt_unit_distance[unit_distance](
+                                    float(lane_length))
+
+                            if speed:
+                                speed = re.findall(
+                                    r"\d+", str(speed))[0]  # Extract digit
+                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
+                            else:
+                                # use speed from link lookup dictionary
+                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
+                                lane_speed = re.findall(
+                                    # Extract digit
+                                    r"\d+", str(lane_speed))[0]
+                                lane_speed = cvt_unit_speed[unit_speed](
+                                    float(lane_speed))
+
+                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
+                                "id": f"{up_node}_{int_id}_{lane_index}",
+                                "link_id": f"{up_node}_{int_id}",
+                                "index": lane_index_left,
+                                f"length_{unit_distance}": lane_length,
+                                f"speed_{unit_speed}": lane_speed,
+                                "volume": volume,
+                                "numDetects": num_detects,
+                                "dir": "s",
+                                "shared": shared,
+                                "up_node": up_node,
+                                "dest_node": dest_node,
+                            }
+
+                            lane_index += 1
 
             # Add Right Turn lanes
             if mvt_type["R"]:
@@ -236,73 +300,13 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
 
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
                                 "id": f"{up_node}_{int_id}_{lane_index}",
-                                "index": lane_index,
-                                "length": lane_length,
-                                "speed": lane_speed,
+                                "link_id": f"{up_node}_{int_id}",
+                                "index": lane_index_left,
+                                f"length_{unit_distance}": lane_length,
+                                f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
                                 "dir": "r",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                            }
-
-                            lane_index += 1
-
-            # Add Through lanes
-            if mvt_type["T"]:
-                for through in mvt_type["T"]:
-                    num_lanes = through.get("lanes")
-
-                    up_node = through.get("up_node")
-                    dest_node = through.get("dest_node")
-                    shared = through.get("shared")
-                    storage = through.get("storage")
-                    # taper = through.get("taper")
-                    speed = through.get("speed")
-                    volume = through.get("volume")
-                    distance = through.get("distance")
-                    num_detects = through.get("num_detects")
-
-                    if int(num_lanes) > 0:
-                        for _ in range(int(num_lanes)):
-                            if storage:
-                                storage = re.findall(r"\d+", str(storage))[0]
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(
-                                    r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_length))[0]
-                                lane_length = cvt_unit_distance[unit_distance](
-                                    float(lane_length))
-
-                            if speed:
-                                speed = re.findall(
-                                    r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_speed))[0]
-                                lane_speed = cvt_unit_speed[unit_speed](
-                                    float(lane_speed))
-
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
-                                "index": lane_index,
-                                "length": lane_length,
-                                "speed": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "dir": "s",
                                 "shared": shared,
                                 "up_node": up_node,
                                 "dest_node": dest_node,
@@ -362,11 +366,12 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                 lane_speed = cvt_unit_speed[unit_speed](
                                     float(lane_speed))
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
-                                "index": lane_index,
-                                "length": lane_length,
-                                "speed": lane_speed,
+                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
+                                "id": f"{up_node}_{int_id}_{lane_index_left}",
+                                "link_id": f"{up_node}_{int_id}",
+                                "index": lane_index_left,
+                                f"length_{unit_distance}": lane_length,
+                                f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
                                 "dir": "l",
@@ -375,7 +380,7 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                 "dest_node": dest_node,
                             }
 
-                            lane_index += 1
+                            lane_index_left -= 1
 
             # Add U-Turn lanes
             if mvt_type["U"]:
@@ -428,11 +433,12 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                 lane_speed = cvt_unit_speed[unit_speed](
                                     float(lane_speed))
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
-                                "index": lane_index,
-                                "length": lane_length,
-                                "speed": lane_speed,
+                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
+                                "id": f"{up_node}_{int_id}_{lane_index_left}",
+                                "link_id": f"{up_node}_{int_id}",
+                                "index": lane_index_left,
+                                f"length_{unit_distance}": lane_length,
+                                f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
                                 "dir": "t",
@@ -441,7 +447,7 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                 "dest_node": dest_node,
                             }
 
-                            lane_index += 1
+                            lane_index_left -= 1
 
     return lane_lookup_dict
 
@@ -510,10 +516,23 @@ def generate_gmns_lane(utdf_dict: dict, filename: str = "lane.csv", net_unit: st
     Returns:
         bool: True if the CSV file is generated successfully, False otherwise.
     """
-
     lanes_dict = generate_lane_lookup_dict(utdf_dict, net_unit=net_unit)
+    df_lane = pd.DataFrame(lanes_dict.values())
 
-    df_lane = pd.DataFrame.from_dict(lanes_dict, orient="index")
+    # change id column to "lane_id"
+    df_lane.rename(columns={"id": "lane_id"}, inplace=True)
+    df_lane.rename(columns={"index": "lane_num"}, inplace=True)
+
+    dir_type = {"s": "thru",
+                "t": "uturn",
+                "l": "left",
+                "r": "right",
+                "L": "partially left",
+                "R": "partially right",
+                "invalid": "invalid"}
+    df_lane["dir"] = df_lane["dir"].map(dir_type)
+    df_lane.rename(columns={"dir": "type"}, inplace=True)
+
     df_lane.to_csv(filename, index=False)
     return True
 
