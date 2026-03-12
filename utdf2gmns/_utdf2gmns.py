@@ -25,6 +25,7 @@ from utdf2gmns.func_lib.gmns.geocoding_Nodes import update_node_from_one_interse
 from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      cvt_link_df_to_dict)
+from utdf2gmns.func_lib.gmns.generate_lane_movement import generate_gmns_lane, generate_gmns_movement
 from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import cvt_utdf_to_signal_intersection
 
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
@@ -323,6 +324,10 @@ class UTDF2GMNS:
         other_cols = [col for col in df_gmns_link.columns if col not in front_cols]
         df_gmns_link = df_gmns_link[front_cols + other_cols]
         df_gmns_link.to_csv(os.path.join(gmns_output_dir, "link.csv"), index=False)
+
+        # Save lane and movement data
+        generate_gmns_lane(self._utdf_dict, os.path.join(gmns_output_dir, "lane.csv"), net_unit=self.network_unit)
+        generate_gmns_movement(self._utdf_dict, os.path.join(gmns_output_dir, "movement.csv"))
 
         with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
             json.dump(self.network_signal_control, f)
