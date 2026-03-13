@@ -114,6 +114,8 @@ This step will convert the UTDF network to GMNS format and save it to CSV and js
 
 > * **nodes.csv** : Contains information about the nodes in the network.
 > * **links.csv** : Contains information about the links in the network.
+> * **lane.csv**: Contains information about the lanes in the network.
+> * **movement.csv:** Contains information about movements on the network.
 > * **signal.json** : Contains information about the signals of each signalized intersection in the network.
 > * **utdf_network.csv** : Contains information from the UTDF file regarding the network configuration and settings.
 > * **utdf_nodes.csv** : Contains information from the UTDF file regarding the nodes in the network.
