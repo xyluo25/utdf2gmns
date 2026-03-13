@@ -325,7 +325,9 @@ class UTDF2GMNS:
 
         # Save lane and movement data
         generate_gmns_lane(self._utdf_dict, os.path.join(gmns_output_dir, "lane.csv"), net_unit=self.network_unit)
-        generate_gmns_movement(self._utdf_dict, os.path.join(gmns_output_dir, "movement.csv"))
+        generate_gmns_movement(self._utdf_dict,
+                               os.path.join(gmns_output_dir, "movement.csv"),
+                               net_unit=self.network_unit)
 
         with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
             json.dump(self.network_signal_control, f)
