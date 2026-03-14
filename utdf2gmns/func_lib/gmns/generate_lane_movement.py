@@ -244,7 +244,7 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
                                 "lane_id": f"{up_node}_{int_id}_{lane_index}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index_left,
+                                "lane_num": lane_index,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
@@ -312,7 +312,7 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
                                 "lane_id": f"{up_node}_{int_id}_{lane_index}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index_left,
+                                "lane_num": lane_index,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
