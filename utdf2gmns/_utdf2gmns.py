@@ -148,7 +148,30 @@ class UTDF2GMNS:
         """
         print("\nGeocoding UTDF intersections...")
         # check if single coordinate is provided and validate it's value
-        if single_intersection_coord:
+        if not single_intersection_coord:
+            if not self._utdf_region_name:
+                raise Exception(
+                    "\nCould not geocode intersections, two ways to solve this issue: \n"
+                    "  1. provide city_name when initializing UTDF2GMNS class; \n"
+                    "  2. provide single_coord manually while running geocoding_intersections()."
+                )
+            # generate intersections with name for coordinations
+            df_utdf_intersection = generate_intersection_from_Links(
+                self._utdf_dict.get("Links"),
+                self._utdf_region_name)
+
+            # geocoding one intersection from address, with threshold (default 0.01) km
+            single_intersection = generate_intersection_coordinates(
+                df_utdf_intersection,
+                dist_threshold=dist_threshold,
+                geocode_one=True)
+
+            # check if the single_intersection is empty
+            if single_intersection["INTID"] is None:
+                raise Exception(
+                    "\n  No valid intersection is geo-coded!"
+                    "  Please change dist_threshold or provide single_coord manually.")
+        else:
             if not {"INTID", "x_coord", "y_coord"}.issubset(set(single_intersection_coord.keys())):
                 raise ValueError("Single coordinate should have INTID, x_coord, and y_coord keys!")
 
@@ -167,31 +190,6 @@ class UTDF2GMNS:
                 raise ValueError(f"single intersection: {int_id} not in the UTDF Nodes!")
 
             single_intersection = single_intersection_coord
-
-        else:
-            if self._utdf_region_name:
-                # generate intersections with name for coordinations
-                df_utdf_intersection = generate_intersection_from_Links(
-                    self._utdf_dict.get("Links"),
-                    self._utdf_region_name)
-
-                # geocoding one intersection from address, with threshold (default 0.01) km
-                single_intersection = generate_intersection_coordinates(
-                    df_utdf_intersection,
-                    dist_threshold=dist_threshold,
-                    geocode_one=True)
-
-                # check if the single_intersection is empty
-                if single_intersection["INTID"] is None:
-                    raise Exception(
-                        "\n  No valid intersection is geo-coded!"
-                        "  Please change dist_threshold or provide single_coord manually.")
-            else:
-                raise Exception(
-                    "\nCould not geocode intersections, two ways to solve this issue: \n"
-                    "  1. provide city_name when initializing UTDF2GMNS class; \n"
-                    "  2. provide single_coord manually while running geocoding_intersections()."
-                )
 
         # update Nodes from single_intersection
         node_dict = update_node_from_one_intersection(single_intersection,
@@ -327,7 +325,9 @@ class UTDF2GMNS:
 
         # Save lane and movement data
         generate_gmns_lane(self._utdf_dict, os.path.join(gmns_output_dir, "lane.csv"), net_unit=self.network_unit)
-        generate_gmns_movement(self._utdf_dict, os.path.join(gmns_output_dir, "movement.csv"))
+        generate_gmns_movement(self._utdf_dict,
+                               os.path.join(gmns_output_dir, "movement.csv"),
+                               net_unit=self.network_unit)
 
         with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
             json.dump(self.network_signal_control, f)

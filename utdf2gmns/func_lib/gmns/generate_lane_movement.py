@@ -56,6 +56,16 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
         utdf_dict (dict): A dictionary containing UTDF data.
         net_unit (str): The unit of the network (e.g., "feet", "meters").
 
+    Note:
+        SUMO to GMNS direction mapping:
+        dir_type = {"s": "thru",
+                    "t": "uturn",
+                    "l": "left",
+                    "r": "right",
+                    "L": "partially left",
+                    "R": "partially right",
+                    "invalid": "invalid"}
+
     Raises:
         ValueError: Could not get Lane data from utdf_dict.
 
@@ -232,17 +242,18 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                     float(lane_speed))
 
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
+                                "lane_id": f"{up_node}_{int_id}_{lane_index}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "index": lane_index_left,
+                                "lane_num": lane_index,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
-                                "dir": "s",
+                                "type": "thru",
                                 "shared": shared,
                                 "up_node": up_node,
                                 "dest_node": dest_node,
+                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
                             }
 
                             lane_index += 1
@@ -299,17 +310,18 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                     float(lane_speed))
 
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index}",
+                                "lane_id": f"{up_node}_{int_id}_{lane_index}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "index": lane_index_left,
+                                "lane_num": lane_index,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
-                                "dir": "r",
+                                "type": "right",
                                 "shared": shared,
                                 "up_node": up_node,
                                 "dest_node": dest_node,
+                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
                             }
 
                             lane_index += 1
@@ -367,17 +379,18 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                     float(lane_speed))
 
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index_left}",
+                                "lane_id": f"{up_node}_{int_id}_{lane_index_left}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "index": lane_index_left,
+                                "lane_num": lane_index_left,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
-                                "dir": "l",
+                                "type": "left",
                                 "shared": shared,
                                 "up_node": up_node,
                                 "dest_node": dest_node,
+                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
                             }
 
                             lane_index_left -= 1
@@ -434,17 +447,18 @@ def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                                     float(lane_speed))
 
                             lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
-                                "id": f"{up_node}_{int_id}_{lane_index_left}",
+                                "lane_id": f"{up_node}_{int_id}_{lane_index_left}",
                                 "link_id": f"{up_node}_{int_id}",
-                                "index": lane_index_left,
+                                "lane_num": lane_index_left,
                                 f"length_{unit_distance}": lane_length,
                                 f"speed_{unit_speed}": lane_speed,
                                 "volume": volume,
                                 "numDetects": num_detects,
-                                "dir": "t",
+                                "type": "uturn",
                                 "shared": shared,
                                 "up_node": up_node,
                                 "dest_node": dest_node,
+                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
                             }
 
                             lane_index_left -= 1
@@ -519,25 +533,14 @@ def generate_gmns_lane(utdf_dict: dict, filename: str = "lane.csv", net_unit: st
     lanes_dict = generate_lane_lookup_dict(utdf_dict, net_unit=net_unit)
     df_lane = pd.DataFrame(lanes_dict.values())
 
-    # change id column to "lane_id"
-    df_lane.rename(columns={"id": "lane_id"}, inplace=True)
-    df_lane.rename(columns={"index": "lane_num"}, inplace=True)
-
-    dir_type = {"s": "thru",
-                "t": "uturn",
-                "l": "left",
-                "r": "right",
-                "L": "partially left",
-                "R": "partially right",
-                "invalid": "invalid"}
-    df_lane["dir"] = df_lane["dir"].map(dir_type)
-    df_lane.rename(columns={"dir": "type"}, inplace=True)
-
+    # exclude mvmt_id, up_node, dest_node columns in the output lane.csv
+    exlude_columns = ["mvmt_id", "shared"]  # "up_node", "dest_node"
+    df_lane = df_lane.drop(columns=exlude_columns, errors='ignore')
     df_lane.to_csv(filename, index=False)
     return True
 
 
-def generate_gmns_movement(utdf_dict: dict, filename: str = "movement.csv") -> bool:
+def generate_gmns_movement(utdf_dict: dict, filename: str = "movement.csv", net_unit: str = "feet") -> bool:
     """Generate the movement.csv file in GMNS Standard.
                      int_id
                     ____|____ _____  __ ...
@@ -900,7 +903,17 @@ def generate_gmns_movement(utdf_dict: dict, filename: str = "movement.csv") -> b
             movement_dict[mvmt_id]["num_lanes"] += 1
 
     # Convert movement_dict to DataFrame
-    df_movement = pd.DataFrame.from_dict(movement_dict, orient="index")
+    df_movement = pd.DataFrame(movement_dict.values())
+
+    # Collapse lane records to one row per movement key before merge.
+    df_lane = pd.DataFrame(generate_lane_lookup_dict(utdf_dict, net_unit=net_unit).values())
+    df_lane = df_lane[["mvmt_id", "type", "volume"]]
+    df_lane = df_lane.groupby(["mvmt_id", "type"], as_index=False)["volume"].first()
+    df_movement = df_movement.merge(df_lane, on=["mvmt_id", "type"], how="left", validate="one_to_one")
+
+    # fill volume NaN with 0
+    df_movement["volume"] = df_movement["volume"].fillna(0)
+
     df_movement.to_csv(filename, index=False)
 
     return True
