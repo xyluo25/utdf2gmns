@@ -1,22 +1,18 @@
-'''
+"""
 ##############################################################
 # Created Date: Monday, February 2nd 2026
 # Contact Info: luoxiangyong01@gmail.com
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
-'''
-
+"""
 
 from pathlib import Path
 import os
 import sys
-import json
-from collections import defaultdict
 import subprocess
 
-if 'SUMO_HOME' in os.environ:
-    sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'))
-import sumolib
+if "SUMO_HOME" in os.environ:
+    sys.path.append(os.path.join(os.environ["SUMO_HOME"], "tools"))
 
 
 def shape2json(net, geometry, isBoundary):
@@ -24,23 +20,22 @@ def shape2json(net, geometry, isBoundary):
     coords = [[round(x, 6), round(y, 6)] for x, y in lonLatGeometry]
     if isBoundary:
         coords = [coords]
-    return {
-        "type": "Polygon" if isBoundary else "LineString",
-        "coordinates": coords
-    }
+    return {"type": "Polygon" if isBoundary else "LineString", "coordinates": coords}
 
 
-def sumo2geojson(net_file: str,
-                 output_file: str,
-                 lanes: bool = False,
-                 junctions: bool = False,
-                 internal: bool = False,
-                 junction_coords: bool = False,
-                 boundary: bool = False,
-                 edge_data_timeline: bool = False,
-                 edge_data: str = None,
-                 pt_lines: str = None) -> None:
-    """ Convert SUMO net file to geojson format, in default exports edge geometries only.
+def sumo2geojson(
+    net_file: str,
+    output_file: str,
+    lanes: bool = False,
+    junctions: bool = False,
+    internal: bool = False,
+    junction_coords: bool = False,
+    boundary: bool = False,
+    edge_data_timeline: bool = False,
+    edge_data: str = None,
+    pt_lines: str = None,
+) -> None:
+    """Convert SUMO net file to geojson format, in default exports edge geometries only.
 
     Args:
         net_file (str): The SUMO .net.xml file to convert
@@ -58,20 +53,38 @@ def sumo2geojson(net_file: str,
         The conversion result in geojson format.
     """
 
+    # TDD validate input and output file
+    if not isinstance(net_file, str):
+        raise TypeError(f"The specified net file path must be a string: {net_file}")
+    if not isinstance(output_file, str):
+        raise TypeError(
+            f"The specified output file path must be a string: {output_file}"
+        )
+    if not Path(net_file).is_file():
+        raise FileNotFoundError(f"The specified net file does not exist: {net_file}")
+
+    # Validate input extension in .net.xml and output in .geojson
+    if not net_file.endswith(".net.xml"):
+        raise ValueError(
+            f"The specified net file is not a valid SUMO .net.xml file: {net_file}"
+        )
+    if not output_file.endswith(".geojson"):
+        output_file += ".geojson"
+
     # Use command statement run net2geojson.py
     cmd = f'python "{Path(__file__).parent / "net2geojson.py"}" -n "{net_file}" -o "{output_file}"'
     if lanes:
-        cmd += ' -l'
+        cmd += " -l"
     if junctions:
-        cmd += ' --junctions'
+        cmd += " --junctions"
     if internal:
-        cmd += ' -i'
+        cmd += " -i"
     if junction_coords:
-        cmd += ' -j'
+        cmd += " -j"
     if boundary:
-        cmd += ' -b'
+        cmd += " -b"
     if edge_data_timeline:
-        cmd += ' --edgedata-timeline'
+        cmd += " --edgedata-timeline"
     if edge_data:
         cmd += f' -d "{edge_data}"'
     if pt_lines:

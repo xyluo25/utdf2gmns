@@ -11,7 +11,7 @@ import utdf2gmns as ug
 if __name__ == "__main__":
 
     region_name = " Tempe, AZ"
-    path_utdf = r"C:\Users\xyluo25\Desktop\pytes\data_Tempe_network\UTDF.csv"
+    path_utdf = r"./datasets/data_Tempe_network\UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
@@ -31,8 +31,8 @@ if __name__ == "__main__":
 
     # Step 5 (optional): visualize the network
     # # visualize in matplotlib (png) and kepler.gl (html)
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
+    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="tempe.png")
+    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="tempe.html")
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()
