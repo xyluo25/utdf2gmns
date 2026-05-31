@@ -10,6 +10,46 @@ import pandas as pd
 from collections import OrderedDict
 
 
+BLANK_TEXT_VALUES = {"", "nan", "none", "null"}
+
+
+def _is_blank(value: object) -> bool:
+    """Return True when a UTDF cell does not contain useful data."""
+    if value is None:
+        return True
+    return str(value).strip().lower() in BLANK_TEXT_VALUES
+
+
+def _extract_int(value: object, default: int = 0) -> int:
+    """Extract an integer from a UTDF cell that may be text or numeric."""
+    if _is_blank(value):
+        return default
+    try:
+        return int(float(str(value).strip()))
+    except ValueError:
+        return default
+
+
+def _normalize_phase_name(value: object) -> str:
+    """Convert a UTDF lane phase cell into a SUMO/Synchro phase key like ``D2``."""
+    if _is_blank(value):
+        return ""
+
+    phase_value = str(value).strip()
+    try:
+        numeric_phase = float(phase_value)
+    except ValueError:
+        numeric_phase = None
+
+    if numeric_phase is not None:
+        if numeric_phase <= 0:
+            return ""
+        if numeric_phase.is_integer():
+            return f"D{int(numeric_phase)}"
+
+    return f"D{phase_value}"
+
+
 def parse_phase(df_phase: pd.DataFrame, int_id: int) -> dict:
     """Extract signal Phase data by intersection ID
 
@@ -109,17 +149,21 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int, verbose: bool = False) -> dic
 
             key = f'Phase{i}'
             if key in df_lane_id.index:
-                phase_val = df_lane_id[traffic_movement].loc[key]
-                if phase_val and phase_val != '-1':
+                phase_name = _normalize_phase_name(
+                    df_lane_id[traffic_movement].loc[key],
+                )
+                if phase_name:
                     traffic_movement_data[traffic_movement]["Protected"].append(
-                        f"D{phase_val}")
+                        phase_name)
 
             key = f'PermPhase{i}'
             if key in df_lane_id.index:
-                perm_phase_val = df_lane_id[traffic_movement].loc[key]
-                if perm_phase_val and perm_phase_val != '-1':
+                phase_name = _normalize_phase_name(
+                    df_lane_id[traffic_movement].loc[key],
+                )
+                if phase_name:
                     traffic_movement_data[traffic_movement]["Permitted"].append(
-                        f"D{perm_phase_val}")
+                        phase_name)
 
         len_protected = len(traffic_movement_data[traffic_movement]['Protected'])
         len_permitted = len(traffic_movement_data[traffic_movement]['Permitted'])
@@ -140,10 +184,10 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int, verbose: bool = False) -> dic
     for movement, value in traffic_movement_data.items():
         bound = movement[:2]
         if bound not in total_lanes_per_bound:
-            total_lanes_per_bound[bound] = int(
+            total_lanes_per_bound[bound] = _extract_int(
                 traffic_movement_data[movement]["Lanes"])
         else:
-            total_lanes_per_bound[bound] += int(value["Lanes"])
+            total_lanes_per_bound[bound] += _extract_int(value["Lanes"])
 
     # Look up the traffic movement data for the traffic movements that do not have an up node
     for pair in need_lookup:
@@ -167,14 +211,21 @@ def parse_lane(df_lane: pd.DataFrame, int_id: int, verbose: bool = False) -> dic
             continue
 
         type_ = 'Protected' if movement[-1] == 'T' else 'Permitted'
-        if len(possible_list) == 1:
-            traffic_movement_data[movement][type_] = traffic_movement_data[possible_list[0]]['Protected']
-        else:
-            through_movement = movement[:2] + 'T'
-            if through_movement in possible_list:
-                traffic_movement_data[movement][type_] = traffic_movement_data[through_movement]['Protected']
-            else:
-                traffic_movement_data[movement][type_] = traffic_movement_data[possible_list[0]]['Protected']
+        preferred_movements = []
+        through_movement = movement[:2] + 'T'
+        base_turn_movement = movement[:3]
+        for possible_movement in [through_movement, base_turn_movement, *possible_list]:
+            if possible_movement in possible_list and possible_movement not in preferred_movements:
+                preferred_movements.append(possible_movement)
+
+        for possible_movement in preferred_movements:
+            candidate_phases = (
+                traffic_movement_data[possible_movement]['Protected']
+                or traffic_movement_data[possible_movement]['Permitted']
+            )
+            if candidate_phases:
+                traffic_movement_data[movement][type_] = candidate_phases
+                break
 
     phases = {}
     for bound, movement_data in traffic_movement_data.items():
@@ -219,13 +270,20 @@ def parse_timeplans(df_timeplans: pd.DataFrame, int_id: int) -> dict:
     return int_timeplans
 
 
-def parse_signal_control(df_phase: pd.DataFrame, df_lane: pd.DataFrame, int_id: int) -> dict:
+def parse_signal_control(
+        df_phase: pd.DataFrame,
+        df_lane: pd.DataFrame,
+        int_id: int,
+        lane_int_id: int | str | None = None) -> dict:
     """Extract signalized intersection data from the UTDF Phase and Lane data by intersection ID
 
     Args:
         df_Phase (pd.DataFrame): UTDF Phase data
         df_Lane (pd.DataFrame): UTDF Lane data
-        int_id (int): Intersection ID
+        int_id (int): Intersection ID that owns the controller timings
+        lane_int_id (int | str | None): Intersection ID that owns the lane
+            movement-to-phase records. Timeplans can assign multiple nodes to
+            one controller, so this can differ from ``int_id``.
 
     Returns:
         dict: {'D1': {'protected': ['SBL']},
@@ -238,8 +296,11 @@ def parse_signal_control(df_phase: pd.DataFrame, df_lane: pd.DataFrame, int_id: 
         'D8': {'protected': ['EBT'], 'permitted': ['EBR']}}
     """
 
+    if lane_int_id is None:
+        lane_int_id = int_id
+
     int_phase = parse_phase(df_phase, int_id)
-    int_lane = parse_lane(df_lane, int_id)
+    int_lane = parse_lane(df_lane, lane_int_id)
     int_lane_phase = int_lane['phases']
 
     phase_key = list(int_lane_phase.keys())

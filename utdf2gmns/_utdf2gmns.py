@@ -8,6 +8,7 @@
 import os
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import pandas as pd
 
@@ -37,6 +38,7 @@ from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
 from utdf2gmns.func_lib.sumo.gmns2sumo import (generate_sumo_nod_xml,
                                                generate_sumo_edg_xml,
                                                generate_sumo_flow_xml,
+                                               generate_sumo_network_route_xml,
                                                generate_sumo_connection_xml,
                                                generate_sumo_loop_detector_add_xml)
 
@@ -277,7 +279,7 @@ class UTDF2GMNS:
         Returns:
             bool: whether the conversion is successful.
         """
-        print("\nConverting UTDF to GMNS...")
+        print("Converting UTDF to GMNS...")
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
         gmns_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_gmns")
@@ -357,14 +359,16 @@ class UTDF2GMNS:
 
     def utdf_to_sumo(self, *, output_dir: str = "", sim_name: str = "",
                      show_warning_message: bool = False,
-                     disable_U_turn: bool = True,
+                     remove_U_turn: bool = True,
+                     remove_loop_detectors: bool = True,
                      sim_start_time: int = 0,
-                     sim_duration: int = 3600  # 1 hour
+                     sim_duration: int = 3600,  # 1 hour
+                     flow_mode: str = "network",
                      ) -> bool:
         """Convert UTDF to SUMO and save networks to the output directory
 
         Args:
-            out_dir (str): the output directory for the generated sumo files.
+            output_dir (str): the output directory for the generated sumo files.
                 Defaults to "". If not provided, the output directory is the same as the UTDF file.
 
             sim_name (str): name the generated sumo files. Defaults to "".
@@ -373,7 +377,10 @@ class UTDF2GMNS:
             show_warning_message (bool): whether to show warning message during the net processing.
                 Defaults to False.
 
-            disable_U_turn (bool): whether to remove U-turns in the SUMO network.
+            remove_U_turn (bool): whether to remove U-turns in the SUMO network.
+                Defaults to True.
+
+            remove_loop_detectors (bool): whether to skip loop detector generation.
                 Defaults to True.
 
             sim_start_time (int): the start time of the simulation in seconds.
@@ -382,10 +389,29 @@ class UTDF2GMNS:
             sim_duration (int): the duration of the simulation in seconds.
                 Defaults to 3600 seconds (1 hour).
 
+            flow_mode (str): demand generation mode. Use "intersection" to keep
+                the current UTDF turning-count flow behavior, or "network" to
+                decompose turning counts into full network route flows.
+                Defaults to "network".
+
         Returns:
             bool: whether the conversion is successful.
         """
         print("\nConverting UTDF to SUMO using GMNS standard...")
+        flow_mode_lookup = {
+            "intersection": "intersection",
+            "intersection-level": "intersection",
+            "intersection_level": "intersection",
+            "network": "network",
+            "network-level": "network",
+            "network_level": "network",
+        }
+        normalized_flow_mode = flow_mode_lookup.get(str(flow_mode).strip().lower())
+        if normalized_flow_mode is None:
+            raise ValueError(
+                "flow_mode must be one of: 'intersection' or 'network'."
+            )
+
         # check if the output directory exists
         utdf_dir = Path(self._utdf_filename).parent.absolute()
         sumo_output_dir = output_dir or os.path.join(utdf_dir, "utdf_to_sumo")
@@ -407,7 +433,7 @@ class UTDF2GMNS:
         # create SUMO .nod.xml file
         output_node_file = os.path.join(sumo_output_dir, f"{xml_name}.nod.xml")
         output_node_file = pf.path2linux(output_node_file)
-        generate_sumo_nod_xml(self._utdf_dict, output_node_file)
+        generate_sumo_nod_xml(self._utdf_dict, output_node_file, self.network_unit)
         print(f"  :generated SUMO node xml file: {xml_name}.nod.xml")
 
         # create SUMO .edg.xml file
@@ -419,17 +445,20 @@ class UTDF2GMNS:
         # Create SUMO .con.xml file
         output_con_file = os.path.join(sumo_output_dir, f"{xml_name}.con.xml")
         output_con_file = pf.path2linux(output_con_file)
-        generate_sumo_connection_xml(self._utdf_dict, output_con_file)
+        generate_sumo_connection_xml(self._utdf_dict, output_con_file, self.network_unit)
         print(f"  :generated SUMO connection xml file: {xml_name}.con.xml")
 
         # Create SUMO loop detector in .add.xml file
         output_add_file = os.path.join(sumo_output_dir, f"{xml_name}.add.xml")
         output_add_file = pf.path2linux(output_add_file)
-        generate_sumo_loop_detector_add_xml(self._utdf_dict, self.network_unit,
-                                            detector_type="E1",
-                                            add_fname=output_add_file,
-                                            sim_output_fname="")
-        print(f"  :generated SUMO loop detector xml file: {xml_name}.add.xml")
+        if not remove_loop_detectors:
+            generate_sumo_loop_detector_add_xml(self._utdf_dict, self.network_unit,
+                                                detector_type="E1",
+                                                add_fname=output_add_file,
+                                                sim_output_fname="")
+            print(f"  :generated SUMO loop detector xml file: {xml_name}.add.xml")
+        else:
+            print("  :skipped SUMO loop detector xml file generation.")
 
         # convert .nod.xml and .edg.xml files to .net.xml file
         output_net_file = os.path.join(sumo_output_dir, f"{xml_name}.net.xml")
@@ -493,65 +522,101 @@ class UTDF2GMNS:
         else:
             begin_time = sim_start_time
         end_time = begin_time + sim_duration
-        generate_sumo_flow_xml(self._utdf_dict, output_flow_file,
-                               begin=begin_time,
-                               end=end_time)
 
         # create .rou.xml file
         output_rou_file = os.path.join(sumo_output_dir, f"{xml_name}.rou.xml")
         output_rou_file = pf.path2linux(output_rou_file)
 
-        try:
-            print("\n  :Generating SUMO .rou.xml file from UTDF lanes...")
-            jtrrouter_fname = Path(__file__).parent / "engine" / "jtrrouter.exe"
-            jtrrouter_fname = pf.path2linux(jtrrouter_fname)
-            result = subprocess.run([jtrrouter_fname,
-                                     f"--route-files={output_flow_file}",
-                                     f"--net-file={output_net_file}",
-                                     "--accept-all-destinations=false",
-                                     f"--output-file={output_rou_file}",
-                                     "--remove-loops=true",
-                                     "--no-internal-links=false",
-                                     "--no-warnings=true"],
-                                    cwd=sumo_output_dir,
-                                    capture_output=True,
-                                    text=True)
-            if result.returncode != 0:
-                print(f" :{result.stderr}")
+        if normalized_flow_mode == "network":
+            try:
+                print("\n  :Generating SUMO network-level .rou.xml file from UTDF turning counts...")
+                generate_sumo_network_route_xml(self._utdf_dict,
+                                                output_rou_file,
+                                                begin=begin_time,
+                                                end=end_time,
+                                                net_unit=self.network_unit)
+                shutil.copyfile(output_rou_file, output_flow_file)
+                print(f"  :Successfully generated network-level route file to \n    {sumo_output_dir}.")
+            except Exception as e:
+                print(f"  :Error in generating SUMO network-level route file: {e}")
+                return False
+        else:
+            generate_sumo_flow_xml(self._utdf_dict, output_flow_file,
+                                   begin=begin_time,
+                                   end=end_time,
+                                   net_unit=self.network_unit)
 
-                # get the path of the randomTrips.py file under the func_lib directory
-                print("  :Generating SUMO .rou.xml file with random trips...")
-                path_random_trips = Path(__file__).parent / "func_lib" / "sumo" / "randomTrips.py"
-                path_random_trips = pf.path2linux(path_random_trips)
+            try:
+                print("\n  :Generating SUMO .rou.xml file from UTDF lanes...")
+                duarouter_fname = shutil.which("duarouter")
+                if duarouter_fname:
+                    result = subprocess.run([duarouter_fname,
+                                             f"--route-files={output_flow_file}",
+                                             f"--net-file={output_net_file}",
+                                             f"--output-file={output_rou_file}",
+                                             "--no-warnings=true"],
+                                            cwd=sumo_output_dir,
+                                            capture_output=True,
+                                            text=True)
+                else:
+                    result = subprocess.CompletedProcess(args=[], returncode=1, stderr="duarouter not found")
 
-                # run randomTrips.py to generate .rou.xml file
-                result = subprocess.run(["python",
-                                        path_random_trips,
-                                        "-n", output_net_file,
-                                         "-r", output_rou_file],
-                                        cwd=sumo_output_dir,
-                                        capture_output=True,
-                                        text=True)
-            if result.returncode != 0:
-                print("  :SUMO create .flow.xml failed!")
-                print(f" :{result.stderr}")
+                if result.returncode != 0:
+                    print(f" :duarouter failed, trying jtrrouter...\n :{result.stderr}")
+                    jtrrouter_fname = Path(__file__).parent / "engine" / "jtrrouter.exe"
+                    jtrrouter_fname = pf.path2linux(jtrrouter_fname)
+                    result = subprocess.run([jtrrouter_fname,
+                                             f"--route-files={output_flow_file}",
+                                             f"--net-file={output_net_file}",
+                                             "--accept-all-destinations=false",
+                                             f"--output-file={output_rou_file}",
+                                             "--remove-loops=true",
+                                             "--no-internal-links=false",
+                                             "--no-warnings=true"],
+                                            cwd=sumo_output_dir,
+                                            capture_output=True,
+                                            text=True)
+
+                if result.returncode != 0:
+                    print(f" :jtrrouter failed, trying random trips...\n :{result.stderr}")
+
+                    # get the path of the randomTrips.py file under the func_lib directory
+                    print("  :Generating SUMO .rou.xml file with random trips...")
+                    path_random_trips = Path(__file__).parent / "func_lib" / "sumo" / "randomTrips.py"
+                    path_random_trips = pf.path2linux(path_random_trips)
+
+                    # run randomTrips.py to generate .rou.xml file
+                    result = subprocess.run(["python",
+                                            path_random_trips,
+                                            "-n", output_net_file,
+                                             "-r", output_rou_file],
+                                            cwd=sumo_output_dir,
+                                            capture_output=True,
+                                            text=True)
+                if result.returncode != 0:
+                    print("  :SUMO create .flow.xml failed!")
+                    print(f" :{result.stderr}")
+                    return False
+
+                print(f"  :Successfully generated default route file to \n    {sumo_output_dir}.")
+            except Exception as e:
+                print(f"  :Error in generating SUMO route file: {e}")
                 return False
 
-            print(f"  :Successfully generated default flow file to \n    {sumo_output_dir}.")
-        except Exception as e:
-            print(f"  :Error in generating SUMO route file: {e}")
-            return False
-
         # remove U-turns in the SUMO network
-        if disable_U_turn:
-            print()
-            remove_sumo_U_turn(output_net_file)
-            print()
+        if remove_U_turn:
+            if not remove_sumo_U_turn(output_net_file, output_con_file):
+                return False
 
         # create .sumocfg file for the generated network
         # will generate default .rou.xml file for the network
         sumo_cfg_file = os.path.join(sumo_output_dir, f"{xml_name}.sumocfg")
         sumo_cfg_file = pf.path2linux(sumo_cfg_file)
+        additional_files_config = (
+            ""
+            if remove_loop_detectors
+            else f'        <additional-files value="{xml_name}.add.xml"/>\n'
+        )
 
         cfg_str = (
             f'<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -560,7 +625,7 @@ class UTDF2GMNS:
             f'    <input>\n'
             f'        <net-file value="{xml_name}.net.xml"/>\n'
             f'        <route-files value="{xml_name}.rou.xml"/>\n'
-            f'        <additional-files value="{xml_name}.add.xml"/>\n'
+            f'{additional_files_config}'
             f'    </input>\n'
             f'    <output>\n'
             f'        <edgedata-output value="EdgeData.xml"/>\n'

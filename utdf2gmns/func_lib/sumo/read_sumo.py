@@ -141,7 +141,7 @@ class ReadSUMO:
 
         for link in linkDur:
             f.write(
-                f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
+                f'\t\t<param key="linkMaxDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
             f.write(
                 f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMinDur"]):.1f}"/>\n')
         f.write('\t</tlLogic>\n')

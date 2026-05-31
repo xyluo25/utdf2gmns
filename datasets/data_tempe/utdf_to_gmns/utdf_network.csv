@@ -1,0 +1,23 @@
+RECORDNAME,DATA
+UTDFVERSION,8
+Metric,0
+yellowTime,3.5
+allRedTime,0.5
+Walk,5
+DontWalk,11
+HV,0.02
+PHF,0.92
+DefWidth,12
+DefFlow,1900
+vehLength,25
+heavyvehlength,45
+criticalgap,4.5
+followuptime,2.5
+stopthresholdspeed,5
+criticalmergegap,3.7
+growth,1
+PedSpeed,4
+LostTimeAdjust,0
+ScenarioDate,12/20/2016
+ScenarioTime,7:30 AM
+,

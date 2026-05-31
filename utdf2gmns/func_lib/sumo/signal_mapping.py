@@ -19,6 +19,196 @@ opposite_ped = {
 }
 
 
+BLANK_TEXT_VALUES = {"", "nan", "none", "null"}
+
+
+def _phase_seconds(value: object, default: float = 0.0) -> float:
+    """Read a UTDF phase timing value without changing its exported units.
+
+    The UTDF metadata describes some phase fields as tenths or hundredths of
+    seconds, but field exports used by this package already contain
+    second-like values. This helper intentionally validates blanks and bad
+    cells without applying another unit conversion.
+    """
+    if value is None:
+        return default
+    value_text = str(value).strip()
+    if value_text.lower() in BLANK_TEXT_VALUES:
+        return default
+    try:
+        return float(value_text)
+    except ValueError:
+        return default
+
+
+def _effective_green_seconds(timings: dict) -> float:
+    """Return the best available UTDF green duration for one phase.
+
+    ``ActGreen`` is the observed/analysis green from UTDF. It is preferred
+    when present because coordinated actuated plans can have effective green
+    values that differ from the exported ``MaxGreen`` setting. ``MaxGreen`` is
+    still used as the fallback for fixed-time or incomplete records.
+    """
+    min_green = _phase_seconds(timings.get("MinGreen"), 0.0)
+    act_green = _phase_seconds(timings.get("ActGreen"), 0.0)
+    max_green = _phase_seconds(timings.get("MaxGreen"), min_green)
+    if act_green > 0:
+        return max(act_green, min_green)
+    return max(max_green, min_green)
+
+
+def _phase_interval_segments(timings: dict, cycle_length: float) -> list[tuple[float, float]]:
+    """Return non-wrapping timing intervals for one UTDF phase.
+
+    UTDF ``Start`` and ``End`` are positions inside the signal cycle. A phase
+    that crosses the cycle boundary is split into two simple intervals so that
+    overlap with the other NEMA ring can be calculated directly.
+    """
+    start_seconds = _phase_seconds(timings.get("Start"), -1.0)
+    end_seconds = _phase_seconds(timings.get("End"), -1.0)
+    if start_seconds < 0 or end_seconds < 0 or cycle_length <= 0:
+        return []
+
+    start_seconds %= cycle_length
+    end_seconds %= cycle_length
+    if abs(start_seconds - end_seconds) < 1e-6:
+        return []
+    if start_seconds < end_seconds:
+        return [(start_seconds, end_seconds)]
+
+    segments = [(start_seconds, cycle_length)]
+    if end_seconds > 0:
+        segments.append((0.0, end_seconds))
+    return segments
+
+
+def _intersect_interval_segments(
+        current_segments: list[tuple[float, float]],
+        next_segments: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Return the overlap between two lists of non-wrapping intervals."""
+    overlapping_segments = []
+    for current_start, current_end in current_segments:
+        for next_start, next_end in next_segments:
+            overlap_start = max(current_start, next_start)
+            overlap_end = min(current_end, next_end)
+            if overlap_end - overlap_start > 1e-6:
+                overlapping_segments.append((overlap_start, overlap_end))
+    return overlapping_segments
+
+
+def _phase_overlap_segments(
+        utdf_signal: dict,
+        phase_names: list[str],
+        cycle_length: float) -> list[tuple[float, float]]:
+    """Return cycle intervals where all phases in one NEMA stage are active."""
+    overlapping_segments: list[tuple[float, float]] = [(0.0, cycle_length)]
+    for phase_name in phase_names:
+        phase_segments = _phase_interval_segments(utdf_signal[phase_name], cycle_length)
+        if not phase_segments:
+            return []
+        overlapping_segments = _intersect_interval_segments(
+            overlapping_segments,
+            phase_segments,
+        )
+        if not overlapping_segments:
+            return []
+    return overlapping_segments
+
+
+def _copy_green_phase(green_phase: dict) -> dict:
+    """Copy one generated green phase without sharing the mutable state list."""
+    copied_green_phase = dict(green_phase)
+    if isinstance(copied_green_phase.get("state"), list):
+        copied_green_phase["state"] = list(copied_green_phase["state"])
+    return copied_green_phase
+
+
+def _transition_clearance_seconds(current_green: dict, next_green: dict) -> float:
+    """Return the yellow/all-red time that will be inserted after a green phase."""
+    current_state = current_green["state"]
+    next_state = next_green["state"]
+    has_common_green = False
+    need_yellow = False
+
+    for index in range(len(current_state)):
+        if current_state[index] in {"G", "g"} and next_state[index] in {"G", "g"}:
+            has_common_green = True
+        if current_state[index] in {"G", "g"} and next_state[index] == "r":
+            need_yellow = True
+
+    if not need_yellow:
+        return 0.0
+    if has_common_green:
+        return _phase_seconds(current_green.get("yellow"), 0.0)
+    return (
+        _phase_seconds(current_green.get("yellow"), 0.0)
+        + _phase_seconds(current_green.get("allRed"), 0.0)
+    )
+
+
+def _build_static_phase_sequence_from_utdf_starts(
+        utdf_signal: dict,
+        phase_queue: list[dict],
+        green_phases: list[dict],
+        cycle_length: float | None) -> tuple[list[dict], list[dict]]:
+    """Build a deterministic static sequence from UTDF phase Start/End times."""
+    if cycle_length is None or cycle_length <= 0:
+        return phase_queue, green_phases
+
+    timed_phase_segments = []
+    for phase_index, phase_info in enumerate(phase_queue):
+        overlap_segments = _phase_overlap_segments(
+            utdf_signal,
+            phase_info["phases"],
+            cycle_length,
+        )
+        for start_seconds, end_seconds in overlap_segments:
+            timed_phase_segments.append({
+                "start": start_seconds,
+                "end": end_seconds,
+                "phase_index": phase_index,
+            })
+
+    if not timed_phase_segments:
+        return phase_queue, green_phases
+
+    timed_phase_segments.sort(key=lambda item: (item["start"], item["end"], item["phase_index"]))
+    static_phase_queue = []
+    static_green_phases = []
+    for sequence_index, timed_segment in enumerate(timed_phase_segments):
+        source_phase_index = timed_segment["phase_index"]
+        next_sequence_index = (sequence_index + 1) % len(timed_phase_segments)
+        phase_info = {
+            "phases": list(phase_queue[source_phase_index]["phases"]),
+            "next": [next_sequence_index],
+        }
+        green_phase = _copy_green_phase(green_phases[source_phase_index])
+        interval_duration = timed_segment["end"] - timed_segment["start"]
+        static_phase_queue.append(phase_info)
+        static_green_phases.append(green_phase)
+
+        # The green duration is corrected after all green phases are copied,
+        # because the clearance depends on the next phase state.
+        green_phase["_utdf_interval_duration"] = interval_duration
+
+    for sequence_index, green_phase in enumerate(static_green_phases):
+        next_green_phase = static_green_phases[(sequence_index + 1) % len(static_green_phases)]
+        clearance_seconds = _transition_clearance_seconds(green_phase, next_green_phase)
+        green_duration = max(green_phase["_utdf_interval_duration"] - clearance_seconds, 0.1)
+        green_phase["maxDur"] = green_duration
+        green_phase["minDur"] = min(_phase_seconds(green_phase.get("minDur"), green_duration), green_duration)
+        del green_phase["_utdf_interval_duration"]
+
+    return static_phase_queue, static_green_phases
+
+
+def _is_utdf_signal_direction(direction: str) -> bool:
+    """Return True when a mapped SUMO link uses a UTDF vehicle direction name."""
+    if len(direction) < 3:
+        return False
+    return direction[:2].isalpha() and direction[2] in {"R", "T", "L", "U"}
+
+
 def findBestMatchDirection(direction: str, allDirection: str) -> str:
     """ Find the best match direction for the given direction"""
 
@@ -190,7 +380,8 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
 
     for j in sumo_signal:
         sumo_lane = sumo_signal[j]
-        sumo_lane['synchro_dir'] = sumo_lane['dir']
+        if "synchro_dir" not in sumo_lane:
+            sumo_lane['synchro_dir'] = sumo_lane['dir']
         if "synchro_dir" not in sumo_lane:
             sumo_lane["signal_dir"] = "N/A"
             allValid = False
@@ -232,7 +423,9 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
             elif sumo_lane['ped_allowed'].intersection(protected) == protected:
                 value[int(j)] = 'G'
             """
-            if "STOP" in sumo_lane["synchro_dir"]:
+            if sumo_lane.get("uncontrolled"):
+                value[int(j)] = "g"
+            elif "STOP" in sumo_lane["synchro_dir"]:
                 value[int(j)] = "s"
             elif "PED" in sumo_lane["synchro_dir"]:
                 if pedOnlyPhase:
@@ -259,12 +452,15 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
                     if not hasConflict:
                         value[int(j)] = "G"
             elif sumo_lane["signal_dir"] in protected:
-                if (sumo_lane["synchro_dir"] == sumo_lane["signal_dir"] or sumo_lane["dir"] == "s"):
+                raw_sumo_dir = sumo_lane.get("sumo_dir", sumo_lane.get("dir"))
+                if sumo_lane["synchro_dir"] == sumo_lane["signal_dir"] or raw_sumo_dir == "s":
                     value[int(j)] = "G"
                 else:
                     value[int(j)] = "g"
             # Permitted phases
             elif sumo_lane["signal_dir"] in permitted:
+                value[int(j)] = "g"
+            elif sumo_lane.get("rtor_allowed"):
                 value[int(j)] = "g"
             ii += 1
         except IndexError:
@@ -286,10 +482,10 @@ def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExcl
 
     for phase in currentPhases:
         timings = utdf_signal[phase]
-        minDur = min(minDur, float(timings["MinGreen"]))
-        maxDur = min(maxDur, float(timings["MaxGreen"]))
-        yellow = timings["Yellow"]
-        allRed = timings["AllRed"]
+        minDur = min(minDur, _phase_seconds(timings.get("MinGreen"), 0.0))
+        maxDur = min(maxDur, _effective_green_seconds(timings))
+        yellow = _phase_seconds(timings.get("Yellow"), 3.0)
+        allRed = _phase_seconds(timings.get("AllRed"), 0.0)
         if "protected" in utdf_signal[phase]:
             protected_directions = protected_directions.union(
                 utdf_signal[phase]["protected"]
@@ -317,6 +513,38 @@ def get_PhaseTiming(utdf_signal, sumo_signal, all_directions, phaseInfo, pedExcl
     )
 
 
+def _select_static_next_phase(next_phase_indices: list[int], greens: list[dict]) -> list[int]:
+    """Choose one deterministic next phase for a SUMO static program.
+
+    The NEMA phase graph can contain multiple valid actuated branches, for
+    example advancing either ring first at a barrier. SUMO ``static`` programs
+    follow the first ``next`` value, so leaving multiple branches can skip a
+    high-volume through phase. For fixed exported timing, choose the branch
+    with the larger next green duration and keep the original order as the tie
+    breaker.
+    """
+    if len(next_phase_indices) <= 1:
+        return next_phase_indices
+
+    selected_phase_index = next_phase_indices[0]
+    selected_phase_duration = -1.0
+    for next_phase_index in next_phase_indices:
+        if 0 <= next_phase_index < len(greens):
+            next_green = greens[next_phase_index]
+            phase_duration = _phase_seconds(
+                next_green.get("maxDur", next_green.get("duration")),
+                0.0,
+            )
+        else:
+            phase_duration = 0.0
+
+        if phase_duration > selected_phase_duration:
+            selected_phase_index = next_phase_index
+            selected_phase_duration = phase_duration
+
+    return [selected_phase_index]
+
+
 def build_TransitionPhase(synchro_signal, greens, phases):
     # print(synchro_signal, phases)
     transitionPhases = []
@@ -330,7 +558,7 @@ def build_TransitionPhase(synchro_signal, greens, phases):
         # else:
         #     end = len(current_green)
         newNext = []
-        for nextPhaseIndex in phase['next']:
+        for nextPhaseIndex in _select_static_next_phase(phase['next'], greens):
             next_green = greens[nextPhaseIndex]['state']
             yellow = list(current_green)
             all_read = ['r'] * len(current_green)
@@ -404,20 +632,21 @@ def build_linkDuration(utdf_signal, sumo_signal):
             make_signal = sumo_lane.get("synchro_dir", None) in utdf_signal[phase].get("protected", [])
 
             if all([mask_protected, mask_lane, make_signal]):
+                effective_green = _effective_green_seconds(utdf_signal[phase])
+                min_green = _phase_seconds(utdf_signal[phase].get('MinGreen'))
                 if index in linkDuration:
                     linkDuration[index]['linkMaxDur'] = max(
                         float(linkDuration[index]['linkMaxDur']),
-                        float(utdf_signal[phase]['MaxGreen']))
+                        effective_green)
 
                     linkDuration[index]['linkMinDur'] = min(
                         float(linkDuration[index]['linkMinDur']),
-                        float(utdf_signal[phase]['MinGreen']))
+                        min_green)
                 else:
                     linkDuration[index] = {}
-                    linkDuration[index]['linkMaxDur'] = utdf_signal[phase]['MaxGreen']
-                    linkDuration[index]['linkMinDur'] = utdf_signal[phase]['MinGreen']
+                    linkDuration[index]['linkMaxDur'] = effective_green
+                    linkDuration[index]['linkMinDur'] = min_green
                     linkDuration[index]['dir'] = sumo_lane['synchro_dir']
-                    break
             index += 1
     return linkDuration
 
@@ -441,9 +670,14 @@ def extract_dir_info(utdf_signal):
     return synchro_dir
 
 
-def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False):
+def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False,
+                            cycle_length: float | None = None):
     # print('create timing:', utdf_signal)
-    all_directions = extract_dir_info(utdf_signal)
+    all_directions = set(extract_dir_info(utdf_signal))
+    for sumo_lane in sumo_signal.values():
+        mapped_direction = sumo_lane.get("synchro_dir", "")
+        if _is_utdf_signal_direction(mapped_direction):
+            all_directions.add(mapped_direction)
     phaseIndex = 0
     phaseQueue = []
 
@@ -536,6 +770,13 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False):
     if verbose:
         print('  :green', greenPhases)
         print('  :phaseQueue', phaseQueue)
+
+    phaseQueue, greenPhases = _build_static_phase_sequence_from_utdf_starts(
+        utdf_signal,
+        phaseQueue,
+        greenPhases,
+        cycle_length,
+    )
     return build_TransitionPhase(utdf_signal, greenPhases, phaseQueue)
 
 
