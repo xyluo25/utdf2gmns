@@ -2670,36 +2670,6 @@ def generate_sumo_network_route_xml(utdf_dict: dict, fname: str = "network.rou.x
     return True
 
 
-def generate_turn_bay_node_edge_con(up_node: str,
-                                    int_node: str,
-                                    length: str,
-                                    speed: str,
-                                    nod_fname: str = "network.nod.xml",
-                                    edge_fname: str = "network.edg.xml",
-                                    con_fname: str = "network.con.xml",
-                                    **kwargs) -> bool:
-    """Create dummy node and edge for turn bay"""
-
-    # Step 1: Get coordinates of up_node and int_id from the node file.
-
-    # Step 2: Generate dummy node id and calculate its coordinate.
-    # The dummy node is bay_len away from int_id along the line from int_id toward up_node.
-
-    # Step 3: Open node_fname (.nod.xml) and add the dummy node.
-
-    # Step 4: Add the bay edge into the edge file.
-    # Create a new edge that represents the bay.
-
-    # Define the lane for this edge.
-    # The lane goes from the dummy node coordinate to int_id's coordinate.
-
-    # Step 5: Add connections to the connection file.
-    # Connection from the bay edge to int_id.
-
-    # Connection from int_id to dest_node.
-    pass
-
-
 def generate_sumo_loop_detector_add_xml(utdf_dict: dict, net_unit: str, detector_type: str = "E1",
                                         add_fname: str = "network.add.xml", sim_output_fname: str = "") -> bool:
     """""Generate the .add.xml file for SUMO and add loop detectors for each lane that has a detector.

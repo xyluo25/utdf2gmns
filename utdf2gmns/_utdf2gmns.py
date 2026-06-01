@@ -26,11 +26,19 @@ from utdf2gmns.func_lib.gmns.geocoding_Nodes import update_node_from_one_interse
 from utdf2gmns.func_lib.gmns.geocoding_Links import (generate_links,
                                                      generate_links_polygon,
                                                      cvt_link_df_to_dict)
-from utdf2gmns.func_lib.gmns.generate_lane_movement import generate_gmns_lane, generate_gmns_movement
+from utdf2gmns.func_lib.gmns.generate_lane_movement import (generate_gmns_lane,
+                                                            generate_gmns_link,
+                                                            generate_gmns_movement,
+                                                            generate_gmns_node)
 from utdf2gmns.func_lib.gmns.sigma_x_process_signal_intersection import cvt_utdf_to_signal_intersection
 
 from utdf2gmns.func_lib.sumo.signal_intersections import parse_signal_control
-from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import update_sumo_signal_from_utdf
+from utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf import (
+    _build_signal_controller_mapping,
+    _node_sort_key,
+    _normalize_utdf_node_id,
+    update_sumo_signal_from_utdf,
+)
 from utdf2gmns.func_lib.sumo.remove_u_turn import remove_sumo_U_turn
 
 
@@ -205,19 +213,47 @@ class UTDF2GMNS:
 
     def create_signal_control(self) -> bool:
         """Signalize intersections
-        1. get signal intersection id from phase
-        2. parse signal control from UTDF data and create signal control for each intersection
+        1. map each local signalized node to its UTDF controller
+        2. parse controller timing data with each node's own lane movements
         3. assign signal control to network_signal_control, a dictionary as internal variable
         """
 
-        # get signal intersection id from phase
         df_phase = self._utdf_dict.get("Phases")
         df_lane = self._utdf_dict.get("Lanes")
-        signal_int_id = df_phase["INTID"].unique()
+        if df_phase is None or df_lane is None:
+            self.network_signal_control = {}
+            return True
+
+        lane_int_ids = {
+            _normalize_utdf_node_id(int_id)
+            for int_id in df_lane["INTID"].dropna().unique()
+        }
+        signal_controller_by_node = _build_signal_controller_mapping(
+            self._utdf_dict.get("Timeplans"),
+        )
+        signal_controller_by_node = {
+            node_id: controller_id
+            for node_id, controller_id in signal_controller_by_node.items()
+            if node_id in lane_int_ids
+        }
+        if not signal_controller_by_node:
+            signal_controller_by_node = {
+                _normalize_utdf_node_id(int_id): _normalize_utdf_node_id(int_id)
+                for int_id in df_phase["INTID"].unique()
+                if _normalize_utdf_node_id(int_id) in lane_int_ids
+            }
 
         signal_intersections = {
-            int_id: parse_signal_control(df_phase, df_lane, int_id)
-            for int_id in signal_int_id
+            node_id: parse_signal_control(
+                df_phase,
+                df_lane,
+                controller_id,
+                lane_int_id=node_id,
+            )
+            for node_id, controller_id in sorted(
+                signal_controller_by_node.items(),
+                key=lambda item: _node_sort_key(item[0]),
+            )
         }
         self.network_signal_control = signal_intersections
         return True
@@ -267,11 +303,14 @@ class UTDF2GMNS:
         Args:
             out_dir (str): output directory to save the GMNS data, defaults to the same directory as the UTDF file.
             incl_utdf (bool): whether to save the UTDF data to the output directory, defaults to True.
-            is_link_polygon (bool): whether to create link polygon, defaults to False.
+            is_link_polygon (bool): retained for API compatibility. GMNS export
+                now writes directed link centerlines so turn-bay links remain
+                consistent with the SUMO network.
 
         Note:
             - the UTDF data includes Nodes, Networks, Timeplans, Links, Lanes, and Phases.
-            - the GMNS data includes node.csv and link.csv.
+            - the GMNS data includes node.csv, link.csv, lane.csv,
+              movement.csv, and signal.json.
 
         Raises:
             FileNotFoundError: Output directory not found!
@@ -289,50 +328,30 @@ class UTDF2GMNS:
         if not os.path.exists(gmns_output_dir):
             os.makedirs(gmns_output_dir)
 
-        # Create node and link data if not exist
+        # Create node data if not exist
         if not hasattr(self, "network_nodes"):
             raise Exception("Please geocode intersections first: net.geocode_utdf_intersections()")
-
-        if not hasattr(self, "network_links"):
-            self.create_gmns_links(is_link_polygon=is_link_polygon)
 
         if not hasattr(self, "network_signal_control"):
             self.create_signal_control()
 
-        # Save the GMNS data to the output directory
-        # add column "node_id" by copying "INTID", add "node_type" by copying "TYPE_DESC"
-        # move these columns to the front
-        df_gmns_node = pd.DataFrame(self.network_nodes.values())
-        df_gmns_node["node_id"] = df_gmns_node["INTID"]
-        df_gmns_node["node_type"] = df_gmns_node["TYPE_DESC"]
-        front_cols = ["node_id", "x_coord", "y_coord", "node_type"]
-        other_cols = [col for col in df_gmns_node.columns if col not in front_cols]
-        df_gmns_node = df_gmns_node[front_cols + other_cols]
-        df_gmns_node.to_csv(os.path.join(gmns_output_dir, "node.csv"), index=False)
+        self._utdf_dict["network_nodes"] = self.network_nodes
 
-        # rename "Link_ID" to "link_id", add "from_node_id" and "to_node_id" by splitting "Link_ID"
-        # move these columns to the front
-        df_gmns_link = pd.DataFrame(self.network_links.values())
-        df_gmns_link = df_gmns_link.rename(columns={"Link_ID": "link_id",
-                                                    "Lanes": "lanes",
-                                                    "Name": "name",
-                                                    "Distance": "length",
-                                                    "Speed": "free_speed"})
-        df_gmns_link["from_node_id"] = df_gmns_link["link_id"].apply(lambda x: x.split("_")[0])
-        df_gmns_link["to_node_id"] = df_gmns_link["link_id"].apply(lambda x: x.split("_")[1])
-        front_cols = ["link_id", "from_node_id", "to_node_id", "lanes", "name", "length", "free_speed"]
-        other_cols = [col for col in df_gmns_link.columns if col not in front_cols]
-        df_gmns_link = df_gmns_link[front_cols + other_cols]
-        df_gmns_link.to_csv(os.path.join(gmns_output_dir, "link.csv"), index=False)
-
-        # Save lane and movement data
+        # Save GMNS data with the same turn-bay profiles used by SUMO export.
+        generate_gmns_node(self._utdf_dict, os.path.join(gmns_output_dir, "node.csv"), net_unit=self.network_unit)
+        generate_gmns_link(self._utdf_dict, os.path.join(gmns_output_dir, "link.csv"), net_unit=self.network_unit)
         generate_gmns_lane(self._utdf_dict, os.path.join(gmns_output_dir, "lane.csv"), net_unit=self.network_unit)
         generate_gmns_movement(self._utdf_dict,
                                os.path.join(gmns_output_dir, "movement.csv"),
                                net_unit=self.network_unit)
 
+        signal_control_for_output = {
+            _normalize_utdf_node_id(node_id): signal_control
+            for node_id, signal_control in self.network_signal_control.items()
+            if _normalize_utdf_node_id(node_id)
+        }
         with open(os.path.join(gmns_output_dir, "signal.json"), "w") as f:
-            json.dump(self.network_signal_control, f)
+            json.dump(signal_control_for_output, f)
 
         # save the UTDF data to the output directory
         if incl_utdf:

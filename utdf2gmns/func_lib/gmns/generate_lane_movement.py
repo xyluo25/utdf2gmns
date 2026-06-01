@@ -6,914 +6,705 @@
 ##############################################################
 '''
 
+from __future__ import annotations
 
-from xml.dom import minidom
-import xml.etree.ElementTree as ET  # Use ElementTree for XML generation
+import math
 import re
-import copy
-from datetime import datetime
+from typing import Any
+
 import pandas as pd
 
-from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_lonlat_to_utm
-from utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict import cvt_lane_df_to_dict
-from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_link_df_to_dict
+from utdf2gmns.func_lib.gmns.geocoding_Links import cvt_utm_to_lonlat
+from utdf2gmns.func_lib.sumo.gmns2sumo import (
+    TURN_TYPE_TO_SUMO_DIR,
+    _build_sumo_edge_profile_dict,
+    _calculate_turn_bay_node_coord,
+    _format_xml_number,
+    _get_profile_shape_points,
+    _normalize_node_id,
+    _shape_length_meters,
+    _shape_points_to_utm,
+    _source_lane_indices_for_movement,
+    _split_shape_at_point,
+    _target_lane_index_for_movement,
+    generate_net_link_lookup_dict,
+)
 
 
-def xml_prettify(element: str) -> str:
-    """Return a pretty-printed XML string for the Element."""
-    rough_string = ET.tostring(element, 'utf-8')
-    re_parsed = minidom.parseString(rough_string)
-    return re_parsed.toprettyxml(indent="    ")
+TURN_TYPE_TO_GMNS_TYPE = {
+    "R": "right",
+    "T": "thru",
+    "L": "left",
+    "U": "uturn",
+}
+DEFAULT_LANE_WIDTH_FEET = 12.0
+DEFAULT_LANE_WIDTH_METERS = 3.6
 
 
-def cvt_feet_to_meters(feet: float) -> float:
-    """Convert feet to meters."""
-    return feet * 0.3048
+def _format_number(value: float | int | None) -> float | str:
+    """Return a compact number for CSV output while preserving blanks."""
+    formatted_value = _format_xml_number(value)
+    if formatted_value is None:
+        return ""
+    return float(formatted_value)
 
 
-def cvt_mph_to_mps(mph: float) -> float:
-    """Convert miles per hour to meters per second."""
-    return mph * 0.44704
+def _format_csv_list(values: list[int]) -> str:
+    """Return lane indices as a readable comma-separated CSV cell."""
+    return ",".join(str(value) for value in values)
 
 
-def cvt_kmh_to_mps(kmh: float) -> float:
-    """Convert kilometers per hour to meters per second."""
-    return kmh / 3.6
+def _get_lane_width_meters(utdf_dict: dict, net_unit: str | None) -> float:
+    """Return the lane width used to offset GMNS lane centerlines."""
+    lane_width_value = None
+    network_df = utdf_dict.get("Network")
+    if network_df is not None and "RECORDNAME" in network_df and "DATA" in network_df:
+        matching_rows = network_df[
+            network_df["RECORDNAME"].astype(str) == "DefWidth"
+        ]
+        if not matching_rows.empty:
+            lane_width_text = str(matching_rows.iloc[0]["DATA"]).strip()
+            if lane_width_text.lower() not in {"", "nan", "none", "null"}:
+                try:
+                    lane_width_value = float(lane_width_text)
+                except ValueError:
+                    number_matches = re.findall(r"-?\d+(?:\.\d+)?", lane_width_text)
+                    if number_matches:
+                        lane_width_value = float(number_matches[0])
+
+    if lane_width_value is None:
+        lane_width_value = (
+            DEFAULT_LANE_WIDTH_FEET
+            if net_unit and "feet" in net_unit
+            else DEFAULT_LANE_WIDTH_METERS
+        )
+
+    if net_unit and "feet" in net_unit:
+        return lane_width_value * 0.3048
+    return lane_width_value
 
 
-def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
-    """Generate the .lane.xml file.
-                     int_id
-                    ____|____ _____  __ ...
-                   |    |    |     |
-                   NB   SB   EB    WB  NE NW SE SW
-              __ __|__   |
-    --->     |  |  |  |  ...
-             R  T  L  U
-    lane index from 0 to more...
+def _build_polygon_geometry(shape_points: list[tuple[float, float]] | None,
+                            lane_count: int,
+                            lane_width_meters: float,
+                            lane_index: int | None = None) -> str:
+    """Return a GMNS link or lane polygon as WKT geometry.
 
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-        net_unit (str): The unit of the network (e.g., "feet", "meters").
-
-    Note:
-        SUMO to GMNS direction mapping:
-        dir_type = {"s": "thru",
-                    "t": "uturn",
-                    "l": "left",
-                    "r": "right",
-                    "L": "partially left",
-                    "R": "partially right",
-                    "invalid": "invalid"}
-
-    Raises:
-        ValueError: Could not get Lane data from utdf_dict.
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_lane_lookup_dict
-        >>> lane_lookup_dict = generate_lane_lookup_dict(utdf_dict, net_unit="feet")
-        >>> # This will generate a lane lookup dictionary based on the provided UTDF Lane data.
-        >>> print(lane_lookup_dict)
-        {'1_2_0': {'id': '1_2_0', 'index': 0, 'length': '30.48', 'speed': '13.4112', 'volume': 100, ...}, ...}
-
-    Returns:
-        dict: A dictionary containing lane information for each intersection.
+    When ``lane_index`` is not provided, the polygon covers the full directional
+    link width. When ``lane_index`` is provided, the polygon covers only that
+    lane. Adjacent lane polygons reuse the same offset boundary, so they touch
+    at shared edges without overlapping.
     """
+    if not shape_points:
+        return ""
 
-    # Extract network unit: whether it's feet / mph or meters / km/h
-    if "feet" in net_unit:
-        unit_distance = "feet"
-        unit_speed = "mph"
-    elif "meters" in net_unit:
-        unit_distance = "meters"
-        unit_speed = "km/h"
+    lane_count = max(lane_count, 1)
+    center_lane_index = (lane_count - 1) / 2
+    if lane_index is None:
+        right_offset_meters = (center_lane_index + 0.5) * lane_width_meters
+        left_offset_meters = -right_offset_meters
     else:
-        print(f"  Warning:Unknown distance and speed unit for Edge generation: {net_unit}. "
-              "Defaulting to meters and km/h.")
-        unit_distance = "meters"
-        unit_speed = "km/h"
+        lane_center_offset_meters = (center_lane_index - lane_index) * lane_width_meters
+        right_offset_meters = lane_center_offset_meters + lane_width_meters / 2
+        left_offset_meters = lane_center_offset_meters - lane_width_meters / 2
 
-    cvt_unit_speed = {
-        "mph": cvt_mph_to_mps,
-        "km/h": cvt_kmh_to_mps,
-    }
-    cvt_unit_distance = {
-        "feet": cvt_feet_to_meters,
-        "meters": lambda x: x,
-    }
+    projected_data = _shape_points_to_utm(shape_points)
+    if projected_data is None:
+        return ""
 
-    lanes_df = utdf_dict.get("Lanes")
+    projected_points, zone_number, hemisphere = projected_data
+    if len(projected_points) < 2:
+        return ""
 
-    if lanes_df is None:
-        raise ValueError("Could not get Lane data from utdf_dict.")
+    # Turn-bay splits can create a very short interior segment next to an
+    # existing UTDF curve point. Dropping only those tiny interior kinks keeps
+    # the link endpoints fixed and prevents lane-width offsets from folding.
+    polygon_width_meters = abs(right_offset_meters - left_offset_meters)
+    minimum_segment_length_meters = min(1.0, max(0.1, polygon_width_meters / 4))
+    if len(projected_points) > 2:
+        cleaned_projected_points: list[tuple[float, float]] = [projected_points[0]]
+        for projected_point in projected_points[1:-1]:
+            previous_projected_point = cleaned_projected_points[-1]
+            segment_length_meters = math.hypot(
+                projected_point[0] - previous_projected_point[0],
+                projected_point[1] - previous_projected_point[1],
+            )
+            if segment_length_meters < minimum_segment_length_meters:
+                continue
+            cleaned_projected_points.append(projected_point)
 
-    # Convert lanes DataFrame to dictionary
-    network_lanes = cvt_lane_df_to_dict(lanes_df)
+        if len(cleaned_projected_points) > 1:
+            previous_projected_point = cleaned_projected_points[-1]
+            final_projected_point = projected_points[-1]
+            final_segment_length_meters = math.hypot(
+                final_projected_point[0] - previous_projected_point[0],
+                final_projected_point[1] - previous_projected_point[1],
+            )
+            if final_segment_length_meters < minimum_segment_length_meters:
+                cleaned_projected_points.pop()
 
-    mvt_group_base = {
-        "NB": {},  # {"NBL": {},"NBT": {}, "NBR": {},"NBU": {}, ...},
-        "SB": {},
-        "EB": {},
-        "WB": {},
-        "NE": {},
-        "NW": {},
-        "SE": {},
-        "SW": {},
-    }
+        cleaned_projected_points.append(projected_points[-1])
+        projected_points = cleaned_projected_points
 
-    mvt_type_base = {
-        "L": [],
-        "T": [],
-        "R": [],
-        "U": [],
-    }
+    boundaries: list[list[tuple[float, float]]] = []
+    for offset_meters in [right_offset_meters, left_offset_meters]:
+        offset_projected_points: list[tuple[float, float]] = []
+        last_normal: tuple[float, float] | None = None
+        for point_index, projected_point in enumerate(projected_points):
+            candidate_normals: list[tuple[float, float]] = []
+            if point_index > 0:
+                start_point = projected_points[point_index - 1]
+                end_point = projected_point
+                segment_dx = end_point[0] - start_point[0]
+                segment_dy = end_point[1] - start_point[1]
+                segment_length = math.hypot(segment_dx, segment_dy)
+                if segment_length > 0:
+                    candidate_normals.append((
+                        segment_dy / segment_length,
+                        -segment_dx / segment_length,
+                    ))
+            if point_index < len(projected_points) - 1:
+                start_point = projected_point
+                end_point = projected_points[point_index + 1]
+                segment_dx = end_point[0] - start_point[0]
+                segment_dy = end_point[1] - start_point[1]
+                segment_length = math.hypot(segment_dx, segment_dy)
+                if segment_length > 0:
+                    candidate_normals.append((
+                        segment_dy / segment_length,
+                        -segment_dx / segment_length,
+                    ))
 
-    # Store lane information for each intersection
-    lane_lookup_dict = {}
+            if not candidate_normals:
+                normal = last_normal
+            elif len(candidate_normals) == 1:
+                normal = candidate_normals[0]
+            else:
+                normal_x = candidate_normals[0][0] + candidate_normals[1][0]
+                normal_y = candidate_normals[0][1] + candidate_normals[1][1]
+                normal_length = math.hypot(normal_x, normal_y)
+                normal = (
+                    candidate_normals[1]
+                    if normal_length <= 0
+                    else (normal_x / normal_length, normal_y / normal_length)
+                )
 
-    # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
-    link_lookup_dict = generate_link_lookup_dict(utdf_dict)
-
-    # Loop through each intersection, mvt group, lane and connection
-    for int_id, mvt_lanes in network_lanes.items():
-        # e.g.: "1",  {"NBT": {}, "NBL": {}, "NBU": {}, "NBR": {}, ...}
-
-        # Reset mvt_group for each intersection
-        mvt_group = copy.deepcopy(mvt_group_base)
-
-        # Group movement under each direction: NE, NW, SE, SW, NB, SB, EB, WB
-        # mvt_group = {"NB": {"NBL": {}, "NBT": {}, "NBR": {}, "NBU": {}, ...},
-        for each_mvt in mvt_lanes.keys():
-            first_two_char = each_mvt[:2]
-            if first_two_char in mvt_group:
-                mvt_group[first_two_char][each_mvt] = mvt_lanes[each_mvt]
-
-        # add movement into mvt_type dictionary
-        for mvt_name, each_mvt_group in mvt_group.items():
-            # mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
-            # each_mvt_group: {"NBL": {}, "NBT": {}, "NBR": {}, "NBU": {}, ...}
-
-            # Reset mvt_type for each intersection
-            mvt_type = copy.deepcopy(mvt_type_base)
-
-            # check if each_mvt_group is not empty, skip empty group
-            if not each_mvt_group:
+            if normal is None:
+                offset_projected_points.append(projected_point)
                 continue
 
-            for mvt_turn, mvt_turn_info in each_mvt_group.items():
-                # mvt_turn: NBL, NBT, NBR, NBU, ...
-                # mvt_turn_info: {"Up Bode": "", "Dest Node": "", "Lanes": "", ...}
+            last_normal = normal
+            offset_projected_points.append((
+                projected_point[0] + normal[0] * offset_meters,
+                projected_point[1] + normal[1] * offset_meters,
+            ))
 
-                # Extract relevant information from mvt_turn_info
-                lane_mvt_info = {"up_node": mvt_turn_info.get("Up Node"),
-                                 "dest_node": mvt_turn_info.get("Dest Node"),
-                                 "lanes": mvt_turn_info.get("Lanes"),
-                                 "shared": mvt_turn_info.get("Shared"),
-                                 "storage": mvt_turn_info.get("Storage"),
-                                 "taper": mvt_turn_info.get("Taper"),
-                                 "speed": mvt_turn_info.get("Speed"),
-                                 "volume": mvt_turn_info.get("Volume"),
-                                 "distance": mvt_turn_info.get("Distance"),
-                                 "num_detects": mvt_turn_info.get("numDetects"),
-                                 }
+        boundaries.append([
+            cvt_utm_to_lonlat(point_x, point_y, zone_number, hemisphere)
+            for point_x, point_y in offset_projected_points
+        ])
 
-                if "R" in mvt_turn:
-                    mvt_type["R"].append(lane_mvt_info)
-                elif "T" in mvt_turn:
-                    mvt_type["T"].append(lane_mvt_info)
-                elif "L" in mvt_turn:
-                    mvt_type["L"].append(lane_mvt_info)
-                elif "U" in mvt_turn:
-                    mvt_type["U"].append(lane_mvt_info)
-                else:
-                    print(
-                        f"Warning: Unknown movement type {mvt_turn} in node: {int_id}.")
+    right_boundary_points, left_boundary_points = boundaries
+    polygon_points = [*right_boundary_points, *reversed(left_boundary_points)]
+    if len(polygon_points) < 3:
+        return ""
+    first_point = polygon_points[0]
+    last_point = polygon_points[-1]
+    if (
+        abs(first_point[0] - last_point[0]) > 1e-12
+        or abs(first_point[1] - last_point[1]) > 1e-12
+    ):
+        polygon_points.append(first_point)
 
-            # Ordering lane index from the sequence of Right -> Through -> Left -> U-Turn  (SUMO)
-            # Ordering lane index from the sequence of Through -> Right -> Left -> U-Turn  (GMNS)
-            # For each mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
-            lane_index = 1
-            lane_index_left = -1
+    point_text = [
+        f"{_format_xml_number(point[0])} {_format_xml_number(point[1])}"
+        for point in polygon_points
+    ]
+    return f"POLYGON (({', '.join(point_text)}))"
 
-            # Add Through lanes
-            if mvt_type["T"]:
-                for through in mvt_type["T"]:
-                    num_lanes = through.get("lanes")
 
-                    up_node = through.get("up_node")
-                    dest_node = through.get("dest_node")
-                    shared = through.get("shared")
-                    storage = through.get("storage")
-                    # taper = through.get("taper")
-                    speed = through.get("speed")
-                    volume = through.get("volume")
-                    distance = through.get("distance")
-                    num_detects = through.get("num_detects")
+def _get_network_nodes(utdf_dict: dict) -> dict:
+    """Return geocoded network nodes or raise a clear export error."""
+    network_nodes = utdf_dict.get("network_nodes")
+    if network_nodes is None:
+        raise ValueError("No network_nodes found, please run geocode_utdf_intersections() first.")
+    return network_nodes
 
-                    if int(num_lanes) > 0:
-                        for _ in range(int(num_lanes)):
-                            if storage:
-                                storage = re.findall(r"\d+", str(storage))[0]
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(
-                                    r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_length))[0]
-                                lane_length = cvt_unit_distance[unit_distance](
-                                    float(lane_length))
 
-                            if speed:
-                                speed = re.findall(
-                                    r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_speed))[0]
-                                lane_speed = cvt_unit_speed[unit_speed](
-                                    float(lane_speed))
+def _get_profile_segment_records(profile: dict, network_nodes: dict,
+                                 net_unit: str | None,
+                                 lane_width_meters: float) -> list[dict[str, Any]]:
+    """Return the GMNS link segment rows represented by one SUMO edge profile."""
+    shape_points = _get_profile_shape_points(profile, network_nodes, net_unit)
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "lane_id": f"{up_node}_{int_id}_{lane_index}",
-                                "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index,
-                                f"length_{unit_distance}": lane_length,
-                                f"speed_{unit_speed}": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "type": "thru",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
-                            }
+    if not profile["has_turn_bay"]:
+        return [{
+            "link_id": profile["main_edge_id"],
+            "from_node_id": profile["from_node"],
+            "to_node_id": profile["to_node"],
+            "lanes": profile["stop_lane_count"],
+            "length_m": _shape_length_meters(shape_points) or profile["length_m"],
+            "free_speed_mps": profile["speed_mps"],
+            "geometry": _build_polygon_geometry(
+                shape_points,
+                profile["stop_lane_count"],
+                lane_width_meters,
+            ),
+            "_shape_points": shape_points,
+            "main_link_id": profile["main_edge_id"],
+            "is_turn_bay_link": False,
+        }]
 
-                            lane_index += 1
+    bay_node_coord = _calculate_turn_bay_node_coord(profile, network_nodes, net_unit)
+    if bay_node_coord is None:
+        return [{
+            "link_id": profile["main_edge_id"],
+            "from_node_id": profile["from_node"],
+            "to_node_id": profile["to_node"],
+            "lanes": profile["stop_lane_count"],
+            "length_m": _shape_length_meters(shape_points) or profile["length_m"],
+            "free_speed_mps": profile["speed_mps"],
+            "geometry": _build_polygon_geometry(
+                shape_points,
+                profile["stop_lane_count"],
+                lane_width_meters,
+            ),
+            "_shape_points": shape_points,
+            "main_link_id": profile["main_edge_id"],
+            "is_turn_bay_link": False,
+        }]
 
-            # Add Right Turn lanes
-            if mvt_type["R"]:
-                for right_turn in mvt_type["R"]:
-                    num_lanes = right_turn.get("lanes")
+    main_shape_points, stop_shape_points = _split_shape_at_point(
+        shape_points,
+        bay_node_coord,
+    )
+    main_length_m = _shape_length_meters(main_shape_points)
+    stop_length_m = _shape_length_meters(stop_shape_points)
+    if main_length_m is None and stop_length_m is None:
+        if profile["length_m"] is None:
+            main_length_m = None
+            stop_length_m = profile["turn_bay_length_m"]
+        else:
+            stop_length_m = min(profile["turn_bay_length_m"], profile["length_m"])
+            main_length_m = max(profile["length_m"] - stop_length_m, 0.1)
 
-                    up_node = right_turn.get("up_node")
-                    dest_node = right_turn.get("dest_node")
-                    shared = right_turn.get("shared")
-                    storage = right_turn.get("storage")
-                    # taper = right_turn.get("taper")
-                    speed = right_turn.get("speed")
-                    volume = right_turn.get("volume")
-                    distance = right_turn.get("distance")
-                    num_detects = right_turn.get("num_detects")
+    return [
+        {
+            "link_id": profile["main_edge_id"],
+            "from_node_id": profile["from_node"],
+            "to_node_id": profile["bay_node_id"],
+            "lanes": profile["main_lane_count"],
+            "length_m": main_length_m,
+            "free_speed_mps": profile["speed_mps"],
+            "geometry": _build_polygon_geometry(
+                main_shape_points,
+                profile["main_lane_count"],
+                lane_width_meters,
+            ),
+            "_shape_points": main_shape_points,
+            "main_link_id": profile["main_edge_id"],
+            "is_turn_bay_link": False,
+        },
+        {
+            "link_id": profile["stop_edge_id"],
+            "from_node_id": profile["bay_node_id"],
+            "to_node_id": profile["to_node"],
+            "lanes": profile["stop_lane_count"],
+            "length_m": stop_length_m,
+            "free_speed_mps": profile["speed_mps"],
+            "geometry": _build_polygon_geometry(
+                stop_shape_points,
+                profile["stop_lane_count"],
+                lane_width_meters,
+            ),
+            "_shape_points": stop_shape_points,
+            "main_link_id": profile["main_edge_id"],
+            "is_turn_bay_link": True,
+        },
+    ]
 
-                    if int(num_lanes) == 0:  # shared right turn lane
-                        # Do not create lane for shared right turn lane
-                        pass
 
-                    elif int(num_lanes) > 0:  # protected right turn lane (right turn bay)
-                        for _ in range(int(num_lanes)):
-                            # Create lane for protected right turn bay
-                            if storage:
-                                storage = re.findall(r"\d+", str(storage))[0]
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(
-                                    r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_length))[0]
-                                lane_length = cvt_unit_distance[unit_distance](
-                                    float(lane_length))
+def _get_profile_segments_by_link_id(utdf_dict: dict,
+                                     net_unit: str | None) -> dict[str, dict[str, Any]]:
+    """Build link segment records keyed by generated GMNS link id."""
+    network_nodes = _get_network_nodes(utdf_dict)
+    edge_profiles = _build_sumo_edge_profile_dict(utdf_dict, net_unit)
+    lane_width_meters = _get_lane_width_meters(utdf_dict, net_unit)
+    segments_by_link_id = {}
+    for edge_id in sorted(edge_profiles):
+        profile = edge_profiles[edge_id]
+        for segment in _get_profile_segment_records(
+                profile,
+                network_nodes,
+                net_unit,
+                lane_width_meters):
+            segments_by_link_id[segment["link_id"]] = segment
+    return segments_by_link_id
 
-                            if speed:
-                                speed = re.findall(
-                                    r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_speed))[0]
-                                lane_speed = cvt_unit_speed[unit_speed](
-                                    float(lane_speed))
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index}"] = {
-                                "lane_id": f"{up_node}_{int_id}_{lane_index}",
-                                "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index,
-                                f"length_{unit_distance}": lane_length,
-                                f"speed_{unit_speed}": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "type": "right",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
-                            }
+def _build_lane_record(profile: dict, lane_index: int, link_id: str,
+                       lane_length_m: float | None, lane_speed_mps: float | None,
+                       lane_count: int, shape_points: list[tuple[float, float]] | None,
+                       lane_width_meters: float,
+                       lane_slot: dict | None = None) -> dict[str, Any]:
+    """Create one GMNS lane row from a profile lane slot."""
+    movement = lane_slot.get("movement") if lane_slot else None
+    turn_type = lane_slot.get("turn_type", "T") if lane_slot else "T"
+    lane_type = TURN_TYPE_TO_GMNS_TYPE.get(turn_type, "thru")
+    movement_name = movement.get("movement_name", "") if movement else ""
+    dest_node = movement.get("dest_node", "") if movement else ""
+    movement_id = ""
+    if movement is not None and dest_node:
+        movement_id = (
+            f"{movement['up_node']}_{movement['intersection_node']}_"
+            f"{dest_node}_{movement_name}"
+        )
 
-                            lane_index += 1
+    if movement is not None and movement.get("speed_mps") is not None:
+        lane_speed_mps = movement["speed_mps"]
 
-            # Add Left Turn lanes
-            if mvt_type["L"]:
-                for left_turn in mvt_type["L"]:
-                    num_lanes = left_turn.get("lanes")
+    return {
+        "lane_id": f"{link_id}_{lane_index}",
+        "link_id": link_id,
+        "lane_num": lane_index,
+        "length_m": _format_number(lane_length_m),
+        "speed_mps": _format_number(lane_speed_mps),
+        "geometry": _build_polygon_geometry(
+            shape_points,
+            lane_count,
+            lane_width_meters,
+            lane_index=lane_index,
+        ),
+        "type": lane_type,
+        "movement_name": movement_name,
+        "mvmt_id": movement_id,
+        "up_node": movement.get("up_node", "") if movement else profile["from_node"],
+        "dest_node": dest_node,
+        "volume": movement.get("volume", "") if movement else "",
+        "numDetects": movement.get("num_detects", "") if movement else "",
+        "is_turn_bay_lane": bool(lane_slot and lane_slot.get("is_turn_bay")),
+        "is_added_turn_bay_lane": bool(lane_slot and lane_slot.get("is_added_turn_bay_lane")),
+    }
 
-                    up_node = left_turn.get("up_node")
-                    dest_node = left_turn.get("dest_node")
-                    shared = left_turn.get("shared")
-                    storage = left_turn.get("storage")
-                    # taper = left_turn.get("taper")
-                    speed = left_turn.get("speed")
-                    volume = left_turn.get("volume")
-                    distance = left_turn.get("distance")
-                    num_detects = left_turn.get("num_detects")
 
-                    if int(num_lanes) == 0:  # shared left turn lane
-                        # Do not create lane for shared left turn lane
-                        pass
+def generate_gmns_node(utdf_dict: dict, filename: str = "node.csv",
+                       net_unit: str | None = None) -> bool:
+    """Generate ``node.csv`` with original intersections and turn-bay nodes."""
+    network_nodes = _get_network_nodes(utdf_dict)
+    edge_profiles = _build_sumo_edge_profile_dict(utdf_dict, net_unit)
 
-                    elif int(num_lanes) > 0:  # protected left turn lane (left turn bay)
-                        # reverse order for left turn lane
-                        for left_turn_index in range(int(num_lanes))[::-1]:
-                            # Create lane for protected left turn lane
-                            if storage:
-                                storage = re.findall(r"\d+", str(storage))[0]
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(
-                                    r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_length))[0]
-                                lane_length = cvt_unit_distance[unit_distance](
-                                    float(lane_length))
+    node_rows = []
+    existing_node_ids = set()
+    for node_id, node in network_nodes.items():
+        node_row = dict(node)
+        normalized_node_id = _normalize_node_id(node_row.get("INTID", node_id))
+        if not normalized_node_id or normalized_node_id in existing_node_ids:
+            continue
+        node_row["node_id"] = normalized_node_id
+        node_row["INTID"] = normalized_node_id
+        node_row["node_type"] = node_row.get("TYPE_DESC", "")
+        node_row["is_turn_bay_node"] = False
+        node_rows.append(node_row)
+        existing_node_ids.add(normalized_node_id)
 
-                            if speed:
-                                speed = re.findall(
-                                    r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_speed))[0]
-                                lane_speed = cvt_unit_speed[unit_speed](
-                                    float(lane_speed))
+    for edge_id in sorted(edge_profiles):
+        profile = edge_profiles[edge_id]
+        if not profile["has_turn_bay"] or profile["bay_node_id"] in existing_node_ids:
+            continue
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
-                                "lane_id": f"{up_node}_{int_id}_{lane_index_left}",
-                                "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index_left,
-                                f"length_{unit_distance}": lane_length,
-                                f"speed_{unit_speed}": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "type": "left",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
-                            }
+        bay_node_coord = _calculate_turn_bay_node_coord(profile, network_nodes, net_unit)
+        if bay_node_coord is None:
+            continue
 
-                            lane_index_left -= 1
+        node_rows.append({
+            "node_id": profile["bay_node_id"],
+            "INTID": profile["bay_node_id"],
+            "x_coord": bay_node_coord[0],
+            "y_coord": bay_node_coord[1],
+            "node_type": "Turn Bay",
+            "TYPE_DESC": "Turn Bay",
+            "is_turn_bay_node": True,
+            "main_link_id": profile["main_edge_id"],
+        })
+        existing_node_ids.add(profile["bay_node_id"])
 
-            # Add U-Turn lanes
-            if mvt_type["U"]:
-                for u_turn in mvt_type["U"]:
-                    num_lanes = u_turn.get("lanes")
+    df_node = pd.DataFrame(node_rows)
+    front_cols = ["node_id", "x_coord", "y_coord", "node_type"]
+    other_cols = [column for column in df_node.columns if column not in front_cols]
+    df_node = df_node[front_cols + other_cols]
+    df_node["node_id"] = df_node["node_id"].astype("string")
+    if "INTID" in df_node.columns:
+        df_node["INTID"] = df_node["INTID"].astype("string")
+    df_node.to_csv(filename, index=False)
+    return True
 
-                    up_node = u_turn.get("up_node")
-                    # dest_node = u_turn.get("dest_node")
-                    # shared = u_turn.get("shared")
-                    storage = u_turn.get("storage")
-                    # taper = u_turn.get("taper")
-                    speed = u_turn.get("speed")
-                    volume = u_turn.get("volume")
-                    distance = u_turn.get("distance")
-                    num_detects = u_turn.get("num_detects")
 
-                    if int(num_lanes) == 0:  # shared U-turn lane
-                        # Do not create lane for shared U-turn lane
-                        pass
+def generate_gmns_link(utdf_dict: dict, filename: str = "link.csv",
+                       net_unit: str | None = None) -> bool:
+    """Generate ``link.csv`` using the same turn-bay split as SUMO export."""
+    segments_by_link_id = _get_profile_segments_by_link_id(utdf_dict, net_unit)
+    df_link = pd.DataFrame(segments_by_link_id.values())
+    if df_link.empty:
+        df_link.to_csv(filename, index=False)
+        return True
 
-                    elif int(num_lanes) > 0:  # protected U-turn lane (U-turn bay)
-                        for u_turn_index in range(int(num_lanes))[::-1]:
-                            if storage:
-                                storage = re.findall(
-                                    r"\d+", str(storage))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(storage))}"
-                            elif distance:
-                                distance = re.findall(
-                                    r"\d+", str(distance))[0]  # Extract digit
-                                lane_length = f"{cvt_unit_distance[unit_distance](float(distance))}"
-                            else:
-                                # use length from link lookup dictionary
-                                lane_length = f"{link_lookup_dict[f'{up_node}_{int_id}']['length']}"
-                                lane_length = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_length))[0]
-                                lane_length = cvt_unit_distance[unit_distance](
-                                    float(lane_length))
+    df_link["length_m"] = df_link["length_m"].map(_format_number)
+    df_link["free_speed_mps"] = df_link["free_speed_mps"].map(_format_number)
+    df_link = df_link.drop(columns=["_shape_points"], errors="ignore")
+    for id_column in ["link_id", "from_node_id", "to_node_id", "main_link_id"]:
+        if id_column in df_link.columns:
+            df_link[id_column] = df_link[id_column].astype("string")
+    front_cols = [
+        "link_id",
+        "from_node_id",
+        "to_node_id",
+        "lanes",
+        "length_m",
+        "free_speed_mps",
+        "geometry",
+    ]
+    other_cols = [column for column in df_link.columns if column not in front_cols]
+    df_link = df_link[front_cols + other_cols]
+    df_link.to_csv(filename, index=False)
+    return True
 
-                            if speed:
-                                speed = re.findall(
-                                    r"\d+", str(speed))[0]  # Extract digit
-                                lane_speed = f"{cvt_unit_speed[unit_speed](float(speed))}"
-                            else:
-                                # use speed from link lookup dictionary
-                                lane_speed = f"{link_lookup_dict[f'{up_node}_{int_id}']['speed']}"
-                                lane_speed = re.findall(
-                                    # Extract digit
-                                    r"\d+", str(lane_speed))[0]
-                                lane_speed = cvt_unit_speed[unit_speed](
-                                    float(lane_speed))
 
-                            lane_lookup_dict[f"{up_node}_{int_id}_{lane_index_left}"] = {
-                                "lane_id": f"{up_node}_{int_id}_{lane_index_left}",
-                                "link_id": f"{up_node}_{int_id}",
-                                "lane_num": lane_index_left,
-                                f"length_{unit_distance}": lane_length,
-                                f"speed_{unit_speed}": lane_speed,
-                                "volume": volume,
-                                "numDetects": num_detects,
-                                "type": "uturn",
-                                "shared": shared,
-                                "up_node": up_node,
-                                "dest_node": dest_node,
-                                "mvmt_id": f"{up_node}_{int_id}_{dest_node}",
-                            }
+def generate_lane_lookup_dict(utdf_dict: dict, net_unit: str | None = None) -> dict:
+    """Return GMNS lane rows built from the shared SUMO edge profile model."""
+    network_nodes = _get_network_nodes(utdf_dict)
+    edge_profiles = _build_sumo_edge_profile_dict(utdf_dict, net_unit)
+    lane_width_meters = _get_lane_width_meters(utdf_dict, net_unit)
+    lane_lookup_dict = {}
 
-                            lane_index_left -= 1
+    for edge_id in sorted(edge_profiles):
+        profile = edge_profiles[edge_id]
+        segments = {
+            segment["link_id"]: segment
+            for segment in _get_profile_segment_records(
+                profile,
+                network_nodes,
+                net_unit,
+                lane_width_meters,
+            )
+        }
+
+        has_written_turn_bay = (
+            profile["has_turn_bay"]
+            and profile["main_edge_id"] in segments
+            and profile["stop_edge_id"] in segments
+        )
+        if has_written_turn_bay:
+            main_segment = segments[profile["main_edge_id"]]
+            for lane_index in range(profile["main_lane_count"]):
+                lane_record = _build_lane_record(
+                    profile,
+                    lane_index,
+                    profile["main_edge_id"],
+                    main_segment["length_m"],
+                    profile["speed_mps"],
+                    profile["main_lane_count"],
+                    main_segment.get("_shape_points"),
+                    lane_width_meters,
+                )
+                lane_lookup_dict[lane_record["lane_id"]] = lane_record
+
+            stop_segment = segments[profile["stop_edge_id"]]
+            for lane_slot in profile["stop_lane_slots"]:
+                lane_record = _build_lane_record(
+                    profile,
+                    lane_slot["index"],
+                    profile["stop_edge_id"],
+                    stop_segment["length_m"],
+                    profile["speed_mps"],
+                    profile["stop_lane_count"],
+                    stop_segment.get("_shape_points"),
+                    lane_width_meters,
+                    lane_slot,
+                )
+                lane_lookup_dict[lane_record["lane_id"]] = lane_record
+            continue
+
+        segment = segments[profile["main_edge_id"]]
+        for lane_slot in profile["stop_lane_slots"]:
+            lane_record = _build_lane_record(
+                profile,
+                lane_slot["index"],
+                profile["main_edge_id"],
+                segment["length_m"],
+                profile["speed_mps"],
+                profile["stop_lane_count"],
+                segment.get("_shape_points"),
+                lane_width_meters,
+                lane_slot,
+            )
+            lane_lookup_dict[lane_record["lane_id"]] = lane_record
 
     return lane_lookup_dict
 
 
 def generate_link_lookup_dict(utdf_dict: dict) -> dict:
-    """Generate a lookup dictionary for edges.
-
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-
-    Raises:
-        ValueError: UTDF Links data are required in utdf_dict.
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_link_lookup_dict
-        >>> edge_lookup_dict = generate_link_lookup_dict(utdf_dict)
-        >>> # This will generate a lookup dictionary for edges based on the provided UTDF Links data.
-        >>> print(edge_lookup_dict)  # {"edge_id": "num_lanes"}
-        {'1_2': '2', '2_3': '2', ...}
-
-    Returns:
-        dict: A dictionary containing edge information for each intersection.
-    """
-    link_df = utdf_dict.get("Links")
-
-    if link_df is None:
-        raise ValueError("UTDF Links data are required in utdf_dict.")
-
-    # Convert links DataFrame to dictionary
-    network_links = cvt_link_df_to_dict(link_df)
-
-    # Create a lookup dictionary for edges
-    edge_lookup_dict = {}
-    for int_id, direction_links in network_links.items():
-        for direction in direction_links:
-            num_lanes = direction_links[direction].get(
-                "Lanes")  # Default lanes
-            length = direction_links[direction].get("Distance")
-            speed = direction_links[direction].get("Speed")
-
-            up_node = direction_links[direction]["Up ID"]
-            edge_lookup_dict[f"{up_node}_{int_id}"] = {
-                "num_lanes": num_lanes,
-                "length": length,
-                "speed": speed,
-            }
-    return edge_lookup_dict
+    """Return the filtered UTDF directed link lookup used by network export."""
+    return generate_net_link_lookup_dict(utdf_dict)
 
 
-def generate_gmns_lane(utdf_dict: dict, filename: str = "lane.csv", net_unit: str = "feet") -> bool:
-    """Generate the lane.csv file in GMNS Standard.
-
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-        filename (str): The name of the output lane CSV file (lane.csv).
-        net_unit (str): The unit of measurement for the network data.
-
-    Raises:
-        ValueError: Could not get Lane data from utdf_dict.
-
-    Example:
-        >>> from utdf2gmns.func_lib import generate_gmns_lane
-        >>> generate_gmns_lane(utdf_dict, filename="lane.csv")
-        >>> # This will generate a lane.csv file in the current directory.
-        True
-    Returns:
-        bool: True if the CSV file is generated successfully, False otherwise.
-    """
+def generate_gmns_lane(utdf_dict: dict, filename: str = "lane.csv",
+                       net_unit: str | None = None) -> bool:
+    """Generate ``lane.csv`` using real through lanes plus short turn-bay lanes."""
     lanes_dict = generate_lane_lookup_dict(utdf_dict, net_unit=net_unit)
     df_lane = pd.DataFrame(lanes_dict.values())
+    if df_lane.empty:
+        df_lane.to_csv(filename, index=False)
+        return True
 
-    # exclude mvmt_id, up_node, dest_node columns in the output lane.csv
-    exlude_columns = ["mvmt_id", "shared"]  # "up_node", "dest_node"
-    df_lane = df_lane.drop(columns=exlude_columns, errors='ignore')
+    for id_column in ["lane_id", "link_id", "mvmt_id", "up_node", "dest_node"]:
+        if id_column in df_lane.columns:
+            df_lane[id_column] = df_lane[id_column].astype("string")
+    front_cols = [
+        "lane_id",
+        "link_id",
+        "lane_num",
+        "length_m",
+        "speed_mps",
+        "geometry",
+        "type",
+        "movement_name",
+        "mvmt_id",
+    ]
+    other_cols = [column for column in df_lane.columns if column not in front_cols]
+    df_lane = df_lane[front_cols + other_cols]
     df_lane.to_csv(filename, index=False)
     return True
 
 
-def generate_gmns_movement(utdf_dict: dict, filename: str = "movement.csv", net_unit: str = "feet") -> bool:
-    """Generate the movement.csv file in GMNS Standard.
-                     int_id
-                    ____|____ _____  __ ...
-                   |    |    |     |
-                   NB   SB   EB    WB  NE NW SE SW
-              __ __|__   |
-             |  |  |  |  ...
-             R  T  L  U
-    lane index from 0 to more (right most lane index is 0)...
+def _build_turn_bay_connector_movement(profile: dict) -> dict[str, Any]:
+    """Create the free connector movement from an upstream link into a bay link."""
+    inbound_lane_indices = [
+        lane_slot["main_lane_index"]
+        for lane_slot in profile["stop_lane_slots"]
+    ]
+    outbound_lane_indices = [
+        lane_slot["index"]
+        for lane_slot in profile["stop_lane_slots"]
+    ]
 
-    Args:
-        utdf_dict (dict): A dictionary containing UTDF data.
-        filename (str): The name of the output movement CSV file (movement.csv).
+    return {
+        "mvmt_id": f"{profile['main_edge_id']}_to_{profile['stop_edge_id']}",
+        "node_id": profile["bay_node_id"],
+        "ib_link_id": profile["main_edge_id"],
+        "ob_link_id": profile["stop_edge_id"],
+        "type": "thru",
+        "movement_name": "TURN_BAY_CONNECTOR",
+        "num_lanes": len(outbound_lane_indices),
+        "volume": 0,
+        "ib_lane_indices": _format_csv_list(inbound_lane_indices),
+        "ob_lane_indices": _format_csv_list(outbound_lane_indices),
+        "sumo_dir": "s",
+        "is_turn_bay_connector": True,
+        "control": "free",
+    }
 
-    Raises:
-        ValueError: Could not get Lane data from utdf_dict.
 
-    Example:
-        >>> from utdf2gmns.func_lib import generate_gmns_movement
-        >>> generate_gmns_movement(utdf_dict, filename="movement.csv")
-        >>> # This will generate a movement.csv file in the current directory.
-        True
+def _build_intersection_movement(profile: dict, target_profile: dict,
+                                 movement: dict,
+                                 inbound_link_id: str) -> dict[str, Any] | None:
+    """Create one GMNS movement row from an intersection turning movement."""
+    source_lane_indices = _source_lane_indices_for_movement(profile, movement)
+    if not source_lane_indices:
+        return None
 
-    Returns:
-        bool: True if the CSV file is generated successfully, False otherwise.
-    """
+    target_lane_indices = [
+        _target_lane_index_for_movement(
+            target_profile,
+            movement["turn_type"],
+            lane_position,
+            len(source_lane_indices),
+        )
+        for lane_position, _ in enumerate(source_lane_indices)
+    ]
+    movement_name = movement["movement_name"]
+    movement_id = (
+        f"{movement['up_node']}_{movement['intersection_node']}_"
+        f"{movement['dest_node']}_{movement_name}"
+    )
 
-    lanes_df = utdf_dict.get("Lanes")
+    return {
+        "mvmt_id": movement_id,
+        "node_id": movement["intersection_node"],
+        "ib_link_id": inbound_link_id,
+        "ob_link_id": target_profile["main_edge_id"],
+        "type": TURN_TYPE_TO_GMNS_TYPE.get(movement["turn_type"], "invalid"),
+        "movement_name": movement_name,
+        "num_lanes": len(source_lane_indices),
+        "volume": movement.get("volume") or 0,
+        "ib_lane_indices": _format_csv_list(source_lane_indices),
+        "ob_lane_indices": _format_csv_list(target_lane_indices),
+        "sumo_dir": TURN_TYPE_TO_SUMO_DIR.get(movement["turn_type"], ""),
+        "turning_speed_mps": _format_number(movement.get("turning_speed_mps")),
+        "is_turn_bay_connector": False,
+        "control": "",
+    }
 
-    if lanes_df is None:
+
+def generate_gmns_movement(utdf_dict: dict, filename: str = "movement.csv",
+                           net_unit: str | None = None) -> bool:
+    """Generate ``movement.csv`` from the same lane connections used by SUMO."""
+    if utdf_dict.get("Lanes") is None:
         raise ValueError("Could not get Lane data from utdf_dict.")
 
-    # Convert lanes DataFrame to dictionary
-    network_lanes = cvt_lane_df_to_dict(lanes_df)
+    edge_profiles = _build_sumo_edge_profile_dict(utdf_dict, net_unit)
+    segments_by_link_id = _get_profile_segments_by_link_id(utdf_dict, net_unit)
+    movement_rows = []
 
-    mvt_group_base = {
-        "NB": {},  # {"NBL": {},"NBT": {}, "NBR": {},"NBU": {}, ...},
-        "SB": {},
-        "EB": {},
-        "WB": {},
-        "NE": {},
-        "NW": {},
-        "SE": {},
-        "SW": {},
-    }
+    for edge_id in sorted(edge_profiles):
+        profile = edge_profiles[edge_id]
+        has_written_turn_bay = (
+            profile["has_turn_bay"]
+            and profile["stop_edge_id"] in segments_by_link_id
+        )
+        inbound_link_id = profile["stop_edge_id"] if has_written_turn_bay else profile["main_edge_id"]
 
-    mvt_type_base = {
-        "L": [],
-        "T": [],
-        "R": [],
-        "U": [],
-    }
+        if has_written_turn_bay:
+            movement_rows.append(_build_turn_bay_connector_movement(profile))
 
-    # create link lookup dictionary: f{"{from_node}_{to_node}": "num_lanes"}
-    link_lookup_dict = generate_link_lookup_dict(utdf_dict)
-
-    def update_lane_index(lane_index: str, edge_id: str, link_lookup_dict: dict) -> str:
-        """Update lane index based on the link lookup dictionary."""
-
-        lane_index_integer = int(lane_index)
-        edge_lanes = link_lookup_dict.get(edge_id)["num_lanes"]
-        # extract digit group from edge_lanes
-        edge_lanes = re.findall(r"\d+", str(edge_lanes))[0]  # Extract digit
-        edge_lanes = int(edge_lanes)
-
-        if lane_index_integer >= edge_lanes:
-            lane_index_integer = edge_lanes - 1
-
-        if lane_index_integer < 0:
-            lane_index_integer = 0
-
-        return f"{lane_index_integer}"
-
-    # create connection xml
-    root_con = ET.Element("connections")
-
-    # Loop through each intersection, mvt group, lane and connection
-    for int_id, mvt_lanes in network_lanes.items():
-        # e.g.: "1",  {"NBT": {}, "NBL": {}, "NBU": {}, "NBR": {}, ...}
-
-        # Reset mvt_group and mvt_type for each intersection
-        # Reset mvt_group for each intersection
-        mvt_group = copy.deepcopy(mvt_group_base)
-
-        # Group movement under each direction: NE, NW, SE, SW, NB, SB, EB, WB
-        # mvt_group = {"NB": {"NBL": {}, "NBT": {}, "NBR": {}, "NBU": {}, ...},
-        for each_mvt in mvt_lanes.keys():
-            first_two_char = each_mvt[:2]
-            if first_two_char in mvt_group:
-                mvt_group[first_two_char][each_mvt] = mvt_lanes[each_mvt]
-
-        # add movement into mvt_type dictionary
-        for mvt_name, each_mvt_group in mvt_group.items():
-            # mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
-            # each_mvt_group: {"NBL": {}, "NBT": {}, "NBR": {}, "NBU": {}, ...}
-
-            # Reset mvt_type for each intersection
-            mvt_type = copy.deepcopy(mvt_type_base)
-
-            # check if each_mvt_group is not empty, skip empty group
-            if not each_mvt_group:
+        for movement in profile["movements"]:
+            if not movement["dest_node"]:
                 continue
 
-            for mvt_turn, mvt_turn_info in each_mvt_group.items():
-                # mvt_turn: NBL, NBT, NBR, NBU, ...
-                # mvt_turn_info: {"Up Bode": "", "Dest Node": "", "Lanes": "", ...}
+            target_edge_id = f"{movement['intersection_node']}_{movement['dest_node']}"
+            target_profile = edge_profiles.get(target_edge_id)
+            if target_profile is None:
+                continue
 
-                # Extract relevant information from mvt_turn_info
-                lane_mvt_info = {"up_node": mvt_turn_info.get("Up Node"),
-                                 "dest_node": mvt_turn_info.get("Dest Node"),
-                                 "lanes": mvt_turn_info.get("Lanes"),
-                                 "shared": mvt_turn_info.get("Shared"),
-                                 "storage": mvt_turn_info.get("Storage"),
-                                 "taper": mvt_turn_info.get("Taper"),
-                                 "speed": mvt_turn_info.get("Speed"),
-                                 "volume": mvt_turn_info.get("Volume"),
-                                 "distance": mvt_turn_info.get("Distance"),
-                                 "num_detects": mvt_turn_info.get("numDetects"),
-                                 }
+            movement_row = _build_intersection_movement(
+                profile,
+                target_profile,
+                movement,
+                inbound_link_id,
+            )
+            if movement_row is not None:
+                movement_rows.append(movement_row)
 
-                if "R" in mvt_turn:
-                    mvt_type["R"].append(lane_mvt_info)
-                elif "T" in mvt_turn:
-                    mvt_type["T"].append(lane_mvt_info)
-                elif "L" in mvt_turn:
-                    mvt_type["L"].append(lane_mvt_info)
-                elif "U" in mvt_turn:
-                    mvt_type["U"].append(lane_mvt_info)
-                else:
-                    print(
-                        f"Warning: Unknown movement type {mvt_turn} in node: {int_id}.")
+    df_movement = pd.DataFrame(movement_rows)
+    if df_movement.empty:
+        df_movement.to_csv(filename, index=False)
+        return True
 
-            # Ordering lane index from the sequence of Right -> Through -> Left -> U-Turn
-            # For each mvt_name: NB, SB, EB, WB, NE, NW, SE, SW
-            lane_index = 0
-
-            # Add Right Turn lanes
-            if mvt_type["R"]:
-                for right_turn in mvt_type["R"]:
-                    num_lanes = right_turn.get("lanes")
-
-                    up_node = right_turn.get("up_node")
-                    dest_node = right_turn.get("dest_node")
-
-                    if int(num_lanes) == 0:  # shared right turn lane
-                        # Create connection for shared right turn lane
-                        connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
-                        connection.set("fromLane",
-                                       update_lane_index(f"{lane_index}", f"{up_node}_{int_id}", link_lookup_dict))
-                        connection.set("toLane",
-                                       update_lane_index(f"{lane_index}", f"{int_id}_{dest_node}", link_lookup_dict))
-                        connection.set("dir", "r")  # right turn
-                        # connection.set("state", "o")  #
-
-                    elif int(num_lanes) > 0:  # protected right turn lane (right turn bay)
-                        for _ in range(int(num_lanes)):
-                            # Create connection for protected right turn lane
-                            connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
-                            connection.set("fromLane",
-                                           update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
-                                                             link_lookup_dict))
-                            connection.set("toLane",
-                                           update_lane_index(f"{lane_index}",
-                                                             f"{int_id}_{dest_node}",
-                                                             link_lookup_dict))
-                            connection.set("dir", "r")  # right turn
-                            # connection.set("state", "o")
-
-                            lane_index += 1
-
-            # Add Through lanes
-            if mvt_type["T"]:
-                for through in mvt_type["T"]:
-                    num_lanes = through.get("lanes")
-
-                    up_node = through.get("up_node")
-                    dest_node = through.get("dest_node")
-
-                    if int(num_lanes) > 0:
-                        for through_index in range(int(num_lanes)):
-                            # create connection for through lane
-                            connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
-                            # connection.set("fromLane", str(lane_index))
-                            # connection.set("toLane", str(through_index))
-
-                            connection.set("fromLane",
-                                           update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
-                                                             link_lookup_dict))
-                            connection.set("toLane",
-                                           update_lane_index(f"{through_index}",
-                                                             f"{int_id}_{dest_node}",
-                                                             link_lookup_dict))
-                            connection.set("dir", "s")  # straight lane
-                            # connection.set("state", "M")  # open lane
-
-                            lane_index += 1
-
-            # Add Left Turn lanes
-            if mvt_type["L"]:
-                for left_turn in mvt_type["L"]:
-                    num_lanes = left_turn.get("lanes")
-
-                    up_node = left_turn.get("up_node")
-                    dest_node = left_turn.get("dest_node")
-
-                    if int(num_lanes) == 0:  # shared left turn lane
-                        # Create connection for shared left turn lane
-                        connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
-                        # connection.set("fromLane", str(lane_index))
-
-                        connection.set("fromLane",
-                                       update_lane_index(f"{lane_index}",
-                                                         f"{up_node}_{int_id}",
-                                                         link_lookup_dict))
-
-                        num_lanes_for_to_link = link_lookup_dict.get(
-                            f"{int_id}_{dest_node}")["num_lanes"]
-                        # extract digit group from num_lanes_for_to_link
-                        num_lanes_for_to_link = re.findall(
-                            # Extract digit
-                            r"\d+", str(num_lanes_for_to_link))[0]
-
-                        # to innermost lane
-                        to_lane_val = int(num_lanes_for_to_link) - 1
-                        if to_lane_val < 0:
-                            to_lane_val = 0
-                        connection.set("toLane", str(to_lane_val))
-
-                        connection.set("dir", "l")  # left turn
-                        # connection.set("state", "o")  #
-
-                    elif int(num_lanes) > 0:  # protected left turn lane (left turn bay)
-                        # reverse order for left turn lane
-                        for left_turn_index in range(int(num_lanes))[::-1]:
-                            # Create connection for protected left turn lane
-                            connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
-                            # connection.set("fromLane", str(lane_index))
-                            connection.set("fromLane",
-                                           update_lane_index(f"{lane_index}",
-                                                             f"{up_node}_{int_id}",
-                                                             link_lookup_dict))
-
-                            num_lanes_for_to_link = link_lookup_dict.get(
-                                f"{int_id}_{dest_node}")["num_lanes"]
-
-                            # extract digit group from num_lanes_for_to_link
-                            num_lanes_for_to_link = re.findall(
-                                # Extract digit
-                                r"\d+", str(num_lanes_for_to_link))[0]
-
-                            to_lane_val = int(
-                                num_lanes_for_to_link) - left_turn_index - 1
-                            if to_lane_val < 0:
-                                to_lane_val = 0
-                            connection.set("toLane", str(to_lane_val))
-                            # connection.set("toLane", f"{int(num_lanes_for_to_link) - left_turn_index - 1}")
-                            connection.set("dir", "l")
-                            # connection.set("state", "o")  #
-
-                            lane_index += 1
-
-            # Add U-Turn lanes
-            if mvt_type["U"]:
-                for u_turn in mvt_type["U"]:
-                    num_lanes = u_turn.get("lanes")
-
-                    up_node = u_turn.get("up_node")
-                    dest_node = u_turn.get("dest_node")
-
-                    if int(num_lanes) == 0:  # shared U-turn lane
-                        # Create connection for shared U-turn lane
-                        connection = ET.SubElement(root_con, "connection")
-                        connection.set("from", f"{up_node}_{int_id}")
-                        connection.set("to", f"{int_id}_{dest_node}")
-
-                        from_lane_val = lane_index - 1
-                        if from_lane_val < 0:
-                            from_lane_val = 0
-                        connection.set("fromLane", str(from_lane_val))
-
-                        num_lanes_for_to_link = link_lookup_dict.get(
-                            f"{int_id}_{dest_node}")["num_lanes"]
-                        # extract digit group from num_lanes_for_to_link
-                        num_lanes_for_to_link = re.findall(
-                            # Extract digit
-                            r"\d+", str(num_lanes_for_to_link))[0]
-
-                        # to innermost lane
-                        to_lane_val = int(num_lanes_for_to_link) - 1
-                        if to_lane_val < 0:
-                            to_lane_val = 0
-                        connection.set("toLane", str(to_lane_val))
-                        # connection.set("toLane", f"{int(num_lanes_for_to_link) - 1}")  # to innermost lane
-                        connection.set("dir", "t")  # U-turn
-                        # connection.set("state", "o")  #
-
-                    elif int(num_lanes) > 0:  # protected U-turn lane (U-turn bay)
-                        for u_turn_index in range(int(num_lanes))[::-1]:
-                            # Create connection for protected U-turn lane
-                            connection = ET.SubElement(root_con, "connection")
-                            connection.set("from", f"{up_node}_{int_id}")
-                            connection.set("to", f"{int_id}_{dest_node}")
-
-                            from_lane_val = lane_index - 1
-                            if from_lane_val < 0:
-                                from_lane_val = 0
-                            connection.set("fromLane", str(from_lane_val))
-
-                            num_lanes_for_to_link = link_lookup_dict.get(
-                                f"{int_id}_{dest_node}")["num_lanes"]
-                            # extract digit group from num_lanes_for_to_link
-                            num_lanes_for_to_link = re.findall(
-                                # Extract digit
-                                r"\d+", str(num_lanes_for_to_link))[0]
-
-                            to_lane_val = int(
-                                num_lanes_for_to_link) - u_turn_index - 1
-                            if to_lane_val < 0:
-                                to_lane_val = 0
-                            connection.set("toLane", str(to_lane_val))
-                            # connection.set("toLane", f"{int(num_lanes_for_to_link) - u_turn_index - 1}")
-                            connection.set("dir", "t")
-
-                            lane_index += 1
-
-    # loop through each connection and get attribute value and write into csv file
-    movement_dict = {}
-    for connection in root_con.findall("connection"):
-        # e.g., "1_2_3" for movement from node 1 to node 2 with destination node 3
-        mvmt_id = connection.get("from").split("_")[0] + "_" + connection.get("to")
-        dir_type = {"s": "thru",
-                    "t": "uturn",
-                    "l": "left",
-                    "r": "right",
-                    "L": "partially left",
-                    "R": "partially right",
-                    "invalid": "invalid"}
-        if mvmt_id not in movement_dict:
-            movement_dict[mvmt_id] = {
-                "mvmt_id": mvmt_id,
-                "node_id": connection.get("to").split("_")[0],
-                "ib_link_id": connection.get("from"),
-                "ob_link_id": connection.get("to"),
-                "type": dir_type.get(connection.get("dir"), "invalid"),
-                "num_lanes": 1,
-            }
-        else:
-            movement_dict[mvmt_id]["num_lanes"] += 1
-
-    # Convert movement_dict to DataFrame
-    df_movement = pd.DataFrame(movement_dict.values())
-
-    # Collapse lane records to one row per movement key before merge.
-    df_lane = pd.DataFrame(generate_lane_lookup_dict(utdf_dict, net_unit=net_unit).values())
-    df_lane = df_lane[["mvmt_id", "type", "volume"]]
-    df_lane = df_lane.groupby(["mvmt_id", "type"], as_index=False)["volume"].first()
-    df_movement = df_movement.merge(df_lane, on=["mvmt_id", "type"], how="left", validate="one_to_one")
-
-    # fill volume NaN with 0
-    df_movement["volume"] = df_movement["volume"].fillna(0)
-
+    for id_column in ["mvmt_id", "node_id", "ib_link_id", "ob_link_id"]:
+        if id_column in df_movement.columns:
+            df_movement[id_column] = df_movement[id_column].astype("string")
+    front_cols = [
+        "mvmt_id",
+        "node_id",
+        "ib_link_id",
+        "ob_link_id",
+        "type",
+        "movement_name",
+        "num_lanes",
+        "volume",
+        "ib_lane_indices",
+        "ob_lane_indices",
+    ]
+    other_cols = [column for column in df_movement.columns if column not in front_cols]
+    df_movement = df_movement[front_cols + other_cols]
     df_movement.to_csv(filename, index=False)
-
     return True
