@@ -81,9 +81,7 @@ def sumo2geojson(net_file: str,
         cmd += f' -p "{pt_lines}"'
 
     # Execute the command using subprocess
-    execute_ = subprocess.run(cmd, shell=True, check=True)
-
-    return execute_
+    subprocess.run(cmd, shell=True, check=True)
 
 
 if __name__ == "__main__":

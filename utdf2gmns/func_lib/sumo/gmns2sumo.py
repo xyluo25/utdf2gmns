@@ -83,9 +83,7 @@ def _normalize_node_id(value: Any) -> str:
     except ValueError:
         return node_id
 
-    if numeric_node_id.is_integer():
-        return str(int(numeric_node_id))
-    return node_id
+    return str(int(numeric_node_id)) if numeric_node_id.is_integer() else node_id
 
 
 def _extract_number(value: Any) -> float | None:
@@ -94,17 +92,13 @@ def _extract_number(value: Any) -> float | None:
         return None
 
     number_matches = re.findall(r"-?\d+(?:\.\d+)?", str(value))
-    if not number_matches:
-        return None
-    return float(number_matches[0])
+    return float(number_matches[0]) if number_matches else None
 
 
 def _extract_int(value: Any, default: int = 0) -> int:
     """Extract the first integer-like value from a UTDF cell."""
     number_value = _extract_number(value)
-    if number_value is None:
-        return default
-    return int(number_value)
+    return default if number_value is None else int(number_value)
 
 
 def _get_unit_labels(net_unit: str | None) -> tuple[str, str]:
@@ -156,18 +150,13 @@ def _get_movement_flow_volume(movement_info: dict) -> float | None:
 
 def _format_xml_number(value: float | int | None) -> str | None:
     """Format a number for XML while keeping the text compact."""
-    if value is None:
-        return None
-    return f"{float(value):.6f}".rstrip("0").rstrip(".")
+    return None if value is None else f"{float(value):.6f}".rstrip("0").rstrip(".")
 
 
 def _movement_turn_type(movement_name: str) -> str | None:
     """Return the movement type from a Synchro movement name such as NBL or EBR2."""
     movement_suffix = movement_name[2:]
-    for turn_type in TURN_TYPE_ORDER:
-        if turn_type in movement_suffix:
-            return turn_type
-    return None
+    return next((turn_type for turn_type in TURN_TYPE_ORDER if turn_type in movement_suffix), None)
 
 
 def _get_turn_bay_length_meters(movement_info: dict, net_unit: str | None) -> float:
@@ -180,9 +169,7 @@ def _get_turn_bay_length_meters(movement_info: dict, net_unit: str | None) -> fl
 def _get_turn_bay_lane_count(movement_info: dict, default_lane_count: int) -> int:
     """Return the UTDF storage-bay lane count when it is explicitly provided."""
     storage_lane_count = _extract_int(movement_info.get("StLanes"), default=0)
-    if storage_lane_count > 0:
-        return storage_lane_count
-    return default_lane_count
+    return storage_lane_count if storage_lane_count > 0 else default_lane_count
 
 
 def _extract_link_lane_count(link_info: dict) -> int:
@@ -395,14 +382,11 @@ def _finalize_edge_profile(profile: dict) -> None:
     ]
     for lane_slot in lane_slots:
         if lane_slot["is_added_turn_bay_lane"]:
-            if lane_slot["turn_type"] == "R":
-                main_lane_index = 0
-            else:
-                main_lane_index = main_lane_count - 1
+            main_lane_index = 0 if lane_slot["turn_type"] == "R" else main_lane_count - 1
         else:
             added_lanes_to_the_right = sum(
-                1 for lane_index in added_turn_bay_lane_indices
-                if lane_index < lane_slot["index"]
+                lane_index < lane_slot["index"]
+                for lane_index in added_turn_bay_lane_indices
             )
             main_lane_index = lane_slot["index"] - added_lanes_to_the_right
 
@@ -755,16 +739,18 @@ def _select_realistic_shape_points(
     """Choose the UTDF shape that avoids unrealistic 90-degree and Z links."""
     candidate_shapes = []
     if reverse_curve_point is not None and current_curve_point is not None:
-        candidate_shapes.append((
-            0,
-            0,
-            [start_point, reverse_curve_point, current_curve_point, end_point],
-        ))
-        candidate_shapes.append((
-            0,
-            1,
-            [start_point, current_curve_point, reverse_curve_point, end_point],
-        ))
+        candidate_shapes.extend([
+            (
+                0,
+                0,
+                [start_point, reverse_curve_point, current_curve_point, end_point],
+            ),
+            (
+                0,
+                1,
+                [start_point, current_curve_point, reverse_curve_point, end_point],
+            ),
+        ])
     if current_curve_point is not None:
         candidate_shapes.append((1, 0, [start_point, current_curve_point, end_point]))
     if reverse_curve_point is not None:
@@ -1020,7 +1006,7 @@ def _target_lane_index_for_movement(profile: dict, turn_type: str, lane_position
                                     source_lane_count: int = 1) -> int:
     """Return a balanced receiving lane on the target edge's main lane group."""
     through_lanes = profile["through_main_lane_indices"]
-    if turn_type == "L" or turn_type == "U":
+    if turn_type in {"L", "U"}:
         balanced_position = _balanced_lane_position(
             lane_position,
             source_lane_count,
@@ -1383,7 +1369,7 @@ def generate_net_lane_lookup_dict(utdf_dict: dict, net_unit: str) -> dict:
                         pass
 
                     elif int(num_lanes) > 0:  # protected left turn lane (left turn bay)
-                        for left_turn_index in range(int(num_lanes))[::-1]:  # reverse order for left turn lane
+                        for _ in range(int(num_lanes))[::-1]:
                             # Create lane for protected left turn lane
                             if storage:
                                 storage = re.findall(r"\d+", str(storage))[0]

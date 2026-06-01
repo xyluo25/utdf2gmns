@@ -7,6 +7,9 @@
 ##############################################################
 """
 
+from itertools import product
+from contextlib import suppress
+
 opposite_ped = {
     "NB_PED": "SBT",
     "EB_PED": "WBT",
@@ -87,12 +90,12 @@ def _intersect_interval_segments(
         next_segments: list[tuple[float, float]]) -> list[tuple[float, float]]:
     """Return the overlap between two lists of non-wrapping intervals."""
     overlapping_segments = []
-    for current_start, current_end in current_segments:
-        for next_start, next_end in next_segments:
-            overlap_start = max(current_start, next_start)
-            overlap_end = min(current_end, next_end)
-            if overlap_end - overlap_start > 1e-6:
-                overlapping_segments.append((overlap_start, overlap_end))
+    for (current_start, current_end), (next_start, next_end) in product(
+            current_segments, next_segments):
+        overlap_start = max(current_start, next_start)
+        overlap_end = min(current_end, next_end)
+        if overlap_end - overlap_start > 1e-6:
+            overlapping_segments.append((overlap_start, overlap_end))
     return overlapping_segments
 
 
@@ -131,9 +134,10 @@ def _transition_clearance_seconds(current_green: dict, next_green: dict) -> floa
     need_yellow = False
 
     for index in range(len(current_state)):
-        if current_state[index] in {"G", "g"} and next_state[index] in {"G", "g"}:
+        curr_is_green = current_state[index] in {"G", "g"}
+        if curr_is_green and next_state[index] in {"G", "g"}:
             has_common_green = True
-        if current_state[index] in {"G", "g"} and next_state[index] == "r":
+        if curr_is_green and next_state[index] == "r":
             need_yellow = True
 
     if not need_yellow:
@@ -162,12 +166,14 @@ def _build_static_phase_sequence_from_utdf_starts(
             phase_info["phases"],
             cycle_length,
         )
-        for start_seconds, end_seconds in overlap_segments:
-            timed_phase_segments.append({
+        timed_phase_segments.extend(
+            {
                 "start": start_seconds,
                 "end": end_seconds,
                 "phase_index": phase_index,
-            })
+            }
+            for start_seconds, end_seconds in overlap_segments
+        )
 
     if not timed_phase_segments:
         return phase_queue, green_phases
@@ -212,17 +218,18 @@ def _is_utdf_signal_direction(direction: str) -> bool:
 def findBestMatchDirection(direction: str, allDirection: str) -> str:
     """ Find the best match direction for the given direction"""
 
-    bound = direction[0:2]
+    bound = direction[:2]
     turn = direction[2:]
     if direction in opposite_ped and opposite_ped[direction] in allDirection:
         return opposite_ped[direction]
-    if bound + "T" in allDirection:
-        return bound + "T"
-    if "PED" not in turn and bound + "L" in allDirection:
-        return bound + "L"
-    if "PED" not in turn and bound + "R" in allDirection:
-        return bound + "R"
-    if "PED" in turn and "PED" in allDirection:
+    if f"{bound}T" in allDirection:
+        return f"{bound}T"
+    if "PED" not in turn:
+        if f"{bound}L" in allDirection:
+            return f"{bound}L"
+        if f"{bound}R" in allDirection:
+            return f"{bound}R"
+    elif "PED" in allDirection:
         return turn
     return "N/A"
 
@@ -240,9 +247,9 @@ def find_candidates(slope_info: str, all_traffic_bounds: set) -> set:
         "abs_slope_larger_than_1": ["SE", "SB", "SW", "NE", "NB", "NW"],
         "abs_slope_smaller_than_1": ["SW", "WB", "NE", "NW", "EB", "SE"],
     }
-    delta_x = slope_info[0]
-    delta_y = slope_info[1]
-    slope = slope_info[2]
+    delta_x = float(slope_info[0])
+    delta_y = float(slope_info[1])
+    slope = float(slope_info[2])
 
     traffic_bounds = set(all_traffic_bounds)
     if delta_x < 0:
@@ -297,7 +304,7 @@ def direction_mapping(sumo_data,
             print(f"  :Edge id: {edge_id}\n  :Slope info: {slope_info}\n"
                   f"  :Candidates: {candidates}\n  :All traffic bounds: {all_traffic_bounds}")
 
-        if len(candidates) == 0:
+        if not candidates:
             if verbose:
                 print(f"  :Intersection id {sumo_id}: match traffic bound failed for {edge_id}")
 
@@ -317,9 +324,9 @@ def direction_mapping(sumo_data,
             candidate_mapping[edge_id] = candidates
 
     updated = True
-    while updated and len(candidate_mapping) > 0:
+    while updated and candidate_mapping:
         updated = False
-        keys = set(candidate_mapping.keys())
+        keys = set(candidate_mapping)
         for edge_id in keys:
             candidate_mapping[edge_id] = candidate_mapping[edge_id] - assigned_bounds
             if len(candidate_mapping[edge_id]) == 1:
@@ -331,7 +338,7 @@ def direction_mapping(sumo_data,
                 # print("updated", candidate_mapping, inbound_direction_mapping)
 
     # print(candidate_mapping, inbound_direction_mapping)
-    if len(candidate_mapping) > 0:
+    if candidate_mapping:
         # there are multiple movements contains the same set of candidates, need to compare abs slope
         ordered_by_abs_slope = ["SB", "NB", "SW", "NE", "SE", "NW", "EB", "WB"]
         for bound in ordered_by_abs_slope:
@@ -355,7 +362,7 @@ def direction_mapping(sumo_data,
                 assigned_bounds.add(candidate_pick)
         # print(inbound_direction_mapping)
 
-    return (len(candidate_mapping) == 0, inbound_direction_mapping)
+    return (not candidate_mapping, inbound_direction_mapping)
 
 
 def getCombinationForBarrier(barrier, rings, ringIndex, currentComb, result):
@@ -378,7 +385,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
     pedStart = 0
     i = 0
 
-    for j in sumo_signal:
+    for i, j in enumerate(sumo_signal):
         sumo_lane = sumo_signal[j]
         if "synchro_dir" not in sumo_lane:
             sumo_lane['synchro_dir'] = sumo_lane['dir']
@@ -414,15 +421,7 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
     ii = 0
     for j in sumo_signal:
         sumo_lane = sumo_signal[j]
-        try:
-            """if 'PED' in sumo_lane['synchro_dir']:
-            if 'PED' in sumo_lane['ped_allowed']:
-                print (sumo_lane, 'conflicts', protected.intersection(sumo_lane['ped_conflicts']))
-                if len(protected.intersection(sumo_lane['ped_conflicts'])) == 0:
-                    value[int(j)] = 'G'
-            elif sumo_lane['ped_allowed'].intersection(protected) == protected:
-                value[int(j)] = 'G'
-            """
+        with suppress(IndexError):
             if sumo_lane.get("uncontrolled"):
                 value[int(j)] = "g"
             elif "STOP" in sumo_lane["synchro_dir"]:
@@ -430,25 +429,15 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
             elif "PED" in sumo_lane["synchro_dir"]:
                 if pedOnlyPhase:
                     if "PED" in protected:
-                        hasConflict = False
-                        for c in sumo_lane["ped_conflicts"][0]:
-                            if value[int(c)] == "G" or value[int(c)] == "g":
-                                hasConflict = True
+                        hasConflict = any(value[int(c)] in {"G", "g"} for c in sumo_lane["ped_conflicts"][0])
                         if not hasConflict:
-                            for c in sumo_lane["ped_conflicts"][1]:
-                                if value[int(c)] == "G":
-                                    hasConflict = True
+                            hasConflict = any(value[int(c)] == "G" for c in sumo_lane["ped_conflicts"][1])
                         if not hasConflict:
                             value[int(j)] = "G"
                 elif sumo_lane["ped_allowed"].intersection(protected) == protected:
-                    hasConflict = False
-                    for c in sumo_lane["ped_conflicts"][0]:
-                        if value[int(c)] == "G" or value[int(c)] == "g":
-                            hasConflict = True
+                    hasConflict = any(value[int(c)] in {"G", "g"} for c in sumo_lane["ped_conflicts"][0])
                     if not hasConflict:
-                        for c in sumo_lane["ped_conflicts"][1]:
-                            if value[int(c)] == "G":
-                                hasConflict = True
+                        hasConflict = any(value[int(c)] == "G" for c in sumo_lane["ped_conflicts"][1])
                     if not hasConflict:
                         value[int(j)] = "G"
             elif sumo_lane["signal_dir"] in protected:
@@ -463,8 +452,6 @@ def generateGreen(sumo_signal, protected, permitted, all_directions, duration, p
             elif sumo_lane.get("rtor_allowed"):
                 value[int(j)] = "g"
             ii += 1
-        except IndexError:
-            pass
 
     duration["state"] = value
     duration["pedStart"] = pedStart
@@ -574,11 +561,11 @@ def build_TransitionPhase(synchro_signal, greens, phases):
                 # print (current_green)
                 if current_green[j] != next_green[j]:
                     hasDiff = True
-                if current_green[j] == 'g' or current_green[j] == 'G':
+                if current_green[j] in ('g', 'G'):
                     if next_green[j] == 'r':
                         needYellow = True
                         yellow[j] = 'y'
-                    if next_green[j] == 'g' or next_green[j] == 'G':
+                    if next_green[j] in ('g', 'G'):
                         hasCommonGreen = True
             if not hasDiff:
                 # print('Phase is the same', i, nextPhaseIndex)
@@ -621,8 +608,7 @@ def build_linkDuration(utdf_signal, sumo_signal):
         if phase == 'brp_info':
             continue
 
-        index = 0
-        for i in sumo_signal:
+        for index, i in enumerate(sumo_signal):
             sumo_lane = sumo_signal[i]
             # print('sumo_lane', sumo_lane)
 
@@ -643,11 +629,11 @@ def build_linkDuration(utdf_signal, sumo_signal):
                         float(linkDuration[index]['linkMinDur']),
                         min_green)
                 else:
-                    linkDuration[index] = {}
-                    linkDuration[index]['linkMaxDur'] = effective_green
-                    linkDuration[index]['linkMinDur'] = min_green
-                    linkDuration[index]['dir'] = sumo_lane['synchro_dir']
-            index += 1
+                    linkDuration[index] = {
+                        'linkMaxDur': effective_green,
+                        'linkMinDur': min_green,
+                        'dir': sumo_lane['synchro_dir'],
+                    }
     return linkDuration
 
 
@@ -683,7 +669,6 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False,
 
     for barrierIndex in utdf_signal['brp_info']:
         barrierRings = utdf_signal['brp_info'][barrierIndex]
-        offset = len(phaseQueue)
         position = 0
         combPos = []
         phaseName = []
@@ -694,9 +679,10 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False,
             ring = barrierRings[ringIndex]
             phaseName.append(ring[position])
             combPos.append(position)
-        queue.append(combPos)
+        queue = [combPos]
 
         # print(queue, 'phases', phaseQueue)
+        offset = len(phaseQueue)
         readIndex = 0
         position += 1
         phaseIndex += 1
@@ -726,16 +712,9 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False,
                         phaseIndex += 1
 
             readIndex += 1
-            if len(nextPhase) == 0:
-                # print (barrierIndex, len(utdf_signal['brp_info']))
-                if barrierIndex == max(utdf_signal['brp_info'].keys()):
-                    nextPhase.append(0)
-                    # getPhaseTiming(utdf_signal, sumo_signal, all_directions,
-                    # currentPhaseName, phaseQueue[0], allRed = False)
-                else:
-                    nextPhase.append(phaseIndex)
-                    # getPhaseTiming(utdf_signal, sumo_signal, all_directions,
-                    # currentPhaseName, phaseQueue[phaseIndex], allRed = False)
+            if not nextPhase:
+                next_val = 0 if barrierIndex == max(utdf_signal['brp_info'].keys()) else phaseIndex
+                nextPhase.append(next_val)
 
             currentName = []
             for c in range(len(current)):
@@ -750,11 +729,9 @@ def create_SignalTimingPlan(utdf_signal, sumo_signal, verbose=False,
     # Check if PED exclusive phase exists
     pedExclusive = False
     for phase in phaseQueue:
-        try:
+        with suppress(KeyError):
             if len(phase['phases']) == 1 and utdf_signal[phase['phases'][0]]['protected'][0] == 'PED':
                 pedExclusive = True
-        except KeyError:
-            pass
 
     greenPhases = []
     for phase in phaseQueue:
@@ -798,123 +775,98 @@ sumo_dir_suffix_order = ['R2', 'R', 'T', 'L', 'L2']
 def assign_dir2sumo(sumo_id, ordered_direction, sumo_signal_info, sumo2synchro):
     ordered_dir_dict = ordered_direction[sumo_id]
     sumo_dict = sumo_signal_info[sumo_id]
-    error = []
     # check the number of directions in sumo
     edges_lst = []
     # get all sumo direction by fromEdge, to check if we have both 'l' and 'L'
     sumo_dir_by_edge = {}
     for index_num in sumo_dict:
         edge = sumo_dict[index_num]['fromEdge']
-        # I revise this
-        # if 'w' not in edge '''and 'signal_dir' not in sumo_dict[index_num]''':
-        if 'w' not in edge and 'signal_dir' not in sumo_dict[index_num]:
-            if edge not in edges_lst:
-                edges_lst.append(edge)
-                sumo_dir_by_edge[edge] = set()
-            sumo_dir_by_edge[edge].add(sumo_dict[index_num]['dir'])
+        # skip walkways and already-mapped signal dirs
+        if 'w' in edge or 'signal_dir' in sumo_dict[index_num]:
+            continue
+        if edge not in edges_lst:
+            edges_lst.append(edge)
+            sumo_dir_by_edge[edge] = set()
+        sumo_dir_by_edge[edge].add(sumo_dict[index_num]['dir'])
 
-    # check if the # of bounds from synchro equals to SUMO
-    # eg, if synchro: wb, nb, eb, the # of edge in sumo ideally = 3
-    if len(edges_lst) != len(ordered_dir_dict.keys()):
-        checked_id = {}
-        checked_id['sumo_dir_num'] = len(edges_lst)
-        checked_id['synchro_dir_num'] = len(ordered_dir_dict.keys())
-        # print(edges_lst)
-        # print(ordered_dir_dict)
-        return (checked_id)
-    else:
-        dir_lst = list(ordered_dir_dict.keys())
-        direction_in_sumo = []
-        for index_num in sumo_dict:
-            edges = sumo_dict[index_num]['fromEdge']
-            # same here
-            # if 'w' not in edges '''and 'signal_dir' not in sumo_dict[index_num]''':
-            if 'w' not in edges and 'signal_dir' not in sumo_dict[index_num]:
-                dir_index = edges_lst.index(sumo_dict[index_num]['fromEdge'])
-                # print(dir_lst[dir_index])
-                # print(sumo_dict[index_num]['fromEdge'], sumo_dict[index_num]['toEdge'], sumo_dict[index_num]['dir'])
-                # print (sumo_dir_by_edge)
-                all_sumo_dir_per_edge = sumo_dir_by_edge[sumo_dict[index_num]['fromEdge']]
-                direct = combine_bound_dir(
-                    dir_lst[dir_index], sumo_dict[index_num]['dir'], all_sumo_dir_per_edge)
+    if len(edges_lst) != len(ordered_dir_dict):
+        return {
+            'sumo_dir_num': len(edges_lst),
+            'synchro_dir_num': len(ordered_dir_dict.keys()),
+        }
+    dir_lst = list(ordered_dir_dict.keys())
+    direction_in_sumo = []
+    error = []
+    for index_num in sumo_dict:
+        edges = sumo_dict[index_num]['fromEdge']
+        # skip walkways and already-mapped signal dirs
+        if 'w' in edges or 'signal_dir' in sumo_dict[index_num]:
+            direction_in_sumo.append('PED')
+            continue
+        dir_index = edges_lst.index(sumo_dict[index_num]['fromEdge'])
+        all_sumo_dir_per_edge = sumo_dir_by_edge[sumo_dict[index_num]['fromEdge']]
+        direct = combine_bound_dir(
+            dir_lst[dir_index], sumo_dict[index_num]['dir'], all_sumo_dir_per_edge)
 
-                # check the direction
-                # here if the direction matches, even l, R, T not in the direction
-                # at all, we think the direction matahces
-                if direct not in ordered_dir_dict[dir_lst[dir_index]]:
-                    # start fuzzy mapping
-                    if direct[0:3] in ordered_dir_dict[dir_lst[dir_index]]:
-                        fuzzy_dir = direct[0:3]
-                    elif direct + '2' in ordered_dir_dict[dir_lst[dir_index]]:
-                        fuzzy_dir = direct + '2'
-                    elif all([sumo_dict[index_num]['dir'] == 'L',
-                              's' not in all_sumo_dir_per_edge,
-                              direct[0:2] + 'T' in ordered_dir_dict[dir_lst[dir_index]]]):
-                        fuzzy_dir = direct[0:2] + 'T'
-                        error.append('\tPartial map to straight(%s->%s)' %
-                                     (direct, fuzzy_dir))
-                    elif all([sumo_dict[index_num]['dir'] == 'R',
-                              's' not in all_sumo_dir_per_edge,
-                              direct[0:2] + 'T' in ordered_dir_dict[dir_lst[dir_index]]]):
-                        fuzzy_dir = direct[0:2] + 'T'
-                        error.append('\tPartial map to straight(%s->%s)' %
-                                     (direct, fuzzy_dir))
-                    elif direct[2:3] == 'R':
-                        fuzzy_dir = direct
-                    else:
-                        fuzzy_dir = direct
-                        error.append('\tsumo direction %s (%s) not found in synchro, %s' % (
-                            direct, sumo_dict[index_num]['dir'], str(all_sumo_dir_per_edge)))
-                else:
-                    fuzzy_dir = direct
-                direction_in_sumo.append(fuzzy_dir)
-
+        dir_key = ordered_dir_dict[dir_lst[dir_index]]
+        if direct not in dir_key:
+            fuzzy_dir_2 = f'{direct}2'
+            if fuzzy_dir_2 in dir_key:
+                fuzzy_dir = fuzzy_dir_2
+            elif all([sumo_dict[index_num]['dir'] == 'L',
+                      's' not in all_sumo_dir_per_edge,
+                      f'{direct[:2]}T' in dir_key]):
+                fuzzy_dir = f'{direct[:2]}T'
+                error.append(f'\tPartial map to straight({direct}->{fuzzy_dir})')
+            elif all([sumo_dict[index_num]['dir'] == 'R',
+                      's' not in all_sumo_dir_per_edge,
+                      f'{direct[:2]}T' in dir_key]):
+                fuzzy_dir = f'{direct[:2]}T'
+                error.append(f'\tPartial map to straight({direct}->{fuzzy_dir})')
             else:
-                direction_in_sumo.append('PED')
-        if (len(error) > 0):
-            pass
-            # print('Warning (%s:%s)' % (sumo_id, sumo2synchro[sumo_id]))
-            # print('\n'.join(error))
-            # print(ordered_dir_dict)
-            # print('')
+                fuzzy_dir = direct
+                error.append(f'\tsumo direction {direct} ({sumo_dict[index_num]["dir"]}) not found in synchro, {str(all_sumo_dir_per_edge)}')
+        else:
+            fuzzy_dir = direct
+        direction_in_sumo.append(fuzzy_dir)
         return (direction_in_sumo)
 
 
 def process_pedestrian_crossing(sumo_id, sumo_data, ped_edge, all_directions, errors=[]):
-    crossedDirection = {
-        'from': {'WB': 'NB',
-                 'SB': 'WB',
-                 'EB': 'SB',
-                 'NB': 'EB',
-                 'NW': 'NE',
-                 'SW': 'NW',
-                 'SE': 'SW',
-                 'NE': 'SE'},
-        'to': {'EBT': 'NB',
-               'SBL': 'NB',
-               'NBR': 'NB',
-               'WBT': 'SB',
-               'NBL': 'SB',
-               'SBR': 'SB',
-               'NBT': 'WB',
-               'EBL': 'WB',
-               'WBR': 'WB',
-               'SBT': 'EB',
-               'WBL': 'EB',
-               'EBR': 'EB',
-               'SWT': 'SE',
-               'NWL': 'SE',
-               'SER': 'SE',
-               'NET': 'NW',
-               'SEL': 'NW',
-               'NWR': 'NW',
-               'SET': 'NE',
-               'SWL': 'NE',
-               'NER': 'NE',
-               'NWT': 'SW',
-               'NEL': 'SW',
-               'SWR': 'SW'}
-    }
+    # crossedDirection = {
+    #     'from': {'WB': 'NB',
+    #              'SB': 'WB',
+    #              'EB': 'SB',
+    #              'NB': 'EB',
+    #              'NW': 'NE',
+    #              'SW': 'NW',
+    #              'SE': 'SW',
+    #              'NE': 'SE'},
+    #     'to': {'EBT': 'NB',
+    #            'SBL': 'NB',
+    #            'NBR': 'NB',
+    #            'WBT': 'SB',
+    #            'NBL': 'SB',
+    #            'SBR': 'SB',
+    #            'NBT': 'WB',
+    #            'EBL': 'WB',
+    #            'WBR': 'WB',
+    #            'SBT': 'EB',
+    #            'WBL': 'EB',
+    #            'EBR': 'EB',
+    #            'SWT': 'SE',
+    #            'NWL': 'SE',
+    #            'SER': 'SE',
+    #            'NET': 'NW',
+    #            'SEL': 'NW',
+    #            'NWR': 'NW',
+    #            'SET': 'NE',
+    #            'SWL': 'NE',
+    #            'NER': 'NE',
+    #            'NWT': 'SW',
+    #            'NEL': 'SW',
+    #            'SWR': 'SW'}
+    # }
 
     junction_id = sumo_id
     crossing_dict = sumo_data.crossing_dict

@@ -383,6 +383,7 @@ class UTDF2GMNS:
                      sim_start_time: int = 0,
                      sim_duration: int = 3600,  # 1 hour
                      flow_mode: str = "network",
+                     is_link_polygon: bool = True
                      ) -> bool:
         """Convert UTDF to SUMO and save networks to the output directory
 
@@ -443,9 +444,8 @@ class UTDF2GMNS:
         if not hasattr(self, "network_nodes"):
             raise Exception("Please geocode intersections first: net.geocode_utdf_intersections()")
 
-        # if not hasattr(self, "network_links"):
-        #     self.create_gmns_links(is_link_polygon=is_link_polygon)
-        #     print()
+        if not hasattr(self, "network_links"):
+            self.create_gmns_links(is_link_polygon=is_link_polygon)
 
         xml_name = sim_name or "utdf_to_sumo"
 
@@ -522,9 +522,8 @@ class UTDF2GMNS:
 
             print(f"  :Successfully generated SUMO network to \n    {sumo_output_dir}.")
             if show_warning_message:
-                pass
-                # print("Warning message in generating SUMO network:")
-                # print(f"{result.stderr}")
+                print("Warning message in generating SUMO network:")
+                print(f"{result.stderr}")
         except Exception as e:
             print(f"  :Error in generating SUMO network: {e}")
             return False
@@ -624,8 +623,7 @@ class UTDF2GMNS:
 
         # remove U-turns in the SUMO network
         if remove_U_turn:
-            if not remove_sumo_U_turn(output_net_file, output_con_file):
-                return False
+            remove_sumo_U_turn(output_net_file, output_con_file)
 
         # create .sumocfg file for the generated network
         # will generate default .rou.xml file for the network

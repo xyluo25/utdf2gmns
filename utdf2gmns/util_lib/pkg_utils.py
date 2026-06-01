@@ -134,7 +134,7 @@ def time_unit_converter(value: float, from_unit: str, to_unit: str, verbose: boo
     return result
 
 
-def time_str_to_seconds(time_str: str, to_unit: str = "seconds", verbose: bool = True) -> int:
+def time_str_to_seconds(time_str: str, to_unit: str = "seconds", verbose: bool = True) -> float:
     """Convert a time string to seconds
 
     Args:
@@ -157,7 +157,7 @@ def time_str_to_seconds(time_str: str, to_unit: str = "seconds", verbose: bool =
         930.0
 
     Returns:
-        int: The time in the target unit.
+        float: The time in the target unit.
     """
 
     time_str = pf.str_strip(time_str).lower()

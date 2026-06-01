@@ -39,9 +39,7 @@ def _normalize_utdf_node_id(value: object) -> str:
     except ValueError:
         return node_id
 
-    if numeric_node_id.is_integer():
-        return str(int(numeric_node_id))
-    return node_id
+    return str(int(numeric_node_id)) if numeric_node_id.is_integer() else node_id
 
 
 def _node_sort_key(node_id: str) -> tuple[int, int | str]:
@@ -65,9 +63,7 @@ def _extract_float(value: object, default: float = 0.0) -> float:
 
 def _strip_turn_bay_suffix(edge_id: str) -> str:
     """Return the main edge id for a SUMO turn-bay edge id."""
-    if edge_id.endswith("_bay"):
-        return edge_id[:-4]
-    return edge_id
+    return edge_id[:-4] if edge_id.endswith("_bay") else edge_id
 
 
 def _get_up_node_from_edge_id(edge_id: str, intersection_id: str) -> str:
@@ -75,9 +71,7 @@ def _get_up_node_from_edge_id(edge_id: str, intersection_id: str) -> str:
     main_edge_id = _strip_turn_bay_suffix(edge_id)
     normalized_intersection_id = _normalize_utdf_node_id(intersection_id)
     suffix = f"_{normalized_intersection_id}"
-    if not main_edge_id.endswith(suffix):
-        return ""
-    return main_edge_id[:-len(suffix)]
+    return main_edge_id[:-len(suffix)] if main_edge_id.endswith(suffix) else ""
 
 
 def _get_dest_node_from_edge_id(edge_id: str, intersection_id: str) -> str:
@@ -85,9 +79,7 @@ def _get_dest_node_from_edge_id(edge_id: str, intersection_id: str) -> str:
     main_edge_id = _strip_turn_bay_suffix(edge_id)
     normalized_intersection_id = _normalize_utdf_node_id(intersection_id)
     prefix = f"{normalized_intersection_id}_"
-    if not main_edge_id.startswith(prefix):
-        return ""
-    return main_edge_id[len(prefix):]
+    return main_edge_id[len(prefix):] if main_edge_id.startswith(prefix) else ""
 
 
 def _is_utdf_movement_name(value: str) -> bool:
@@ -105,9 +97,7 @@ def _sumo_dir_to_utdf_turn(sumo_dir: str | None) -> str:
         return "U"
     if sumo_dir in {"l", "L"}:
         return "L"
-    if sumo_dir in {"r", "R"}:
-        return "R"
-    return str(sumo_dir or "").upper()
+    return "R" if sumo_dir in {"r", "R"} else str(sumo_dir or "").upper()
 
 
 def _build_signal_controller_mapping(
@@ -263,9 +253,7 @@ def _get_movement_info(
     movement_lanes = network_lanes.get(str(intersection_id))
     if movement_lanes is None and str(intersection_id).isdigit():
         movement_lanes = network_lanes.get(int(intersection_id))
-    if movement_lanes is None:
-        return {}
-    return movement_lanes.get(movement_name, {})
+    return {} if movement_lanes is None else movement_lanes.get(movement_name, {})
 
 
 def _movement_is_uncontrolled(movement_info: dict) -> bool:
@@ -416,7 +404,7 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
             if inbound_edge not in inbound_direction_mapping
         ]
         remaining_directions = traffic_directions - set(inbound_direction_mapping.values())
-        flag = len(unmapped_inbound_edges) == 0
+        flag = not unmapped_inbound_edges
 
         if unmapped_inbound_edges and remaining_directions:
             flag, fallback_mapping = direction_mapping(sumo_net,
@@ -494,9 +482,7 @@ def update_sumo_signal_from_utdf(sumo_net_xml: str, utdf_dict_or_fname: dict | s
             return default
 
         value = matching_values[0]
-        if _is_blank(value):
-            return default
-        return str(value)
+        return default if _is_blank(value) else str(value)
 
     def get_signal_type(controller_id: str) -> str:
         """Convert a UTDF Control Type value into a SUMO tlLogic type."""

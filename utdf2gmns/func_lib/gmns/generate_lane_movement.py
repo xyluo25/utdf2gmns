@@ -44,9 +44,7 @@ DEFAULT_LANE_WIDTH_METERS = 3.6
 def _format_number(value: float | int | None) -> float | str:
     """Return a compact number for CSV output while preserving blanks."""
     formatted_value = _format_xml_number(value)
-    if formatted_value is None:
-        return ""
-    return float(formatted_value)
+    return "" if formatted_value is None else float(formatted_value)
 
 
 def _format_csv_list(values: list[int]) -> str:
