@@ -32,7 +32,7 @@ import sumolib  # noqa
 
 def parse_args():
     op = sumolib.options.ArgumentParser(description="net to geojson",
-                                        usage="Usage: " + sys.argv[0] + " -n <net> <options>")
+                                        usage=f"Usage: {sys.argv[0]} -n <net> <options>")
     # input
     op.add_argument("-n", "--net-file", category="input", dest="netFile", required=True, type=op.net_file,
                     help="The .net.xml file to convert")
@@ -108,10 +108,12 @@ if __name__ == "__main__":
 
     geomType = 'lane' if options.lanes else 'edge'
     for id, geometry, width in net.getGeometries(options.lanes, options.junctionCoords):
-        feature = {"type": "Feature"}
-        feature["properties"] = {
-            "element": geomType,
-            "id": id,
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "element": geomType,
+                "id": id,
+            }
         }
         edgeID = net.getLane(id).getEdge().getID() if options.lanes else id
         if edgeID in edgeData:
@@ -132,16 +134,19 @@ if __name__ == "__main__":
 
     if options.junctions:
         for junction in net.getNodes():
-            feature = {"type": "Feature"}
-            feature["properties"] = {
-                "element": 'junction',
-                "id": junction.getID(),
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "element": 'junction',
+                    "id": junction.getID(),
+                }
             }
             feature["geometry"] = shape2json(net, junction.getShape(), options.boundary)
             features.append(feature)
 
-    geojson = {}
-    geojson["type"] = "FeatureCollection"
-    geojson["features"] = features
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
     with open(options.outFile, 'w') as outf:
         outf.write(json.dumps(geojson, sort_keys=True, indent=4, separators=(',', ': ')))

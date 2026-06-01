@@ -38,9 +38,9 @@ def geocoder_geocoding_from_address(address: str) -> tuple:
 
     # get the location
     try:
-        location_lng_lat = list(location_instance["features"][0]["geometry"]["coordinates"])
+        location_lng_lat = tuple(location_instance["features"][0]["geometry"]["coordinates"])
     except Exception:
-        location_lng_lat = [0, 0]
+        location_lng_lat = (0, 0)
 
     return location_lng_lat
 
@@ -75,11 +75,14 @@ def generate_intersection_coordinates(df_intersection: pd.DataFrame,
 
     # Create one column named "reversed_int_name"
     for i in range(len(df)):
-        if "&" in df.loc[i, "intersection_name"]:
-            int_name_lst = df.loc[i, "intersection_name"].split("&")
+        intersection_name_value = df.loc[i, "intersection_name"]
+        intersection_name_str = intersection_name_value if isinstance(intersection_name_value, str) else str(intersection_name_value)
+
+        if "&" in intersection_name_str:
+            int_name_lst = intersection_name_str.split("&")
             df.loc[i, "reversed_int_name"] = int_name_lst[1] + " & " + int_name_lst[0]
         else:
-            df.loc[i, "reversed_int_name"] = df.loc[i, "intersection_name"]
+            df.loc[i, "reversed_int_name"] = intersection_name_str
 
     # create two columns named "full_name_int" and "full_name_int_r" as reverse of "full_name_int"
     df["full_name_int"] = df["intersection_name"] + ", " + df["city_name"]

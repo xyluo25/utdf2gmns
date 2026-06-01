@@ -9,7 +9,6 @@ import os
 from typing import TYPE_CHECKING
 from pathlib import Path
 import pyufunc as pf
-import pandas as pd
 # import keplergl
 # import geopandas as gpd
 # import matplotlib.pyplot as plt
@@ -17,30 +16,31 @@ import pandas as pd
 if TYPE_CHECKING:
     import geopandas as gpd
     import keplergl
-    import matplotlib.pyplot as plt  # for type hinting only
+    from matplotlib.figure import Figure
 
 
 @pf.requires("matplotlib", verbose=False)
 def plot_net_mpl(net: object, *, save_fig: bool = False,
                  fig_name: str = "utdf_network.png",
-                 fig_size: tuple = (12, 12), dpi: int = 600) -> "plt.figure":
+                 fig_size: tuple[float, float] = (12, 12),
+                 dpi: int = 600) -> "Figure":
     """Plot network
 
     Args:
         net (object): the utdf2gmns.UTDF2GMNS object
         save_fig (bool): whether to save the figure. Defaults to False.
         fig_name (str): the name of the figure. Defaults to "utdf_network.png".
-        fig_size (tuple): the size of the figure. Defaults to (12, 12).
+        fig_size (tuple[float, float]): the size of the figure. Defaults to (12, 12).
         dpi (int): the dpi of the figure. Defaults to 600.
 
     Returns:
-        plt.figure: the figure object
+        Figure: the figure object
 
     """
     pf.import_package("matplotlib", verbose=False)  # ensure matplotlib is imported
     import matplotlib.pyplot as plt  # ensure matplotlib is imported
 
-    # crate a fix ans axis
+    # Create a figure and axis.
     is_plot = False
     fig, ax = plt.subplots(figsize=fig_size)
 
@@ -54,12 +54,37 @@ def plot_net_mpl(net: object, *, save_fig: bool = False,
 
     # plot links
     if hasattr(net, 'network_links'):
-        for link in net.network_links:
-            try:
-                x, y = net.network_links[link]['geometry']["exterior"].xy
-            except Exception:
-                x, y = net.network_links[link]['geometry'].coords.xy
-            ax.fill(x, y, color='gray')
+        for link_id, link_info in net.network_links.items():
+            geometry = link_info["geometry"]
+            geometry_type = getattr(geometry, "geom_type", "")
+
+            if isinstance(geometry, dict) and "exterior" in geometry:
+                # Support legacy dict-like polygon geometries.
+                x, y = geometry["exterior"].xy
+                ax.fill(x, y, color='gray')
+            elif geometry_type == "Polygon":
+                x, y = geometry.exterior.xy
+                ax.fill(x, y, color='gray')
+            elif geometry_type == "MultiPolygon":
+                for polygon in geometry.geoms:
+                    x, y = polygon.exterior.xy
+                    ax.fill(x, y, color='gray')
+            elif geometry_type in {"LineString", "LinearRing"}:
+                x, y = geometry.coords.xy
+                ax.plot(x, y, color='gray')
+            elif geometry_type == "MultiLineString":
+                for line in geometry.geoms:
+                    x, y = line.coords.xy
+                    ax.plot(x, y, color='gray')
+            else:
+                try:
+                    x, y = geometry.coords.xy
+                except (AttributeError, NotImplementedError) as error:
+                    raise TypeError(
+                        f"Unsupported link geometry for link {link_id}: "
+                        f"{type(geometry).__name__}"
+                    ) from error
+                ax.plot(x, y, color='gray')
         is_plot = True
 
     if is_plot:
@@ -100,10 +125,11 @@ def plot_net_keplergl(net: object, *, save_fig: bool = False,
     # ensure keplergl is imported
     import keplergl  # ensure keplergl is imported
     import geopandas as gpd  # ensure geopandas is imported
+    import pandas as pd
 
     # check the extension of the fig_name
     if not fig_name.endswith('.html'):
-        fig_name = fig_name + '.html'
+        fig_name += '.html'
 
     # get node and link data
     df_nodes = pd.DataFrame(net.network_nodes.values())

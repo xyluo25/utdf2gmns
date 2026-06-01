@@ -230,6 +230,14 @@ def spanning_phase_timeplans_data(utdf_dict_data: dict, isSimpleCol: bool = True
     df_phase = utdf_dict_data.get("Phases")
     df_timeplans = utdf_dict_data.get("Timeplans")
 
+    # guard for missing required tables
+    if df_phase is None or df_timeplans is None:
+        return pd.DataFrame()
+    if df_phase.empty or df_timeplans.empty:
+        return pd.DataFrame()
+    if "INTID" not in df_phase.columns or "INTID" not in df_timeplans.columns:
+        return pd.DataFrame()
+
     # get unique intersection id
     intersection_id = df_phase["INTID"].unique().tolist()
 
@@ -262,9 +270,8 @@ def spanning_phase_timeplans_data(utdf_dict_data: dict, isSimpleCol: bool = True
                 df_phase_single_id_new += df_phase_single_id_dict.get(col_name)
 
         # span df_timeplans_single_id_dict
-        df_timeplans_col_name_new = df_timeplans_single_id_dict.get(
-            "RECORDNAME")
-        df_timeplans_single_id_new = df_timeplans_single_id_dict.get("DATA")
+        df_timeplans_col_name_new = df_timeplans_single_id_dict.get("RECORDNAME") or []
+        df_timeplans_single_id_new = df_timeplans_single_id_dict.get("DATA") or []
 
         # generate final column name and data for single intersection id
         single_id_col_name_final = [

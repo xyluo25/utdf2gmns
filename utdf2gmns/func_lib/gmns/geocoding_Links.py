@@ -144,7 +144,7 @@ def create_line_polygon_points(lon1: float, lat1: float, lon2: float, lat2: floa
 
 @pf.requires("shapely", verbose=False)
 def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
-                        num_lanes: int, width: float, unit: str = "meters") -> "Polygon":
+                        num_lanes: int, width: float, unit: str = "meters") -> dict:
     """Create a line polygons based on the width of the line and number of lanes.
     The polygon is to the right of the directional line, each lane is exactly next to the previous one.
 
@@ -158,7 +158,7 @@ def create_line_polygon(lon1: float, lat1: float, lon2: float, lat2: float,
         unit (str): the unit of the width. Defaults to "meters".
 
     Returns:
-        Polygon: the line polygon
+        dict: lane polygons indexed by lane id
     """
     pf.import_package("shapely", verbose=False)  # ensure shapely is imported
     from shapely.geometry import Polygon  # ensure Polygon is imported
@@ -229,10 +229,9 @@ def generate_links_polygon(df_link: pd.DataFrame,
         dict: a dictionary of links with keys are link ids and values are link polygon in wkt format
     """
     # extract intersection coordinates from df_node
-    int_coords = {}
-    for int_id in net_node:
-        int_coords[int_id] = [net_node[int_id]["x_coord"],
-                              net_node[int_id]["y_coord"]]
+    int_coords = {int_id: [net_node[int_id]["x_coord"],
+                           net_node[int_id]["y_coord"]]
+                  for int_id in net_node}
 
     # extract link data from df_link
     int_links = cvt_link_df_to_dict(df_link)
@@ -282,9 +281,8 @@ def generate_links(df_link: pd.DataFrame,
     from shapely.geometry import LineString, Point
 
     # extract intersection coordinates from df_node
-    int_coords = {}
-    for int_id in net_node:
-        int_coords[int_id] = [net_node[int_id]["x_coord"], net_node[int_id]["y_coord"]]
+    int_coords = {int_id: [net_node[int_id]["x_coord"], net_node[int_id]["y_coord"]]
+                  for int_id in net_node}
 
     # extract link data from df_link
     int_links = cvt_link_df_to_dict(df_link)
