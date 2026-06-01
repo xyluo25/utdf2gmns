@@ -47,6 +47,7 @@ class TestUTDF2GMNS:
         net._utdf_dict = {}
         net._verbose = False
         net.network_nodes = {"1": {"x_coord": 0.0, "y_coord": 0.0}}
+        net.network_links = {}
         net.network_settings = {}
         net.network_unit = "feet, mph"
 

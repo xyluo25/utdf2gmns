@@ -28,7 +28,7 @@ def sumo2geojson(net_file: str,
                  boundary: bool = False,
                  edge_data_timeline: bool = False,
                  edge_data: str = None,
-                 pt_lines: str = None) -> None:
+                 pt_lines: str = None) -> subprocess.CompletedProcess:
     """ Convert SUMO net file to geojson format, in default exports edge geometries only.
 
     Args:
@@ -81,7 +81,7 @@ def sumo2geojson(net_file: str,
         cmd += f' -p "{pt_lines}"'
 
     # Execute the command using subprocess
-    subprocess.run(cmd, shell=True, check=True)
+    return subprocess.run(cmd, shell=True, check=True)
 
 
 if __name__ == "__main__":
