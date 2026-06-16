@@ -46,15 +46,16 @@ class ReadSUMO:
                     continue
 
                 inbound_edge_id = connection.get('from')
-                if (inbound_edge_id not in inbound_edges) and ':' not in inbound_edge_id:
+                if inbound_edge_id is not None and (inbound_edge_id not in inbound_edges) and ':' not in inbound_edge_id:
                     inbound_edges[inbound_edge_id] = tlLogic_ids
 
-                sumo_signal_info[tlLogic_ids][connection_index] = {}
-                sumo_signal_info[tlLogic_ids][connection_index]['dir'] = connection.get('dir')
-                sumo_signal_info[tlLogic_ids][connection_index]['fromEdge'] = connection.get('from')
-                sumo_signal_info[tlLogic_ids][connection_index]['fromLane'] = connection.get('fromLane')
-                sumo_signal_info[tlLogic_ids][connection_index]['toEdge'] = connection.get('to')
-                sumo_signal_info[tlLogic_ids][connection_index]['toLane'] = connection.get('toLane')
+                sumo_signal_info[tlLogic_ids][connection_index] = {
+                    'dir': connection.get('dir'),
+                    'fromEdge': connection.get('from'),
+                    'fromLane': connection.get('fromLane'),
+                    'toEdge': connection.get('to'),
+                    'toLane': connection.get('toLane'),
+                }
         self.sumo_signal_info = sumo_signal_info
         self.inbound_edges = inbound_edges
 
@@ -119,10 +120,7 @@ class ReadSUMO:
                 if float(max_dur) <= float(min_dur):
                     max_dur = min_dur
 
-                if types == 'actuated':
-                    duration = r['minDur']
-                else:
-                    duration = r['maxDur']
+                duration = r['minDur'] if types == 'actuated' else r['maxDur']
 
                 if float(duration) <= 0:
                     duration = "2.0"
@@ -141,7 +139,7 @@ class ReadSUMO:
 
         for link in linkDur:
             f.write(
-                f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
+                f'\t\t<param key="linkMaxDur:{link}" value="{float(linkDur[link]["linkMaxDur"]):.1f}"/>\n')
             f.write(
                 f'\t\t<param key="linkMinDur:{link}" value="{float(linkDur[link]["linkMinDur"]):.1f}"/>\n')
         f.write('\t</tlLogic>\n')

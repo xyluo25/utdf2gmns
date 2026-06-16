@@ -15,14 +15,6 @@ if "SUMO_HOME" in os.environ:
     sys.path.append(os.path.join(os.environ["SUMO_HOME"], "tools"))
 
 
-def shape2json(net, geometry, isBoundary):
-    lonLatGeometry = [net.convertXY2LonLat(x, y) for x, y in geometry]
-    coords = [[round(x, 6), round(y, 6)] for x, y in lonLatGeometry]
-    if isBoundary:
-        coords = [coords]
-    return {"type": "Polygon" if isBoundary else "LineString", "coordinates": coords}
-
-
 def sumo2geojson(
     net_file: str,
     output_file: str,
@@ -34,7 +26,7 @@ def sumo2geojson(
     edge_data_timeline: bool = False,
     edge_data: str = None,
     pt_lines: str = None,
-) -> None:
+) -> subprocess.CompletedProcess:
     """Convert SUMO net file to geojson format, in default exports edge geometries only.
 
     Args:
@@ -91,9 +83,7 @@ def sumo2geojson(
         cmd += f' -p "{pt_lines}"'
 
     # Execute the command using subprocess
-    execute_ = subprocess.run(cmd, shell=True, check=True)
-
-    return execute_
+    return subprocess.run(cmd, shell=True, check=True)
 
 
 if __name__ == "__main__":

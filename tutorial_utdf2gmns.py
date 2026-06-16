@@ -10,8 +10,8 @@ import utdf2gmns as ug
 
 if __name__ == "__main__":
 
-    region_name = " Tempe, AZ"
-    path_utdf = r"./datasets/data_Tempe_network\UTDF.csv"
+    region_name = " bullhead, AZ"
+    path_utdf = r"./datasets/data_bullhead_seg4/UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
@@ -27,12 +27,12 @@ if __name__ == "__main__":
     net.utdf_to_gmns(incl_utdf=True)
 
     # Step 4 (optional): convert UTDF network to SUMO
-    net.utdf_to_sumo(sim_name="", show_warning_message=True, disable_U_turn=True, sim_duration=7200)
+    net.utdf_to_sumo(sim_name="", show_warning_message=True, sim_duration=3600*3, flow_mode="network")
 
     # Step 5 (optional): visualize the network
-    # # visualize in matplotlib (png) and kepler.gl (html)
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="tempe.png")
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="tempe.html")
+    # visualize in matplotlib (png) and kepler.gl (html)
+    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="bullhead.png")
+    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="bullhead.html")
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()

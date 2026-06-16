@@ -1,50 +1,102 @@
 <?xml version="1.0" ?>
 <routes>
     <vType id="car" type="passenger"/>
-    <flow id="75_73" from="75_39" to="39_73" number="181" type="car" begin="32400" end="39600"/>
-    <flow id="75_106" from="75_39" to="39_106" number="7732" type="car" begin="32400" end="39600"/>
-    <flow id="106_74" from="106_39" to="39_74" number="214" type="car" begin="32400" end="39600"/>
-    <flow id="106_75" from="106_39" to="39_75" number="4961" type="car" begin="32400" end="39600"/>
-    <flow id="73_106" from="73_39" to="39_106" number="182" type="car" begin="32400" end="39600"/>
-    <flow id="73_74" from="73_39" to="39_74" number="122" type="car" begin="32400" end="39600"/>
-    <flow id="74_75" from="74_39" to="39_75" number="580" type="car" begin="32400" end="39600"/>
-    <flow id="74_73" from="74_39" to="39_73" number="140" type="car" begin="32400" end="39600"/>
-    <flow id="78_76" from="78_75" to="75_76" number="67" type="car" begin="32400" end="39600"/>
-    <flow id="78_39" from="78_75" to="75_39" number="649" type="car" begin="32400" end="39600"/>
-    <flow id="39_77" from="39_75" to="75_77" number="41" type="car" begin="32400" end="39600"/>
-    <flow id="39_78" from="39_75" to="75_78" number="541" type="car" begin="32400" end="39600"/>
-    <flow id="76_39" from="76_75" to="75_39" number="5" type="car" begin="32400" end="39600"/>
-    <flow id="76_77" from="76_75" to="75_77" number="18" type="car" begin="32400" end="39600"/>
-    <flow id="77_78" from="77_75" to="75_78" number="17" type="car" begin="32400" end="39600"/>
-    <flow id="77_76" from="77_75" to="75_76" number="14" type="car" begin="32400" end="39600"/>
-    <flow id="80_75" from="80_78" to="78_75" number="1536" type="car" begin="32400" end="39600"/>
-    <flow id="75_79" from="75_78" to="78_79" number="79" type="car" begin="32400" end="39600"/>
-    <flow id="75_80" from="75_78" to="78_80" number="1175" type="car" begin="32400" end="39600"/>
-    <flow id="79_80" from="79_78" to="78_80" number="93" type="car" begin="32400" end="39600"/>
-    <flow id="82_78" from="82_80" to="80_78" number="1063" type="car" begin="32400" end="39600"/>
-    <flow id="78_81" from="78_80" to="80_81" number="48" type="car" begin="32400" end="39600"/>
-    <flow id="78_82" from="78_80" to="80_82" number="712" type="car" begin="32400" end="39600"/>
-    <flow id="81_82" from="81_80" to="80_82" number="27" type="car" begin="32400" end="39600"/>
-    <flow id="84_80" from="84_82" to="82_80" number="1402" type="car" begin="32400" end="39600"/>
-    <flow id="80_83" from="80_82" to="82_83" number="72" type="car" begin="32400" end="39600"/>
-    <flow id="80_84" from="80_82" to="82_84" number="1074" type="car" begin="32400" end="39600"/>
-    <flow id="83_84" from="83_82" to="82_84" number="102" type="car" begin="32400" end="39600"/>
-    <flow id="98_85" from="98_84" to="84_85" number="17" type="car" begin="32400" end="39600"/>
-    <flow id="98_82" from="98_84" to="84_82" number="745" type="car" begin="32400" end="39600"/>
-    <flow id="82_86" from="82_84" to="84_86" number="23" type="car" begin="32400" end="39600"/>
-    <flow id="82_98" from="82_84" to="84_98" number="544" type="car" begin="32400" end="39600"/>
-    <flow id="85_86" from="85_84" to="84_86" number="8" type="car" begin="32400" end="39600"/>
-    <flow id="86_85" from="86_84" to="84_85" number="10" type="car" begin="32400" end="39600"/>
-    <flow id="31_88" from="31_87" to="87_88" number="17" type="car" begin="32400" end="39600"/>
-    <flow id="31_98" from="31_87" to="87_98" number="718" type="car" begin="32400" end="39600"/>
-    <flow id="98_89" from="98_87" to="87_89" number="21" type="car" begin="32400" end="39600"/>
-    <flow id="98_31" from="98_87" to="87_31" number="483" type="car" begin="32400" end="39600"/>
-    <flow id="88_98" from="88_87" to="87_98" number="23" type="car" begin="32400" end="39600"/>
-    <flow id="88_89" from="88_87" to="87_89" number="15" type="car" begin="32400" end="39600"/>
-    <flow id="89_31" from="89_87" to="87_31" number="77" type="car" begin="32400" end="39600"/>
-    <flow id="89_88" from="89_87" to="87_88" number="19" type="car" begin="32400" end="39600"/>
-    <flow id="87_97" from="87_98" to="98_97" number="74" type="car" begin="32400" end="39600"/>
-    <flow id="87_84" from="87_98" to="98_84" number="730" type="car" begin="32400" end="39600"/>
-    <flow id="84_87" from="84_98" to="98_87" number="558" type="car" begin="32400" end="39600"/>
-    <flow id="97_84" from="97_98" to="98_84" number="21" type="car" begin="32400" end="39600"/>
+    <route id="network_route_0" edges="106_39 39_73"/>
+    <flow id="network_flow_0" route="network_route_0" number="58" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_1" edges="106_39 39_74"/>
+    <flow id="network_flow_1" route="network_route_1" number="214" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_2" edges="106_39 39_75 75_76"/>
+    <flow id="network_flow_2" route="network_route_2" number="2" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_3" edges="106_39 39_75 75_77"/>
+    <flow id="network_flow_3" route="network_route_3" number="41" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_4" edges="106_39 39_75 75_78 78_79"/>
+    <flow id="network_flow_4" route="network_route_4" number="79" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_5" edges="106_39 39_75 75_78 78_80 80_81"/>
+    <flow id="network_flow_5" route="network_route_5" number="48" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_6" edges="106_39 39_75 75_78 78_80 80_82 82_83"/>
+    <flow id="network_flow_6" route="network_route_6" number="72" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_7" edges="106_39 39_75 75_78 78_80 80_82 82_84 84_85"/>
+    <flow id="network_flow_7" route="network_route_7" number="6" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_8" edges="106_39 39_75 75_78 78_80 80_82 82_84 84_86"/>
+    <flow id="network_flow_8" route="network_route_8" number="23" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_9" edges="106_39 39_75 75_78 78_80 80_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_9" route="network_route_9" number="288" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_10" edges="106_39 39_75 75_78 78_80 80_82 82_84 84_98 98_97"/>
+    <flow id="network_flow_10" route="network_route_10" number="25" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_11" edges="31_87 87_88"/>
+    <flow id="network_flow_11" route="network_route_11" number="17" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_12" edges="31_87 87_89"/>
+    <flow id="network_flow_12" route="network_route_12" number="28" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_13" edges="31_87 87_98 98_84 84_82 82_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_13" route="network_route_13" number="173" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_14" edges="31_87 87_98 98_84 84_82 82_80 80_78 78_75 75_76"/>
+    <flow id="network_flow_14" route="network_route_14" number="67" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_15" edges="31_87 87_98 98_84 84_82 82_80 80_78 78_75 75_77"/>
+    <flow id="network_flow_15" route="network_route_15" number="22" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_16" edges="31_87 87_98 98_84 84_82 82_80 80_78 78_79"/>
+    <flow id="network_flow_16" route="network_route_16" number="61" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_17" edges="31_87 87_98 98_84 84_82 82_80 80_81"/>
+    <flow id="network_flow_17" route="network_route_17" number="42" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_18" edges="31_87 87_98 98_84 84_82 82_83"/>
+    <flow id="network_flow_18" route="network_route_18" number="56" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_19" edges="31_87 87_98 98_84 84_85"/>
+    <flow id="network_flow_19" route="network_route_19" number="17" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_20" edges="31_87 87_98 98_84 84_86"/>
+    <flow id="network_flow_20" route="network_route_20" number="29" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_21" edges="31_87 87_98 98_97"/>
+    <flow id="network_flow_21" route="network_route_21" number="74" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_22" edges="73_39 39_106"/>
+    <flow id="network_flow_22" route="network_route_22" number="182" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_23" edges="73_39 39_74"/>
+    <flow id="network_flow_23" route="network_route_23" number="122" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_24" edges="74_39 39_106"/>
+    <flow id="network_flow_24" route="network_route_24" number="315" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_25" edges="74_39 39_73"/>
+    <flow id="network_flow_25" route="network_route_25" number="140" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_26" edges="76_75 75_39 39_106"/>
+    <flow id="network_flow_26" route="network_route_26" number="5" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_27" edges="76_75 75_77"/>
+    <flow id="network_flow_27" route="network_route_27" number="18" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_28" edges="76_75 75_78 78_80 80_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_28" route="network_route_28" number="30" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_29" edges="77_75 75_39 39_106"/>
+    <flow id="network_flow_29" route="network_route_29" number="14" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_30" edges="77_75 75_76"/>
+    <flow id="network_flow_30" route="network_route_30" number="14" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_31" edges="77_75 75_78 78_80 80_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_31" route="network_route_31" number="17" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_32" edges="79_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_32" route="network_route_32" number="175" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_33" edges="79_78 78_80 80_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_33" route="network_route_33" number="93" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_34" edges="81_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_34" route="network_route_34" number="52" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_35" edges="81_80 80_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_35" route="network_route_35" number="27" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_36" edges="83_82 82_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_36" route="network_route_36" number="193" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_37" edges="83_82 82_84 84_98 98_87 87_31"/>
+    <flow id="network_flow_37" route="network_route_37" number="28" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_38" edges="83_82 82_84 84_98 98_87 87_88"/>
+    <flow id="network_flow_38" route="network_route_38" number="6" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_39" edges="83_82 82_84 84_98 98_87 87_89"/>
+    <flow id="network_flow_39" route="network_route_39" number="21" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_40" edges="85_84 84_82 82_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_40" route="network_route_40" number="12" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_41" edges="85_84 84_86"/>
+    <flow id="network_flow_41" route="network_route_41" number="8" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_42" edges="86_84 84_82 82_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_42" route="network_route_42" number="23" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_43" edges="86_84 84_85"/>
+    <flow id="network_flow_43" route="network_route_43" number="10" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_44" edges="88_87 87_31"/>
+    <flow id="network_flow_44" route="network_route_44" number="18" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_45" edges="88_87 87_89"/>
+    <flow id="network_flow_45" route="network_route_45" number="15" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_46" edges="89_87 87_31"/>
+    <flow id="network_flow_46" route="network_route_46" number="77" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_47" edges="89_87 87_88"/>
+    <flow id="network_flow_47" route="network_route_47" number="19" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
+    <route id="network_route_48" edges="97_98 98_84 84_82 82_80 80_78 78_75 75_39 39_106"/>
+    <flow id="network_flow_48" route="network_route_48" number="21" type="car" departLane="best" departSpeed="max" departPos="random_free" begin="32400" end="43200"/>
 </routes>

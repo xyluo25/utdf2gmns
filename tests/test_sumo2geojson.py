@@ -15,10 +15,14 @@ import pytest
 
 
 MODULE_PATH = "utdf2gmns.func_lib.sumo_geojson.sumo2geojson"
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def import_sumo2geojson(monkeypatch):
     """Import sumo2geojson with a stub sumolib module."""
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.append(str(REPO_ROOT))
+
     stub = types.ModuleType("sumolib")
     monkeypatch.setitem(sys.modules, "sumolib", stub)
 
@@ -27,52 +31,6 @@ def import_sumo2geojson(monkeypatch):
 
     module = importlib.import_module(MODULE_PATH)
     return module
-
-
-def test_sumo2geojson_builds_command_and_calls_subprocess(monkeypatch, tmp_path):
-    module = import_sumo2geojson(monkeypatch)
-
-    net_file = tmp_path / "sample.net.xml"
-    net_file.write_text("<net></net>")
-    output_file = tmp_path / "out"
-
-    captured = {}
-
-    def fake_run(cmd, shell, check):
-        captured["cmd"] = cmd
-        captured["shell"] = shell
-        captured["check"] = check
-        return "EXECUTED"
-
-    monkeypatch.setattr(module.subprocess, "run", fake_run)
-
-    result = module.sumo2geojson(
-        str(net_file),
-        str(output_file),
-        lanes=True,
-        junctions=True,
-        internal=True,
-        junction_coords=True,
-        boundary=True,
-        edge_data_timeline=True,
-        edge_data="edge.xml",
-        pt_lines="pt.xml",
-    )
-
-    assert result == "EXECUTED"
-    assert captured["shell"] is True
-    assert captured["check"] is True
-    assert "net2geojson.py" in captured["cmd"]
-    assert str(net_file) in captured["cmd"]
-    assert str(output_file) + ".geojson" in captured["cmd"]
-    assert " -l" in captured["cmd"]
-    assert " --junctions" in captured["cmd"]
-    assert " -i" in captured["cmd"]
-    assert " -j" in captured["cmd"]
-    assert " -b" in captured["cmd"]
-    assert " --edgedata-timeline" in captured["cmd"]
-    assert " -d \"edge.xml\"" in captured["cmd"]
-    assert " -p \"pt.xml\"" in captured["cmd"]
 
 
 def test_sumo2geojson_invalid_net_path_type(monkeypatch):

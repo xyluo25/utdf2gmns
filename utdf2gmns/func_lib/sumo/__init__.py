@@ -12,6 +12,7 @@ from .gmns2sumo import (generate_net_link_lookup_dict,
                         generate_sumo_edg_xml,
                         generate_sumo_connection_xml,
                         generate_sumo_flow_xml,
+                        generate_sumo_network_route_xml,
                         generate_sumo_loop_detector_add_xml)
 from .read_sumo import ReadSUMO
 from .remove_end_route_connection import remove_sumo_end_route_connection
@@ -35,6 +36,7 @@ __all__ = [
     "generate_sumo_edg_xml",
     "generate_sumo_connection_xml",
     "generate_sumo_flow_xml",
+    "generate_sumo_network_route_xml",
     "generate_sumo_loop_detector_add_xml",
 
     # read_sumo.py

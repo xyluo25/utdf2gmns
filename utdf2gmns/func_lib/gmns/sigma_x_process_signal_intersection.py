@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 import shutil
+from contextlib import suppress
 
 import pyufunc as pf
 
@@ -79,23 +80,37 @@ def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "",
 
     # Close all existing open Excel instances
     for app in xw.apps:
-        app.quit()
+        with suppress(Exception):
+            app.quit()
 
+    success = False
     try:
         print("  :Running Sigma-X engine to generate each signal intersection...")
         with xw.App(visible=False) as app:
             wb = app.books.open(output_sigma_utdf2gmns)
             # run the macro
             wb.macro("UTDF2GMNS")()
+        success = True
     except Exception as e:
+        success = False
         if verbose:
             print(f"  :Failed to run the macro: {e}")
-
-    # Close all existing open Excel instances
-    os.remove(output_sigma_utdf2gmns)
-    os.remove(output_utdf)
-    os.remove(output_sigma)
+    finally:
+        # Close all existing open Excel instances and remove temp files if they exist
+        for app in xw.apps:
+            with suppress(Exception):
+                app.quit()
+        for p in (output_sigma_utdf2gmns, output_utdf, output_sigma):
+            try:
+                if os.path.exists(p):
+                    os.remove(p)
+            except Exception:
+                if verbose:
+                    print(f"  :Failed to remove temporary file: {p}")
 
     # Step6 delete the sigma-X engine from output directory
-    print("  :Successfully processed each signal intersection from Synchro UTDF file")
-    print(f"  :Please check the output directory: {output_dir}")
+    if success:
+        print("  :Successfully processed each signal intersection from Synchro UTDF file")
+        print(f"  :Please check the output directory: {output_dir}")
+
+    return bool(success)
