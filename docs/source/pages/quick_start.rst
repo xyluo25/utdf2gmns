@@ -8,7 +8,7 @@ Quick Python Example
 .. note::
     - This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
     - The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
-    - The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: `automatic_geociding` or manually ::ref::  `manual_geocoding` as per your requirement.
+    - The example below uses manual geocoding with one known intersection coordinate so it is reproducible without depending on an online geocoding service.
 
 
 Prepare your UTDF file
@@ -22,7 +22,7 @@ Please note that file name does not need to be UTDF.csv, it can be any name.
     import utdf2gmns as ug
 
     region_name = " Bullhead City, AZ"  # Name of the region the UTDF file represents
-    path_utdf = r"datasets\data_bullhead_seg4\UTDF.csv"  # Path to the UTDF file
+    path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"  # Path to the UTDF file
 
 
 Initialize the UTDF2GMNS
@@ -54,12 +54,12 @@ Geocoding Intersections (Use :ref:`Manual Geocoding`)
 
     # Geocode intersections using manual geocoding method
     # This method could provide more accurate geocoding results,
-    # Bit it requires user to provide a single intersection coordinate.
+    # But it requires the user to provide a single intersection coordinate.
 
-    # INTED is the intersection ID in UTDF file
-    # x_coord and x_coord are the coordinates of the intersection in decimal degrees (Latitude and Longitude)
+    # INTID is the intersection ID in the UTDF file.
+    # x_coord and y_coord are longitude and latitude in decimal degrees.
 
-    single_coord={"INTID": "1", "x_coord": -114.568, "x_coord": 35.155}
+    single_coord = {"INTID": "39", "x_coord": -114.59807666698381, "y_coord": 35.02605198650903}
     net.geocode_utdf_intersections(single_intersection_coord=single_coord)
 
 Create GMNS links
@@ -113,8 +113,8 @@ This step will save the following files:
 
     # Convert UTDF network to SUMO format (SUMO files)
 
-    # sumo_name is the name of the SUMO network (default is "utdf_to_sumo")
-    net.utdf_to_sumo(sumo_name="", show_warning_message=True)
+    # sim_name is the name of the SUMO network (default is "utdf_to_sumo")
+    net.utdf_to_sumo(sim_name="", show_warning_message=True)
 
 Visualize the Network
 ~~~~~~~~~~~~~~~~~~~~~
@@ -152,16 +152,14 @@ Quick Example (Full Code)
     if __name__ == "__main__":
 
         region_name = " Bullhead City, AZ"
-        path_utdf = r"datasets\data_bullhead_seg4\UTDF.csv"
+        path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"
 
         # Step 1: Initialize the UTDF2GMNS
         net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=False)
 
-        # Step 2: Geocode intersection
-        #   if user manually provide single intersection coordinate, such as:
-        #   single_coord={"INTID": "1", "x_coord": -114.568, "y_coord": 35.155}
-        #   Intersections will geocoded base on this point (Recommended Method)
-        net.geocode_utdf_intersections(single_intersection_coord={}, dist_threshold=0.01)
+        # Step 2: Geocode intersections from one known intersection coordinate.
+        single_coord = {"INTID": "39", "x_coord": -114.59807666698381, "y_coord": 35.02605198650903}
+        net.geocode_utdf_intersections(single_intersection_coord=single_coord)
 
         # Step 3: create network links: user can generate polygon-link or line-link
         net.create_gmns_links(is_link_polygon=False)
@@ -170,7 +168,7 @@ Quick Example (Full Code)
         net.utdf_to_gmns(incl_utdf=True)
 
         # Step 5 (optional): convert UTDF network to SUMO
-        net.utdf_to_sumo(sumo_name="", show_warning_message=True)
+        net.utdf_to_sumo(sim_name="", show_warning_message=True)
 
         # Step 6 (optional): visualize the network
         # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
@@ -204,7 +202,7 @@ We show to intersection in details:
     :alt: tempe intersection
 
 
-.. _`PyPI`: https://pypi.org/project/osm2gmns
+.. _`PyPI`: https://pypi.org/project/utdf2gmns
 .. _`pip`: https://packaging.python.org/key_projects/#pip
 .. _`pyufunc`: https://github.com/xyluo25/pyufunc
 .. _`traci`: https://github.com/osmcode/pyosmium

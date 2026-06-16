@@ -40,6 +40,18 @@ class TestUTDF2GMNS:
         net = UTDF2GMNS(utdf_filename=self.dir_datasets / "data_Tempe_network" / "UTDF.csv")
         assert net is not None
 
+    def test_user_home_utdf_path_is_expanded(self, monkeypatch, tmp_path):
+        """UTDF paths starting with '~' should resolve to the home directory."""
+        monkeypatch.setenv("HOME", str(tmp_path))
+        monkeypatch.setenv("USERPROFILE", str(tmp_path))
+        monkeypatch.setattr(UTDF2GMNS, "_UTDF2GMNS__load_utdf", lambda self: True)
+
+        net = UTDF2GMNS(utdf_filename="~/Downloads/UTDF.csv")
+
+        expected_path = tmp_path / "Downloads" / "UTDF.csv"
+        assert "~" not in net._utdf_filename
+        assert net._utdf_filename == str(expected_path.resolve()).replace("\\", "/")
+
     def test_utdf_to_sumo_can_skip_loop_detectors(self, tmp_path, monkeypatch):
         """remove_loop_detectors should skip detector files and config references."""
         net = UTDF2GMNS.__new__(UTDF2GMNS)
