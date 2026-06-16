@@ -35,7 +35,7 @@ By running the command above, the utdf2gmns package along with required dependen
 ⚡⚡By the way, the utdf2gmns package will also install the required dependencies automatically when you run functions that require them.
 
 
-.. _`PyPI`: https://pypi.org/project/osm2gmns
+.. _`PyPI`: https://pypi.org/project/utdf2gmns
 .. _`pip`: https://packaging.python.org/key_projects/#pip
 .. _`pyufunc`: https://github.com/xyluo25/pyufunc
 .. _`pandas`: https://pandas.pydata.org/

@@ -72,11 +72,11 @@ This modular design ensures extensibility, allowing users to customize or extend
 
 # Research impact statement
 
-The `utdf2gmns` package has demonstrated significant impact in the field of traffic microsimulation by facilitating the conversion of Synchro UTDF data into SUMO-compatible networks. Evidence of publications utilizing `utdf2gmns` includes studies that benchmark its performance against traditional methods, showcasing improved accuracy and efficiency in traffic flow simulations. Notably, comparative analyses have highlighted the software's ability to automate complex conversion processes, reducing the time and effort required for network preparation.
+The `utdf2gmns` package has demonstrated impact in traffic microsimulation by facilitating the conversion of Synchro UTDF data into SUMO-compatible networks. A peer-reviewed Winter Simulation Conference paper presents `utdf2gmns` as an automated workflow for converting UTDF network representation, signalized intersections, and turning volumes into GMNS-compliant SUMO inputs, and reports case-study validation for complex urban corridors [@luo2025automating]. The same workflow directly addresses the manual Synchro-to-SUMO preparation steps identified in earlier traffic simulation studies [@singh2017impact; @udomsilp2017traffic; @zhang2024integration].
 
-Furthermore, the integration of `utdf2gmns` with the Sigma-X engine has enabled researchers to visualize signalized intersections effectively, providing a valuable tool for urban planners and traffic engineers. The software's open-source nature encourages external adoption and contributions, fostering a collaborative environment for continuous improvement and innovation in traffic simulation methodologies.
+Furthermore, the integration of `utdf2gmns` with the Sigma-X engine supports visualization and auditing of signalized intersections, including phasing diagrams, turning volumes, volume-to-capacity ratios, and control delays [@luo2025automating]. These capabilities provide practical tools for urban planners, traffic engineers, and researchers who need reproducible network preparation rather than project-specific scripts.
 
-`utdf2gmns` has been downloaded more than 30k times from PyPI since its release on July 25, 2023, indicating strong demand and sustained use within the transportation modeling and microsimulation community. Its users span career stages from graduate students to faculty and established researchers, and come from institutions worldwide. This level of adoption and engagement highlights `utdf2gmns` as a widely trusted, community-facing tool that lowers barriers to data preparation and reproducible simulation workflows, and increasingly serves as core infrastructure supporting transportation simulation research.
+`utdf2gmns` has been downloaded more than 36,000 times from PyPI as of June 16, 2026 [@pepy_utdf2gmns], indicating sustained use within the transportation modeling and microsimulation community. This adoption highlights `utdf2gmns` as a community-facing tool that lowers barriers to data preparation and reproducible simulation workflows.
 
 # Hands-On tutorial
 
@@ -87,26 +87,31 @@ import utdf2gmns as ug
 
 if __name__ == "__main__":
 
-    region_name = "Region-name"  # e.g. " Tempe, AZ"
-    path_utdf = "Path-to-UTDF.csv"  # e.g "datasets/data_bullhead_seg4/UTDF.csv
+    region_name = " Bullhead City, AZ"
+    path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
     net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name)
 
-    # Step 2: Geocode intersection
-    net.geocode_utdf_intersections()
+    # Step 2: Geocode intersections from one known intersection coordinate
+    single_coord = {
+        "INTID": "39",
+        "x_coord": -114.59807666698381,
+        "y_coord": 35.02605198650903,
+    }
+    net.geocode_utdf_intersections(single_intersection_coord=single_coord)
 
     # Step 3: convert UTDF network to GMNS format (csv)
     net.utdf_to_gmns(incl_utdf=True)
 
     # Step 4: convert UTDF network to SUMO
-    net.utdf_to_sumo(sim_name="", disable_U_turn=True, sim_duration=7200)
+    net.utdf_to_sumo(sim_name="", remove_U_turn=True, sim_duration=7200)
 
     # Step 5 (optional): visualize the network
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=f"{region_name}.png")
+    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
     net_map = ug.plot_net_keplergl(net,
                                    save_fig=True,
-                                   fig_name=f"{region_name}.html")
+                                   fig_name="Bullhead_City.html")
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()

@@ -69,7 +69,13 @@ class UTDF2GMNS:
 
         - and more...
     """
-    def __init__(self, utdf_filename: str, region_name: str = "", *, verbose: bool = False):
+    def __init__(
+        self,
+        utdf_filename: str | os.PathLike[str],
+        region_name: str = "",
+        *,
+        verbose: bool = False,
+    ) -> None:
         """Initialize UTDF2GMNS class with UTDF file and region name
 
         Args:
@@ -78,7 +84,12 @@ class UTDF2GMNS:
             verbose (bool): whether to printout processing message. Defaults to False.
         """
         print("Initializing UTDF2GMNS...")
-        self._utdf_filename = pf.path2linux(os.path.abspath(utdf_filename))
+        # Expand user-home paths such as "~/Downloads/UTDF.csv" before making
+        # the path absolute. Without this, "~" is treated as a literal folder.
+        expanded_utdf_filename = os.path.expandvars(
+            os.path.expanduser(os.fspath(utdf_filename))
+        )
+        self._utdf_filename = pf.path2linux(os.path.abspath(expanded_utdf_filename))
         self._utdf_region_name = region_name
         self._verbose = verbose
 
