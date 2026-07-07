@@ -7,8 +7,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Geocoding Intersections &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
@@ -16,8 +16,8 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=6f037312"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -111,19 +111,19 @@
 <li><p>The <cite>dist_threshold</cite> parameter can be adjusted based on your needs, default is <strong>0.01 km (10 meters)</strong>.</p></li>
 </ul>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <span class="linenos"> 5</span>
 <span class="hll"><span class="linenos"> 6</span>    <span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
-</span><span class="linenos"> 7</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+</span><span class="linenos"> 7</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="s2">&quot;datasets/data_bullhead_seg4/UTDF.csv&quot;</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>    <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
 <span class="hll"><span class="linenos">10</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span class="linenos">11</span>
 <span class="linenos">12</span>    <span class="c1"># Step 2: Geocode intersection using automatic geocoding method</span>
-<span class="linenos">13</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="linenos">13</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -136,18 +136,18 @@
 <li><p>The dist_threshold parameter will not be used when you provide a single intersection coordinate. The function will use the provided coordinate directly for geocoding.</p></li>
 </ul>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <span class="linenos"> 5</span>
-<span class="hll"><span class="linenos"> 6</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="hll"><span class="linenos"> 6</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="s2">&quot;datasets/data_bullhead_seg4/UTDF.csv&quot;</span>
 </span><span class="linenos"> 7</span>
 <span class="linenos"> 8</span>    <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
 <span class="hll"><span class="linenos"> 9</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span><span class="linenos">10</span>
 <span class="linenos">11</span>    <span class="c1"># Step 2: Example of manual geocoding using the geocode_utdf_intersections method</span>
-<span class="linenos">12</span>    <span class="n">single_coord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.568</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">:</span> <span class="mf">35.155</span><span class="p">}</span>  <span class="c1"># Example coordinates for a known intersection</span>
+<span class="linenos">12</span>    <span class="n">single_coord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;39&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.59807666698381</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">:</span> <span class="mf">35.02605198650903</span><span class="p">}</span>
 <span class="linenos">13</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="n">single_coord</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -165,7 +165,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

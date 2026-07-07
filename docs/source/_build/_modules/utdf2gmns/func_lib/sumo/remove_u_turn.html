@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.sumo.remove_u_turn &mdash; utdf2gmns</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
     <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -50,10 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
@@ -95,13 +95,238 @@
 <span class="sd">##############################################################</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the original edge id when the connection starts from a turn-bay edge.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">edge_id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">edge_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_bay&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">edge_id</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">edge_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reverse_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the reverse edge id for normal UTDF/SUMO edge ids such as 1_2.&quot;&quot;&quot;</span>
+    <span class="n">base_edge_id</span> <span class="o">=</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+    <span class="n">edge_nodes</span> <span class="o">=</span> <span class="n">base_edge_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_nodes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">edge_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">edge_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_u_turn_connection</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when a SUMO connection turns back to the reverse edge.&quot;&quot;&quot;</span>
+    <span class="n">from_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">)</span>
+    <span class="n">to_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;to&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">from_edge</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">to_edge</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">from_edge</span> <span class="o">==</span> <span class="n">to_edge</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">_reverse_edge_id</span><span class="p">(</span><span class="n">from_edge</span><span class="p">)</span> <span class="o">==</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">to_edge</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_connection_pair</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the edge pair used to compare net.xml and con.xml connections.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_internal_edge_id_from_via_lane</span><span class="p">(</span><span class="n">via_lane_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the internal edge id from a SUMO via lane id.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">via_lane_id</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">via_lane_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">via_lane_id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">via_lane_id</span>
+    <span class="k">return</span> <span class="n">via_lane_id</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_default_connection_file</span><span class="p">(</span><span class="n">path_net</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the plain connection file path generated beside a SUMO net file.&quot;&quot;&quot;</span>
+    <span class="n">net_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_net</span><span class="p">)</span>
+    <span class="n">net_file_name</span> <span class="o">=</span> <span class="n">net_file_path</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">net_file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.net.xml&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">net_file_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.con.xml&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">net_file_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="n">net_file_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;.net.xml&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="s2">&quot;.con.xml&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_netconvert_executable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a usable netconvert executable from SUMO or the package bundle.&quot;&quot;&quot;</span>
+    <span class="n">netconvert_executable</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;netconvert&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">netconvert_executable</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">netconvert_executable</span>
+
+    <span class="n">bundled_netconvert</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;engine&quot;</span> <span class="o">/</span> <span class="s2">&quot;netconvert.exe&quot;</span>
+    <span class="k">if</span> <span class="n">bundled_netconvert</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">bundled_netconvert</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rebuild_sumo_net_file</span><span class="p">(</span><span class="n">path_net</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rewrite a compiled SUMO net file so internal connection data stays valid.&quot;&quot;&quot;</span>
+    <span class="n">netconvert_executable</span> <span class="o">=</span> <span class="n">_get_netconvert_executable</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">netconvert_executable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :netconvert was not found, so the SUMO net file could not be rebuilt.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">net_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_net</span><span class="p">)</span>
+    <span class="n">rebuilt_net_file_path</span> <span class="o">=</span> <span class="n">net_file_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">net_file_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.rebuilt.tmp.xml&quot;</span>
+    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">netconvert_executable</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s2">&quot;--sumo-net-file=</span><span class="si">{</span><span class="n">path_net</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="sa">f</span><span class="s2">&quot;--output-file=</span><span class="si">{</span><span class="n">rebuilt_net_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;--no-warnings=true&quot;</span><span class="p">],</span>
+                            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rebuilt_net_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">rebuilt_net_file_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :netconvert failed while rebuilding the SUMO net file.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; :</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">rebuilt_net_file_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">net_file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_explicit_connection_pairs</span><span class="p">(</span><span class="n">path_con</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read edge-to-edge connections that were explicitly written to .con.xml.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path_con</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">connection_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path_con</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">connection_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">connection_tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">connection_file_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">_connection_pair</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connection_tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;connection&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_edge_node_lookup</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+                                                       <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build edge endpoint and node outgoing-edge lookup tables from a SUMO net.&quot;&quot;&quot;</span>
+    <span class="n">edge_nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">outgoing_edges_by_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;edge&quot;</span><span class="p">):</span>
+        <span class="n">edge_id</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">from_node</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">)</span>
+        <span class="n">to_node</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;to&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">edge_id</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">from_node</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">to_node</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">edge_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">edge</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;internal&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">edge_nodes</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">from_node</span><span class="p">,</span> <span class="n">to_node</span><span class="p">)</span>
+        <span class="n">outgoing_edges_by_node</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">from_node</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edge_nodes</span><span class="p">,</span> <span class="n">outgoing_edges_by_node</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_dead_end_u_turn</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span>
+                        <span class="n">edge_nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+                        <span class="n">outgoing_edges_by_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when a U-turn is the only outgoing movement at the end node.&quot;&quot;&quot;</span>
+    <span class="n">from_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">)</span>
+    <span class="n">to_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;to&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">from_edge</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">to_edge</span> <span class="ow">or</span> <span class="n">from_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_nodes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">from_edge_to_node</span> <span class="o">=</span> <span class="n">edge_nodes</span><span class="p">[</span><span class="n">from_edge</span><span class="p">]</span>
+    <span class="n">outgoing_edge_ids</span> <span class="o">=</span> <span class="n">outgoing_edges_by_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_edge_to_node</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+    <span class="n">to_edge_base_id</span> <span class="o">=</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">to_edge</span><span class="p">)</span>
+    <span class="n">has_u_turn_target</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span> <span class="o">==</span> <span class="n">to_edge_base_id</span>
+        <span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">outgoing_edge_ids</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_u_turn_target</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">other_outgoing_edge_ids</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">edge_id</span> <span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">outgoing_edge_ids</span>
+        <span class="k">if</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span> <span class="o">!=</span> <span class="n">to_edge_base_id</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_outgoing_edge_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_dead_end_u_turn_connections_to_remove</span><span class="p">(</span><span class="n">connections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
+                                                <span class="n">explicit_connection_pairs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+                                                <span class="n">edge_nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+                                                <span class="n">outgoing_edges_by_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+                                                <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find synthetic dead-end U-turn connections and their internal via chain.&quot;&quot;&quot;</span>
+    <span class="n">connections_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">removed_connection_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">pending_internal_edge_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">processed_internal_edge_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_u_turn_connection</span><span class="p">(</span><span class="n">connection</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">_connection_pair</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span> <span class="ow">in</span> <span class="n">explicit_connection_pairs</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_dead_end_u_turn</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">edge_nodes</span><span class="p">,</span> <span class="n">outgoing_edges_by_node</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">connections_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="n">removed_connection_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">connection</span><span class="p">))</span>
+        <span class="n">internal_edge_id</span> <span class="o">=</span> <span class="n">_internal_edge_id_from_via_lane</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;via&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">internal_edge_id</span><span class="p">:</span>
+            <span class="n">pending_internal_edge_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">internal_edge_id</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">pending_internal_edge_ids</span><span class="p">:</span>
+        <span class="n">internal_edge_id</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pending_internal_edge_ids</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pending_internal_edge_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">internal_edge_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">internal_edge_id</span> <span class="ow">in</span> <span class="n">processed_internal_edge_ids</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">processed_internal_edge_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">internal_edge_id</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span> <span class="ow">in</span> <span class="n">removed_connection_ids</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">internal_edge_id</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">connections_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+            <span class="n">removed_connection_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">connection</span><span class="p">))</span>
+            <span class="n">next_internal_edge_id</span> <span class="o">=</span> <span class="n">_internal_edge_id_from_via_lane</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;via&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">next_internal_edge_id</span><span class="p">:</span>
+                <span class="n">pending_internal_edge_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">next_internal_edge_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">connections_to_remove</span>
 
 
 <div class="viewcode-block" id="remove_sumo_U_turn">
 <a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.remove_sumo_U_turn.html#utdf2gmns.func_lib.remove_sumo_U_turn">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">remove_sumo_U_turn</span><span class="p">(</span><span class="n">path_net</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Remove U-turns in the SUMO network.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_sumo_U_turn</span><span class="p">(</span><span class="n">path_net</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_con</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">rebuild_net</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove only non-explicit dead-end U-turns in the SUMO network.</span>
+
+<span class="sd">    SUMO can add U-turn connections automatically at dead ends during</span>
+<span class="sd">    ``netconvert``. Those synthetic U-turns should be removed. U-turns that are</span>
+<span class="sd">    explicitly present in the generated ``.con.xml`` file come from UTDF lane</span>
+<span class="sd">    movements and must be preserved.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path_net (str): Path to the SUMO ``.net.xml`` file.</span>
+<span class="sd">        path_con (str | None): Optional path to the generated plain</span>
+<span class="sd">            ``.con.xml`` file. If omitted, the function looks for a file with</span>
+<span class="sd">            the same prefix beside ``path_net``.</span>
+<span class="sd">        rebuild_net (bool): Whether to rewrite the compiled net with</span>
+<span class="sd">            ``netconvert`` after deleting connections. This keeps SUMO&#39;s</span>
+<span class="sd">            internal via-connection tables consistent.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True when the SUMO network file was updated successfully.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># check if path is a string and ends with .net.xml</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_net</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -109,33 +334,34 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path_net</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.net.xml&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;path_net must end with .net.xml&quot;</span><span class="p">)</span>
 
+    <span class="n">path_con</span> <span class="o">=</span> <span class="n">path_con</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">_get_default_connection_file</span><span class="p">(</span><span class="n">path_net</span><span class="p">))</span>
+    <span class="n">explicit_connection_pairs</span> <span class="o">=</span> <span class="n">_read_explicit_connection_pairs</span><span class="p">(</span><span class="n">path_con</span><span class="p">)</span>
+
     <span class="c1"># open the xml file and find all connections</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_net</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
     <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
     <span class="n">connections</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;connection&quot;</span><span class="p">)</span>
+    <span class="n">edge_nodes</span><span class="p">,</span> <span class="n">outgoing_edges_by_node</span> <span class="o">=</span> <span class="n">_build_edge_node_lookup</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
 
-    <span class="c1"># loop through all connections</span>
-    <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-        <span class="n">from_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">)</span>
-        <span class="n">to_edge</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">from_edge</span> <span class="o">==</span> <span class="n">to_edge</span><span class="p">:</span>
-            <span class="c1"># change the dir attribute to &quot;invalid&quot; if the connection is a U-turn&#39;</span>
-            <span class="n">connection</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;invalid&quot;</span>
-            <span class="c1"># directly remove the connection if it is a U-turn</span>
-            <span class="c1"># root.remove(connection)</span>
-
-        <span class="k">if</span> <span class="n">from_edge</span> <span class="o">==</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_edge</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">connection</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;invalid&quot;</span>
-
-            <span class="c1"># directly remove the connection if it is a U-turn</span>
-            <span class="c1"># root.remove(connection)</span>
+    <span class="n">connections_to_remove</span> <span class="o">=</span> <span class="n">_find_dead_end_u_turn_connections_to_remove</span><span class="p">(</span>
+        <span class="n">connections</span><span class="p">,</span>
+        <span class="n">explicit_connection_pairs</span><span class="p">,</span>
+        <span class="n">edge_nodes</span><span class="p">,</span>
+        <span class="n">outgoing_edges_by_node</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections_to_remove</span><span class="p">:</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
 
     <span class="c1"># write the modified xml to the file</span>
     <span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path_net</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :U-turns removed from the SUMO network&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rebuild_net</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_rebuild_sumo_net_file</span><span class="p">(</span><span class="n">path_net</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">connections_to_remove</span><span class="p">)</span><span class="si">}</span><span class="s2"> dead-end U-turn connections removed from the SUMO network&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 </pre></div>
@@ -147,7 +373,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

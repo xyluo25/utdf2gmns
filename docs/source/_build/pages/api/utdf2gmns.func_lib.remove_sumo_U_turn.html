@@ -7,8 +7,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.remove_sumo_U_turn &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
@@ -16,8 +16,8 @@
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=6f037312"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -109,8 +109,31 @@
 <h1>utdf2gmns.func_lib.remove_sumo_U_turn<a class="headerlink" href="#utdf2gmns-func-lib-remove-sumo-u-turn" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="utdf2gmns.func_lib.remove_sumo_U_turn">
-<span class="sig-prename descclassname"><span class="pre">utdf2gmns.func_lib.</span></span><span class="sig-name descname"><span class="pre">remove_sumo_U_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/func_lib/sumo/remove_u_turn.html#remove_sumo_U_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.func_lib.remove_sumo_U_turn" title="Link to this definition"></a></dt>
-<dd><p>Remove U-turns in the SUMO network.</p>
+<span class="sig-prename descclassname"><span class="pre">utdf2gmns.func_lib.</span></span><span class="sig-name descname"><span class="pre">remove_sumo_U_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_con</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebuild_net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/func_lib/sumo/remove_u_turn.html#remove_sumo_U_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.func_lib.remove_sumo_U_turn" title="Link to this definition"></a></dt>
+<dd><p>Remove only non-explicit dead-end U-turns in the SUMO network.</p>
+<p>SUMO can add U-turn connections automatically at dead ends during
+<code class="docutils literal notranslate"><span class="pre">netconvert</span></code>. Those synthetic U-turns should be removed. U-turns that are
+explicitly present in the generated <code class="docutils literal notranslate"><span class="pre">.con.xml</span></code> file come from UTDF lane
+movements and must be preserved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_net</strong> (<em>str</em>) – Path to the SUMO <code class="docutils literal notranslate"><span class="pre">.net.xml</span></code> file.</p></li>
+<li><p><strong>path_con</strong> (<em>str</em><em> | </em><em>None</em>) – Optional path to the generated plain
+<code class="docutils literal notranslate"><span class="pre">.con.xml</span></code> file. If omitted, the function looks for a file with
+the same prefix beside <code class="docutils literal notranslate"><span class="pre">path_net</span></code>.</p></li>
+<li><p><strong>rebuild_net</strong> (<em>bool</em>) – Whether to rewrite the compiled net with
+<code class="docutils literal notranslate"><span class="pre">netconvert</span></code> after deleting connections. This keeps SUMO’s
+internal via-connection tables consistent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True when the SUMO network file was updated successfully.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -126,7 +149,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

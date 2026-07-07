@@ -1,6 +1,6 @@
-pyarrow==18.0.0
+pyarrow
 pandas
-pyufunc>=0.3.7
+pyufunc
 pytest
 geocoder
 coverage
@@ -16,6 +16,6 @@ geopy
 xlwings
 sumolib
 matplotlib
-keplergl
+# keplergl
 sumolib
 

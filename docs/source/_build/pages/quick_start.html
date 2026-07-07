@@ -7,8 +7,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start Guide &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
@@ -16,8 +16,8 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=6f037312"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -115,16 +115,16 @@
 <ul class="simple">
 <li><p>This quick start guide assumes you have a valid UTDF file and the required dependencies installed.</p></li>
 <li><p>The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.</p></li>
-<li><p>The example below uses automatic geocoding by default. You can choose to geocode automatically ::ref:: <cite>automatic_geociding</cite> or manually ::ref::  <cite>manual_geocoding</cite> as per your requirement.</p></li>
+<li><p>The example below uses manual geocoding with one known intersection coordinate so it is reproducible without depending on an online geocoding service.</p></li>
 </ul>
 </div>
 <section id="prepare-your-utdf-file">
 <h3>Prepare your UTDF file<a class="headerlink" href="#prepare-your-utdf-file" title="Link to this heading"></a></h3>
 <p>Please note that file name does not need to be UTDF.csv, it can be any name.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>  <span class="c1"># Name of the region the UTDF file represents</span>
-<span class="linenos">4</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>  <span class="c1"># Path to the UTDF file</span>
+<span class="linenos">4</span><span class="n">path_utdf</span> <span class="o">=</span> <span class="s2">&quot;datasets/data_bullhead_seg4/UTDF.csv&quot;</span>  <span class="c1"># Path to the UTDF file</span>
 </pre></div>
 </div>
 </section>
@@ -148,12 +148,12 @@
 <h3>Geocoding Intersections (Use <a class="reference internal" href="_geocoding_intersection.html#manual-geocoding"><span class="std std-ref">Manual Geocoding</span></a>)<a class="headerlink" href="#geocoding-intersections-use-manual-geocoding" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Geocode intersections using manual geocoding method</span>
 <span class="linenos">2</span><span class="c1"># This method could provide more accurate geocoding results,</span>
-<span class="linenos">3</span><span class="c1"># Bit it requires user to provide a single intersection coordinate.</span>
+<span class="linenos">3</span><span class="c1"># But it requires the user to provide a single intersection coordinate.</span>
 <span class="linenos">4</span>
-<span class="linenos">5</span><span class="c1"># INTED is the intersection ID in UTDF file</span>
-<span class="linenos">6</span><span class="c1"># x_coord and x_coord are the coordinates of the intersection in decimal degrees (Latitude and Longitude)</span>
+<span class="linenos">5</span><span class="c1"># INTID is the intersection ID in the UTDF file.</span>
+<span class="linenos">6</span><span class="c1"># x_coord and y_coord are longitude and latitude in decimal degrees.</span>
 <span class="linenos">7</span>
-<span class="linenos">8</span><span class="n">single_coord</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.568</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="mf">35.155</span><span class="p">}</span>
+<span class="linenos">8</span><span class="n">single_coord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;39&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.59807666698381</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">:</span> <span class="mf">35.02605198650903</span><span class="p">}</span>
 <span class="linenos">9</span><span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="n">single_coord</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -206,8 +206,8 @@ This step will save the following files:</p>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Convert UTDF network to SUMO format (SUMO files)</span>
 <span class="linenos">2</span>
-<span class="linenos">3</span><span class="c1"># sumo_name is the name of the SUMO network (default is &quot;utdf_to_sumo&quot;)</span>
-<span class="linenos">4</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sumo_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">3</span><span class="c1"># sim_name is the name of the SUMO network (default is &quot;utdf_to_sumo&quot;)</span>
+<span class="linenos">4</span><span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sim_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -235,38 +235,36 @@ This step will save the following files:</p>
 </section>
 <section id="quick-example-full-code">
 <h3>Quick Example (Full Code)<a class="headerlink" href="#quick-example-full-code" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">utdf2gmns</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span>    <span class="n">region_name</span> <span class="o">=</span> <span class="s2">&quot; Bullhead City, AZ&quot;</span>
-<span class="linenos"> 7</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
+<span class="linenos"> 7</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="s2">&quot;datasets/data_bullhead_seg4/UTDF.csv&quot;</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>    <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
 <span class="linenos">10</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="n">region_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="linenos">11</span>
-<span class="linenos">12</span>    <span class="c1"># Step 2: Geocode intersection</span>
-<span class="linenos">13</span>    <span class="c1">#   if user manually provide single intersection coordinate, such as:</span>
-<span class="linenos">14</span>    <span class="c1">#   single_coord={&quot;INTID&quot;: &quot;1&quot;, &quot;x_coord&quot;: -114.568, &quot;y_coord&quot;: 35.155}</span>
-<span class="linenos">15</span>    <span class="c1">#   Intersections will geocoded base on this point (Recommended Method)</span>
-<span class="linenos">16</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="p">{},</span> <span class="n">dist_threshold</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
-<span class="linenos">17</span>
-<span class="linenos">18</span>    <span class="c1"># Step 3: create network links: user can generate polygon-link or line-link</span>
-<span class="linenos">19</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">20</span>
-<span class="linenos">21</span>    <span class="c1"># Step 4: convert UTDF network to GMNS format (csv)</span>
-<span class="linenos">22</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">23</span>
-<span class="linenos">24</span>    <span class="c1"># Step 5 (optional): convert UTDF network to SUMO</span>
-<span class="linenos">25</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sumo_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">26</span>
-<span class="linenos">27</span>    <span class="c1"># Step 6 (optional): visualize the network</span>
-<span class="linenos">28</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
-<span class="linenos">29</span>    <span class="c1"># net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=&quot;Bullhead_City.png&quot;)</span>
-<span class="linenos">30</span>
-<span class="linenos">31</span>    <span class="c1"># (Optional) Sigma-X engine generate each signal intersection with visualization</span>
-<span class="linenos">32</span>    <span class="c1"># net.utdf_to_gmns_signal_ints()</span>
+<span class="linenos">12</span>    <span class="c1"># Step 2: Geocode intersections from one known intersection coordinate.</span>
+<span class="linenos">13</span>    <span class="n">single_coord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;INTID&quot;</span><span class="p">:</span> <span class="s2">&quot;39&quot;</span><span class="p">,</span> <span class="s2">&quot;x_coord&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">114.59807666698381</span><span class="p">,</span> <span class="s2">&quot;y_coord&quot;</span><span class="p">:</span> <span class="mf">35.02605198650903</span><span class="p">}</span>
+<span class="linenos">14</span>    <span class="n">net</span><span class="o">.</span><span class="n">geocode_utdf_intersections</span><span class="p">(</span><span class="n">single_intersection_coord</span><span class="o">=</span><span class="n">single_coord</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="c1"># Step 3: create network links: user can generate polygon-link or line-link</span>
+<span class="linenos">17</span>    <span class="n">net</span><span class="o">.</span><span class="n">create_gmns_links</span><span class="p">(</span><span class="n">is_link_polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="c1"># Step 4: convert UTDF network to GMNS format (csv)</span>
+<span class="linenos">20</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns</span><span class="p">(</span><span class="n">incl_utdf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="c1"># Step 5 (optional): convert UTDF network to SUMO</span>
+<span class="linenos">23</span>    <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_sumo</span><span class="p">(</span><span class="n">sim_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">show_warning_message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span>    <span class="c1"># Step 6 (optional): visualize the network</span>
+<span class="linenos">26</span>    <span class="c1"># net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name=&quot;Bullhead_City.html&quot;)</span>
+<span class="linenos">27</span>    <span class="c1"># net_map = ug.plot_net_mpl(net, save_fig=True, fig_name=&quot;Bullhead_City.png&quot;)</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>    <span class="c1"># (Optional) Sigma-X engine generate each signal intersection with visualization</span>
+<span class="linenos">30</span>    <span class="c1"># net.utdf_to_gmns_signal_ints()</span>
 </pre></div>
 </div>
 </section>
@@ -305,7 +303,7 @@ We show to intersection in details:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

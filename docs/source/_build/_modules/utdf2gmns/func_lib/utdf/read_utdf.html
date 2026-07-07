@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.utdf.read_utdf &mdash; utdf2gmns</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
     <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -50,10 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
@@ -322,6 +322,14 @@
     <span class="n">df_phase</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Phases&quot;</span><span class="p">)</span>
     <span class="n">df_timeplans</span> <span class="o">=</span> <span class="n">utdf_dict_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)</span>
 
+    <span class="c1"># guard for missing required tables</span>
+    <span class="k">if</span> <span class="n">df_phase</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">df_timeplans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">df_phase</span><span class="o">.</span><span class="n">empty</span> <span class="ow">or</span> <span class="n">df_timeplans</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;INTID&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df_phase</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="s2">&quot;INTID&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df_timeplans</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
     <span class="c1"># get unique intersection id</span>
     <span class="n">intersection_id</span> <span class="o">=</span> <span class="n">df_phase</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
@@ -354,9 +362,8 @@
                 <span class="n">df_phase_single_id_new</span> <span class="o">+=</span> <span class="n">df_phase_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
 
         <span class="c1"># span df_timeplans_single_id_dict</span>
-        <span class="n">df_timeplans_col_name_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;RECORDNAME&quot;</span><span class="p">)</span>
-        <span class="n">df_timeplans_single_id_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">)</span>
+        <span class="n">df_timeplans_col_name_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">df_timeplans_single_id_new</span> <span class="o">=</span> <span class="n">df_timeplans_single_id_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
 
         <span class="c1"># generate final column name and data for single intersection id</span>
         <span class="n">single_id_col_name_final</span> <span class="o">=</span> <span class="p">[</span>
@@ -418,7 +425,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
