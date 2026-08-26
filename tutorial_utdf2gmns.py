@@ -28,12 +28,20 @@ if __name__ == "__main__":
     net.utdf_to_gmns(incl_utdf=True)
 
     # Step 4 (optional): convert UTDF network to SUMO
-    net.utdf_to_sumo(sim_name="", show_warning_message=True, sim_duration=3600*3, flow_mode="network")
+    # Install SUMO and add its bin directory (which contains netconvert) to the
+    # system PATH before uncommenting this step:
+    # https://sumo.dlr.de/docs/Installing/index.html
+    # net.utdf_to_sumo(
+    #     sim_name="",
+    #     show_warning_message=True,
+    #     sim_duration=3600 * 3,
+    #     flow_mode="network",
+    # )
 
     # Step 5 (optional): visualize the network
     # visualize in matplotlib (png) and kepler.gl (html)
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="bullhead.png")
-    net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="bullhead.html")
+    # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="bullhead.png")
+    # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="bullhead.html")
 
     # Step 6: Sigma-X visualize signalized intersection
-    # net.utdf_to_gmns_signal_ints()
+    net.utdf_to_gmns_signal_ints()

@@ -429,6 +429,11 @@ class UTDF2GMNS:
             bool: whether the conversion is successful.
         """
         print("\nConverting UTDF to SUMO using GMNS standard...")
+        print(
+            "  :SUMO must be installed and its bin directory (which contains "
+            "netconvert) must be available on the system PATH. See "
+            "https://sumo.dlr.de/docs/Installing/index.html."
+        )
         flow_mode_lookup = {
             "intersection": "intersection",
             "intersection-level": "intersection",
