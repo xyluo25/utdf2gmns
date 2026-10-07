@@ -7,17 +7,18 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; utdf2gmns</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=8d35e3f8" />
 
   
     <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6f037312"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=928db92d"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -49,19 +50,31 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">utdf2gmns Navigation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#default-installation">Default installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-dependency-groups">Optional dependency groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extended-data-and-visualization-dependencies">Extended data and visualization dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sigma-x-intersection-visualization">Sigma-X intersection visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-and-documentation">Testing and documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#all-optional-dependencies">All optional dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#editable-source-installation">Editable source installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#external-applications">External applications</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_geocoding_intersection.html">Geocoding Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_sigma_x.html">Sigma-X Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#official-links">Official Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="support.html#reference">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="support.html#acknowledgements">Acknowledgements</a></li>
 </ul>
 
@@ -91,27 +104,85 @@
              
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<p>You can install the latest stable release of the package at <a class="reference external" href="https://pypi.org/project/osm2gmns">PyPI</a> using <a class="reference external" href="https://packaging.python.org/key_projects/#pip">pip</a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<p>utdf2gmns supports Python 3.10 through 3.13.</p>
+</section>
+<section id="default-installation">
+<h2>Default installation<a class="headerlink" href="#default-installation" title="Link to this heading"></a></h2>
+<p>Install the latest stable release from <a class="reference external" href="https://pypi.org/project/utdf2gmns">PyPI</a> with <a class="reference external" href="https://packaging.python.org/key_projects/#pip">pip</a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install utdf2gmns</span>
 </pre></div>
 </div>
-<p>By running the command above, the utdf2gmns package along with required dependency packages
-(<a class="reference external" href="https://pandas.pydata.org/">pandas</a>, <a class="reference external" href="https://github.com/xyluo25/pyufunc">pyufunc</a>) will be installed to your computer (if they have not been installed yet).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can also choose to install packages based on your needs. Below are the optional dependencies that can be included during installation.</p>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">base</span><span class="p">]</span>
+<p>The default installation includes the runtime dependencies declared in
+requirements.txt: geocoder, GeoPandas, geopy, pandas, pyproj, pyufunc,
+Shapely, and sumolib.</p>
+</section>
+<section id="optional-dependency-groups">
+<h2>Optional dependency groups<a class="headerlink" href="#optional-dependency-groups" title="Link to this heading"></a></h2>
+<p>Quote package specifications containing square brackets so the command works
+consistently across shells.</p>
+<section id="extended-data-and-visualization-dependencies">
+<h3>Extended data and visualization dependencies<a class="headerlink" href="#extended-data-and-visualization-dependencies" title="Link to this heading"></a></h3>
+<p>The base extra installs the complete optional data and visualization stack,
+including Matplotlib and Kepler.gl:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install &quot;utdf2gmns[base]&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>  <span class="c1"># including test dependencies (pytest, coverage)</span>
+<p>The latest stable Kepler.gl release still imports pkg_resources, which
+Setuptools 82 removed. The base extra therefore applies a temporary
+Setuptools version constraint automatically; no separate compatibility
+command is required.</p>
+</section>
+<section id="sigma-x-intersection-visualization">
+<h3>Sigma-X intersection visualization<a class="headerlink" href="#sigma-x-intersection-visualization" title="Link to this heading"></a></h3>
+<p>Install the Sigma-X Python dependency with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install &quot;utdf2gmns[sigma-x]&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">utdf2gmns</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>  <span class="c1"># including all optional dependencies, including test dependencies and visualization dependencies (matplotlib, keplergl)</span>
+<p>Sigma-X requires desktop Microsoft Excel and is supported only on Windows and
+macOS. The platform marker intentionally skips xlwings on Linux. Calling the
+Sigma-X workflow on an unsupported platform prints an explanatory message and
+returns False.</p>
+</section>
+<section id="testing-and-documentation">
+<h3>Testing and documentation<a class="headerlink" href="#testing-and-documentation" title="Link to this heading"></a></h3>
+<p>Install the test and documentation tools with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install &quot;utdf2gmns[test]&quot;</span>
 </pre></div>
 </div>
-<p>⚡⚡If you don’t know what’s best for your, the default <a class="reference internal" href="#installation"><span class="std std-ref">Installation</span></a> should work for most users.</p>
-<p>⚡⚡By the way, the utdf2gmns package will also install the required dependencies automatically when you run functions that require them.</p>
+</section>
+<section id="all-optional-dependencies">
+<h3>All optional dependencies<a class="headerlink" href="#all-optional-dependencies" title="Link to this heading"></a></h3>
+<p>Install all package extras with:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install &quot;utdf2gmns[all]&quot;</span>
+</pre></div>
+</div>
+<p>The all extra combines base, sigma-x, and test. Platform markers still apply,
+so Linux does not install the desktop Excel integration.</p>
+</section>
+</section>
+<section id="editable-source-installation">
+<h2>Editable source installation<a class="headerlink" href="#editable-source-installation" title="Link to this heading"></a></h2>
+<p>From a repository checkout, install the project and the desired extras in
+editable mode:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install -e .</span>
+<span class="go">python -m pip install -e &quot;.[base]&quot;</span>
+<span class="go">python -m pip install -e &quot;.[sigma-x]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="external-applications">
+<h2>External applications<a class="headerlink" href="#external-applications" title="Link to this heading"></a></h2>
+<p>Some optional workflows require applications that pip does not install:</p>
+<ul class="simple">
+<li><p><strong>SUMO conversion:</strong> Install SUMO separately and add its bin directory,
+containing the netconvert executable, to the system PATH before calling
+the SUMO conversion workflow.</p></li>
+<li><p><strong>Sigma-X visualization:</strong> Install desktop Microsoft Excel and use Windows
+or macOS.</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -125,7 +196,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

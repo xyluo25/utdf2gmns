@@ -56,18 +56,15 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 class UTDF2GMNS:
     """UTDF2GMNS performs the data conversion from UTDF to different formats.
+
     The class includes functions such as:
-        - geocode_utdf_intersections: geocode intersections
 
-        - create_signal_control: signalize intersections
-
-        - create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases
-
-        - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory
-
-        - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory
-
-        - and more...
+    - geocode_utdf_intersections: Geocode intersections.
+    - create_signal_control: Signalize intersections.
+    - create_gmns_links: Create a network from UTDF nodes, links, lanes,
+      and phases.
+    - utdf_to_gmns: Convert UTDF data to GMNS data and save it.
+    - utdf_to_sumo: Convert UTDF data to SUMO data and save it.
     """
     def __init__(
         self,

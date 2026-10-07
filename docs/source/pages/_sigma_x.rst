@@ -1,29 +1,34 @@
 
 ======================================
-Sigma-x Engine Visualize Intersections
+Sigma-X Engine Visualize Intersections
 ======================================
 
-`utdf2gmns` package provides a method to visualize intersections using the Sigma-x engine. This is an optional step and can be used to generate a visual representation of the intersections.
+utdf2gmns provides an optional method to generate Sigma-X visualizations for
+signalized intersections. The workflow requires desktop Microsoft Excel and
+is supported only on Windows and macOS.
+
+Install the optional dependency before running the workflow:
+
+.. code-block:: console
+
+    python -m pip install "utdf2gmns[sigma-x]"
+
+Then run:
 
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 6, 9
 
     import utdf2gmns as ug
 
+    if __name__ == "__main__":
+        path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"
 
-        if __name__ == "__main__":
+        net = ug.UTDF2GMNS(utdf_filename=path_utdf, verbose=False)
+        success = net.utdf_to_gmns_signal_ints()
 
-            path_utdf = r"datasets\data_bullhead_seg4\UTDF.csv"
-
-            # Step 1: Initialize the UTDF2GMNS
-            net = ug.UTDF2GMNS(utdf_filename=path_utdf, verbose=False)
-
-            net.utdf_to_gmns_signal_ints()  # This will generate the Sigma-x engine visualization for intersections
-
-This optional feature requires desktop Microsoft Excel and is supported only on Windows and macOS. Install its dependency with ``python -m pip install "utdf2gmns[sigma-x]"`` before running it. On unsupported platforms, the method prints an explanatory message and returns ``False`` without launching Excel.
-
-This will save a visualization file for each intersection in the current working directory. You can open these files to perform additional analysis.
+By default, generated files are saved in an utdf_to_gmns_signal_ints
+subdirectory beside the input UTDF file. On unsupported platforms, the method
+does not launch Excel and returns False.
 
 
 Signalized Intersection Overview Chart

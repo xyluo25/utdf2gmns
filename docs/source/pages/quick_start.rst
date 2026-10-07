@@ -9,6 +9,7 @@ Quick Python Example
     - This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
     - The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
     - The example below uses manual geocoding with one known intersection coordinate so it is reproducible without depending on an online geocoding service.
+    - See :ref:`Installation` for optional visualization dependencies and external application requirements.
 
 
 Prepare your UTDF file
@@ -77,16 +78,16 @@ Save GMNS Network (:ref:`UTDF To GMNS Format`)
 
 This step will convert the UTDF network to GMNS format and save it to CSV and json files.
 Specifically, it will save the following files:
-    * **nodes.csv**: Contains information about the nodes in the network.
-    * **links.csv**: Contains information about the links in the network.
-    * **signal.json**: Contains information about the signals of each signalized intersection in the network.
 
-    * **utdf_network.csv**: Contains information from the UTDF file regarding the network configuration and settings.
-    * **utdf_nodes.csv**: Contains information from the UTDF file regarding the nodes in the network.
-    * **utdf_links.csv**: Contains information from the UTDF file regarding the links in the network.
-    * **utdf_lanes.csv**: Contains information from the UTDF file regarding the lanes in the network.
-    * **utdf_phases.csv**: Contains information from the UTDF file regarding the phases in the network.
-    * **utdf_timeplans.csv**: Contains information from the UTDF file regarding the time plans in the network.
+* **nodes.csv**: Contains information about the nodes in the network.
+* **links.csv**: Contains information about the links in the network.
+* **signal.json**: Contains information about the signals of each signalized intersection in the network.
+* **utdf_network.csv**: Contains information from the UTDF file regarding the network configuration and settings.
+* **utdf_nodes.csv**: Contains information from the UTDF file regarding the nodes in the network.
+* **utdf_links.csv**: Contains information from the UTDF file regarding the links in the network.
+* **utdf_lanes.csv**: Contains information from the UTDF file regarding the lanes in the network.
+* **utdf_phases.csv**: Contains information from the UTDF file regarding the phases in the network.
+* **utdf_timeplans.csv**: Contains information from the UTDF file regarding the time plans in the network.
 
 .. code-block:: python
     :linenos:
@@ -99,14 +100,21 @@ Convert UTDF Network to SUMO (:ref:`GMNS To SUMO Format`)
 
 Since we have already converted the UTDF network to GMNS format, we can now convert it to SUMO format.
 This step will save the following files:
-    * **nod.xml**: Contains information about the nodes in the SUMO network.
-    * **edg.xml**: Contains information about the edges in the SUMO network.
-    * **con.xml**: Contains information about the connections in the SUMO network.
-    * **flow.xml**: Contains information about the flow in the SUMO network.
-    * **add.xml**: contains loop detectors information.
-    * **net.xml**: Contains information about the network in the SUMO network.
-    * **rou.xml**: Contains information about the routes in the SUMO network.
-    * **.sumocfg**: Contains configuration information for the SUMO network.
+
+* **nod.xml**: Contains information about the nodes in the SUMO network.
+* **edg.xml**: Contains information about the edges in the SUMO network.
+* **con.xml**: Contains information about the connections in the SUMO network.
+* **flow.xml**: Contains information about the flow in the SUMO network.
+* **add.xml**: Contains loop detector information.
+* **net.xml**: Contains information about the network in the SUMO network.
+* **rou.xml**: Contains information about the routes in the SUMO network.
+* **.sumocfg**: Contains configuration information for the SUMO network.
+
+.. important::
+
+    This step is optional. Install SUMO separately and add its bin directory,
+    containing the netconvert executable, to the system PATH before running
+    the conversion.
 
 .. code-block:: python
     :linenos:
@@ -119,9 +127,13 @@ This step will save the following files:
 Visualize the Network
 ~~~~~~~~~~~~~~~~~~~~~
 
-We provide two methods to visualize the network: Keplergl and Matplotlib.
-    * Keplergl: A powerful tool for visualizing large-scale geospatial data.
-    * Matplotlib: A widely used library for creating static, animated, and interactive visualizations in Python.
+We provide two methods to visualize the network: Kepler.gl and Matplotlib.
+
+Install the base extra described in :ref:`Installation` before using these
+optional visualization methods.
+
+* Kepler.gl: A tool for visualizing large-scale geospatial data.
+* Matplotlib: A library for creating static, animated, and interactive visualizations.
 
 .. code-block:: python
     :linenos:
@@ -168,14 +180,16 @@ Quick Example (Full Code)
         # Step 4: convert UTDF network to GMNS format (csv)
         net.utdf_to_gmns(incl_utdf=True)
 
-        # Step 5 (optional): convert UTDF network to SUMO
-        net.utdf_to_sumo(sim_name="", show_warning_message=True)
+        # Step 5 (optional): convert UTDF network to SUMO.
+        # Install SUMO and add its bin directory to PATH before uncommenting.
+        # net.utdf_to_sumo(sim_name="", show_warning_message=True)
 
         # Step 6 (optional): visualize the network
         # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="Bullhead_City.html")
         # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
 
-        # (Optional) Sigma-X engine generate each signal intersection with visualization
+        # Step 7 (optional, Windows/macOS only): generate Sigma-X visualizations.
+        # Install desktop Excel and "utdf2gmns[sigma-x]" first.
         # net.utdf_to_gmns_signal_ints()
 
 Design Framework
@@ -193,10 +207,11 @@ Illustration of Selected Intersection
 
 We select one intersection from the Tempe City, AZ, the name if intersection is: University Dr & Mill Ave.
 We show to intersection in details:
-    * Google street view
-    * Google 3D view
-    * GMNS view (Keplergl or Matplotlib, ect...)
-    * SUMO view
+
+* Google street view
+* Google 3D view
+* GMNS view (Kepler.gl or Matplotlib)
+* SUMO view
 
 .. image:: ../_static/plot_university_mill_framework.png
     :width: 100%

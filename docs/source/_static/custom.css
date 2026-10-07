@@ -1,0 +1,26 @@
+.rst-content div.copyable-citation {
+    max-width: 100%;
+}
+
+.rst-content div.copyable-citation pre {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    overflow-wrap: normal;
+    scrollbar-color: #808080 #e6e6e6;
+    scrollbar-gutter: stable;
+    white-space: pre;
+    word-break: normal;
+}
+
+.rst-content div.copyable-citation pre::-webkit-scrollbar {
+    height: 12px;
+}
+
+.rst-content div.copyable-citation pre::-webkit-scrollbar-track {
+    background: #e6e6e6;
+}
+
+.rst-content div.copyable-citation pre::-webkit-scrollbar-thumb {
+    background: #808080;
+    border-radius: 6px;
+}
