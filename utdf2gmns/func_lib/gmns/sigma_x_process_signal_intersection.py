@@ -6,19 +6,17 @@
 ##############################################################
 '''
 import os
-from pathlib import Path
-from typing import TYPE_CHECKING
 import shutil
+import sys
 from contextlib import suppress
+from pathlib import Path
 
 import pyufunc as pf
 
-if TYPE_CHECKING:
-    import xlwings as xw
 
-
-@pf.requires("xlwings", verbose=False)
-def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "", verbose: bool = False) -> bool:
+def cvt_utdf_to_signal_intersection(
+    utdf_filename: str | Path, *, output_dir: str = "", verbose: bool = False
+) -> bool:
     """Utilize sigma-X engine to process each signal intersection from Synchro UTDF file
     And save each signal intersection into a separate GMNS file.
 
@@ -37,14 +35,12 @@ def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "",
 
     Raises:
         TypeError: If the input file is not a string or Path
-        FileNotFoundError: If the input file does not exist
+        FileNotFoundError: If the input file does not exist.
+        ImportError: If xlwings is unavailable on a supported platform.
 
     Returns:
         bool: True if success, False otherwise
     """
-    pf.import_package("xlwings", verbose=False)  # ensure xlwings is imported
-    import xlwings as xw  # ensure xlwings is imported
-
     # TDD Test-Driven Development
     if not isinstance(utdf_filename, (str, Path)):
         raise TypeError(f"  :utdf_filename should be str or Path, but got {type(utdf_filename)}")
@@ -54,6 +50,21 @@ def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "",
     if not os.path.exists(utdf_filename):
         raise FileNotFoundError(f"  :{utdf_filename} does not exist")
     input_utdf_dir = pf.path2linux(Path(utdf_filename).parent)
+
+    if sys.platform not in {"win32", "darwin"}:
+        print(
+            "  :Sigma-X visualization requires desktop Microsoft Excel and is "
+            "supported only on Windows and macOS; skipping this optional step."
+        )
+        return False
+
+    try:
+        import xlwings as xw
+    except ImportError as exc:
+        raise ImportError(
+            "xlwings>=0.33.9 is required for Sigma-X visualization. "
+            "Install it with 'python -m pip install \"utdf2gmns[sigma-x]\"'."
+        ) from exc
 
     # Step2 crate output directory to store the results
     output_dir = pf.path2linux(Path(input_utdf_dir) / "utdf_to_gmns_signal_ints")
@@ -78,13 +89,13 @@ def cvt_utdf_to_signal_intersection(utdf_filename: str, *, output_dir: str = "",
     output_sigma_utdf2gmns = pf.path2linux(Path(output_dir) / "UTDF2GMNS.xlsm")
     output_sigma = pf.path2linux(Path(output_dir) / "Sigma-X_UTDF.xlsm")
 
-    # Close all existing open Excel instances
-    for app in xw.apps:
-        with suppress(Exception):
-            app.quit()
-
     success = False
     try:
+        # Close all existing open Excel instances
+        for app in xw.apps:
+            with suppress(Exception):
+                app.quit()
+
         print("  :Running Sigma-X engine to generate each signal intersection...")
         with xw.App(visible=False) as app:
             wb = app.books.open(output_sigma_utdf2gmns)

@@ -21,7 +21,9 @@ Sigma-x Engine Visualize Intersections
 
             net.utdf_to_gmns_signal_ints()  # This will generate the Sigma-x engine visualization for intersections
 
-This will save visualization file for each intersection in the current working directory. You can open these files to perform additional analysis.
+This optional feature requires desktop Microsoft Excel and is supported only on Windows and macOS. Install its dependency with ``python -m pip install "utdf2gmns[sigma-x]"`` before running it. On unsupported platforms, the method prints an explanatory message and returns ``False`` without launching Excel.
+
+This will save a visualization file for each intersection in the current working directory. You can open these files to perform additional analysis.
 
 
 Signalized Intersection Overview Chart

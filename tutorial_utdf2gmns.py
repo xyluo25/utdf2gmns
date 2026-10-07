@@ -43,5 +43,8 @@ if __name__ == "__main__":
     # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="bullhead.png")
     # net_map = ug.plot_net_keplergl(net, save_fig=True, fig_name="bullhead.html")
 
-    # Step 6: Sigma-X visualize signalized intersection
-    net.utdf_to_gmns_signal_ints()
+    # Step 6 (optional, Windows/macOS only): visualize signalized intersections
+    # with Sigma-X. Install desktop Microsoft Excel and the Sigma-X dependency
+    # before uncommenting this step:
+    # python -m pip install -e ".[sigma-x]"
+    # net.utdf_to_gmns_signal_ints()

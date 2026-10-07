@@ -304,9 +304,11 @@ class UTDF2GMNS:
         print("  :Processing each signal intersection, please wait...")
         print(f"  :Total time for {len(self.network_int_ids_signalized)} intersections"
               f" might be: {time_unit_converter(total_seconds, 's', 'm', False):.2f} minutes...")
-        cvt_utdf_to_signal_intersection(
-            self._utdf_filename, verbose=self._verbose)
-        return True
+        return cvt_utdf_to_signal_intersection(
+            self._utdf_filename,
+            output_dir=output_dir,
+            verbose=self._verbose,
+        )
 
     def utdf_to_gmns(self, *, output_dir: str = "", incl_utdf: bool = True, is_link_polygon: bool = False) -> bool:
         """Convert UTDF data to GMNS data and save to the output directory

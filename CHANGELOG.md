@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - 2026-10-07
+
+### Fixed
+
+- Constrain Setuptools below version 82 when installing the optional Kepler.gl visualization dependencies because the latest stable Kepler.gl release still imports the removed `pkg_resources` module.
+
+## Unreleased - 2026-10-06
+
+### Fixed
+
+- Treat Sigma-X visualization as an explicit Windows/macOS-only optional feature, skip it cleanly on Linux, and report its actual success status instead of raising an xlwings interactive-mode error.
+- Keep the platform-specific xlwings dependency out of the general `base` extra and leave the Sigma-X tutorial step disabled by default.
+
 ## Unreleased - 2026-08-26
 
 ### Fixed

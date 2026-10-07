@@ -70,7 +70,7 @@ net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=Fal
 
 ### Signalized Intersection Calculation and Visualization (Optional)
 
-This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)
+This optional step generates and visualizes each signalized intersection using the Sigma-X engine. It requires desktop Microsoft Excel and is supported only on Windows and macOS. Install its dependency with `python -m pip install "utdf2gmns[sigma-x]"`. For large networks, this step may take a long time. (The code will print out total time taken for this step.)
 
 ```python
 # Generate signalized intersections and visualize them using Sigma-X engine
