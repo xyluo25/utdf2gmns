@@ -33,7 +33,7 @@ The project is licensed under MIT license.
 Reference
 =========
 
-.. [XiangyongLuo] Luo, Xiangyong, Yiran Zhang, Guanhao Xu, Wan Li, Ross Wang, and Xuesong Simon Zhou. "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO." In 2025 Winter Simulation Conference (WSC), pp. 2320-2331. IEEE, 2025.
+.. [XiangyongLuo] Luo, Xiangyong, Yiran Zhang, Guanhao Xu, Wan Li, Ross Wang, and Xuesong Simon Zhou. "Automating Traffic Microsimulation from SYNCHRO UTDF to SUMO." In 2025 Winter Simulation Conference (WSC), pp. 2320-2331. IEEE, 2025. (https://ieeexplore.ieee.org/abstract/document/11338949)
 
 
 ================

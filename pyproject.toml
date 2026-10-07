@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "utdf2gmns"
-version = "1.2.4"
+version = "1.2.5"
 description = "Convert Synchro UTDF data format to other formats, such as GMNS, SUMO, etc..."
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
@@ -53,14 +53,14 @@ dependencies = {file = ["requirements.txt"]}
 # optional-dependencies = {file = ["requirements_dev.txt"]}
 
 [tool.setuptools]
-py-modules = []
-package-data = {'utdf2gmns' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_data" = ['*.xls']}
 
-# [tool.setuptools.packages.find]
-# where = ["utdf2gmns"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["utdf2gmns", "utdf2gmns.*"]
+namespaces = false
 
-# [tool.setuptools.package-data]
-# utdf2gmns = ['*.txt', '*.xls', '*.xlsx', '*.csv']
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.xls", "*.xlsx", "*.xlsm", "*.csv"]
 
 [[tool.uv.index]]
 name = "testpypi"

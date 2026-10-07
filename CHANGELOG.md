@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Restore explicit Setuptools package discovery and package-data rules so distributions include the `utdf2gmns` Python sources and Sigma-X workbook/CSV assets while excluding repository tests.
 - Constrain Setuptools below version 82 when installing the optional Kepler.gl visualization dependencies because the latest stable Kepler.gl release still imports the removed `pkg_resources` module.
 - Fix reStructuredText list and docstring indentation and exclude generated documentation output from Sphinx source discovery.
 - Align Read the Docs installation and optional-workflow guidance with the current package extras, platform support, and external application requirements.
