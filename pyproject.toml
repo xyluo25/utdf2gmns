@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "utdf2gmns"
 version = "1.2.5"
-description = "Convert Synchro UTDF data format to other formats, such as GMNS, SUMO, etc..."
+description = "Transform Synchro UTDF files into GMNS, SUMO, and other transportation formats with an easy-to-use Python toolkit for traffic modeling and simulation."
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
 ]
