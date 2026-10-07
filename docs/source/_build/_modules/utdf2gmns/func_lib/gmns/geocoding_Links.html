@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.gmns.geocoding_Links &mdash; utdf2gmns</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
     <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -50,10 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
@@ -233,7 +233,7 @@
 
 <span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_line_polygon</span><span class="p">(</span><span class="n">lon1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lon2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lat2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                        <span class="n">num_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">:</span>
+                        <span class="n">num_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;meters&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a line polygons based on the width of the line and number of lanes.</span>
 <span class="sd">    The polygon is to the right of the directional line, each lane is exactly next to the previous one.</span>
 
@@ -247,7 +247,7 @@
 <span class="sd">        unit (str): the unit of the width. Defaults to &quot;meters&quot;.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Polygon: the line polygon</span>
+<span class="sd">        dict: lane polygons indexed by lane id</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;shapely&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure shapely is imported</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>  <span class="c1"># ensure Polygon is imported</span>
@@ -321,10 +321,9 @@
 <span class="sd">        dict: a dictionary of links with keys are link ids and values are link polygon in wkt format</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># extract intersection coordinates from df_node</span>
-    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">:</span>
-        <span class="n">int_coords</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span>
-                              <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{</span><span class="n">int_id</span><span class="p">:</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span>
+                           <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+                  <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">}</span>
 
     <span class="c1"># extract link data from df_link</span>
     <span class="n">int_links</span> <span class="o">=</span> <span class="n">cvt_link_df_to_dict</span><span class="p">(</span><span class="n">df_link</span><span class="p">)</span>
@@ -374,9 +373,8 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span>
 
     <span class="c1"># extract intersection coordinates from df_node</span>
-    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">:</span>
-        <span class="n">int_coords</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span> <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+    <span class="n">int_coords</span> <span class="o">=</span> <span class="p">{</span><span class="n">int_id</span><span class="p">:</span> <span class="p">[</span><span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;x_coord&quot;</span><span class="p">],</span> <span class="n">net_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="s2">&quot;y_coord&quot;</span><span class="p">]]</span>
+                  <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">net_node</span><span class="p">}</span>
 
     <span class="c1"># extract link data from df_link</span>
     <span class="n">int_links</span> <span class="o">=</span> <span class="n">cvt_link_df_to_dict</span><span class="p">(</span><span class="n">df_link</span><span class="p">)</span>
@@ -430,7 +428,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

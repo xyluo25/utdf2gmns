@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>utdf2gmns.func_lib.sumo.update_sumo_signal_from_utdf &mdash; utdf2gmns</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
   
     <link rel="shortcut icon" href="../../../../_static/utdf2gmns.ico"/>
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -50,10 +50,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/quick_start.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_read_utdf.html">Read UTDF Format Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_geocoding_intersection.html">Geocoding Intersections</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/_gmns2sumo.html">GMNS To SUMO Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html">Citation Request</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../pages/support.html#official-links">Official Links</a></li>
@@ -104,6 +104,301 @@
                                                     <span class="n">create_SignalTimingPlan</span><span class="p">,</span>
                                                     <span class="n">process_pedestrian_crossing</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.read_utdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_UTDF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utdf2gmns.func_lib.utdf.cvt_utdf_lane_df_to_dict</span><span class="w"> </span><span class="kn">import</span> <span class="n">cvt_lane_df_to_dict</span>
+
+
+<span class="n">BLANK_TEXT_VALUES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;nan&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_blank</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when a UTDF cell does not contain useful data.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">BLANK_TEXT_VALUES</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a stable UTDF node id string for edge-id matching.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_is_blank</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">node_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">numeric_node_id</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node_id</span>
+
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">numeric_node_id</span><span class="p">))</span> <span class="k">if</span> <span class="n">numeric_node_id</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span> <span class="k">else</span> <span class="n">node_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_node_sort_key</span><span class="p">(</span><span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort node ids numerically when possible and lexically otherwise.&quot;&quot;&quot;</span>
+    <span class="n">normalized_node_id</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">normalized_node_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="n">normalized_node_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_float</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract a numeric UTDF cell value for simple signal decisions.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_is_blank</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the main edge id for a SUMO turn-bay edge id.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">edge_id</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">edge_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_bay&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">edge_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_up_node_from_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the upstream UTDF node id from a generated SUMO inbound edge id.&quot;&quot;&quot;</span>
+    <span class="n">main_edge_id</span> <span class="o">=</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+    <span class="n">normalized_intersection_id</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">)</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">normalized_intersection_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">main_edge_id</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span> <span class="k">if</span> <span class="n">main_edge_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_dest_node_from_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the downstream UTDF node id from a generated SUMO outbound edge id.&quot;&quot;&quot;</span>
+    <span class="n">main_edge_id</span> <span class="o">=</span> <span class="n">_strip_turn_bay_suffix</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)</span>
+    <span class="n">normalized_intersection_id</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">normalized_intersection_id</span><span class="si">}</span><span class="s2">_&quot;</span>
+    <span class="k">return</span> <span class="n">main_edge_id</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">):]</span> <span class="k">if</span> <span class="n">main_edge_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_utdf_movement_name</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when text looks like a UTDF vehicle movement name.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sumo_dir_to_utdf_turn</span><span class="p">(</span><span class="n">sumo_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert SUMO connection direction text into a UTDF movement suffix.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sumo_dir</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;T&quot;</span>
+    <span class="k">if</span> <span class="n">sumo_dir</span> <span class="o">==</span> <span class="s2">&quot;t&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;U&quot;</span>
+    <span class="k">if</span> <span class="n">sumo_dir</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="s2">&quot;L&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;R&quot;</span> <span class="k">if</span> <span class="n">sumo_dir</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">}</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">sumo_dir</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_signal_controller_mapping</span><span class="p">(</span>
+        <span class="n">timeplans_df</span><span class="p">,</span>
+        <span class="n">sumo_signal_ids</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map each signalized node to the UTDF controller that owns its timings.</span>
+
+<span class="sd">    UTDF Timeplans support ``Node 0`` through ``Node 7`` records so one</span>
+<span class="sd">    controller can operate multiple intersections. In that case Synchro writes</span>
+<span class="sd">    the timing and phase records only for the controller INTID, while the local</span>
+<span class="sd">    intersection still has its own lane movement records.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">timeplans_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;INTID&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">timeplans_df</span> <span class="ow">or</span> <span class="s2">&quot;RECORDNAME&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">timeplans_df</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">allowed_signal_ids</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">sumo_signal_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">allowed_signal_ids</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">signal_id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">signal_id</span> <span class="ow">in</span> <span class="n">sumo_signal_ids</span>
+        <span class="p">}</span>
+
+    <span class="n">controller_mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">normalized_intids</span> <span class="o">=</span> <span class="n">timeplans_df</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_normalize_utdf_node_id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">controller_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">normalized_intids</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">_node_sort_key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">controller_id</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">allowed_signal_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">controller_id</span> <span class="ow">in</span> <span class="n">allowed_signal_ids</span><span class="p">:</span>
+            <span class="n">controller_mapping</span><span class="p">[</span><span class="n">controller_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">controller_id</span>
+
+        <span class="n">controller_rows</span> <span class="o">=</span> <span class="n">timeplans_df</span><span class="p">[</span><span class="n">normalized_intids</span> <span class="o">==</span> <span class="n">controller_id</span><span class="p">]</span>
+        <span class="n">node_rows</span> <span class="o">=</span> <span class="n">controller_rows</span><span class="p">[</span>
+            <span class="n">controller_rows</span><span class="p">[</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">normalized_node_id</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">normalized_node_id</span> <span class="ow">or</span> <span class="n">normalized_node_id</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">allowed_signal_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">normalized_node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_signal_ids</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">controller_mapping</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">normalized_node_id</span><span class="p">,</span> <span class="n">controller_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">controller_mapping</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_inbound_direction_mapping_from_lanes</span><span class="p">(</span>
+        <span class="n">network_lanes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inbound_edges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map generated SUMO inbound edges to UTDF bounds using Up Node values.</span>
+
+<span class="sd">    The old fallback uses geometry slopes, which can fail for short turn-bay</span>
+<span class="sd">    edges or for approaches with zero-lane movements. Generated SUMO edge ids</span>
+<span class="sd">    preserve the UTDF upstream and intersection node ids, so this exact lookup</span>
+<span class="sd">    is the preferred mapping when the network was produced by this package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">lane_directions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">bounds_by_up_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">movement_name</span><span class="p">,</span> <span class="n">movement_info</span> <span class="ow">in</span> <span class="n">movement_lanes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_utdf_movement_name</span><span class="p">(</span><span class="n">movement_name</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">up_node</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Up Node&quot;</span><span class="p">))</span>
+        <span class="n">dest_node</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Dest Node&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">up_node</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dest_node</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">lane_directions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movement_name</span><span class="p">)</span>
+        <span class="n">bounds_by_up_node</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">up_node</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">movement_name</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">inbound_direction_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">inbound_edge</span> <span class="ow">in</span> <span class="n">inbound_edges</span><span class="p">:</span>
+        <span class="n">up_node</span> <span class="o">=</span> <span class="n">_get_up_node_from_edge_id</span><span class="p">(</span><span class="n">inbound_edge</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+        <span class="n">candidate_bounds</span> <span class="o">=</span> <span class="n">bounds_by_up_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">up_node</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_bounds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">inbound_direction_mapping</span><span class="p">[</span><span class="n">inbound_edge</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">candidate_bounds</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">inbound_direction_mapping</span><span class="p">,</span> <span class="n">lane_directions</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_movement_lookup_from_lanes</span><span class="p">(</span>
+        <span class="n">network_lanes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return UTDF movement names keyed by ``(up_node, dest_node)``.&quot;&quot;&quot;</span>
+    <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">movement_names_by_node_pair</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">movement_name</span><span class="p">,</span> <span class="n">movement_info</span> <span class="ow">in</span> <span class="n">movement_lanes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_utdf_movement_name</span><span class="p">(</span><span class="n">movement_name</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">up_node</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Up Node&quot;</span><span class="p">))</span>
+        <span class="n">dest_node</span> <span class="o">=</span> <span class="n">_normalize_utdf_node_id</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Dest Node&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">up_node</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dest_node</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">movement_names_by_node_pair</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">up_node</span><span class="p">,</span> <span class="n">dest_node</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="n">movement_names_by_node_pair</span><span class="p">[(</span><span class="n">up_node</span><span class="p">,</span> <span class="n">dest_node</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">movement_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">movement_names_by_node_pair</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_select_movement_name_for_sumo_connection</span><span class="p">(</span>
+        <span class="n">movement_names_by_node_pair</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sumo_movement</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">fallback_bound</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map one SUMO connection to the best UTDF movement name.</span>
+
+<span class="sd">    SUMO&#39;s connection ``dir`` can be ambiguous after geometry simplification,</span>
+<span class="sd">    especially around short turn-bay edges and skewed intersections. The UTDF</span>
+<span class="sd">    destination node is a stronger signal because it identifies the actual</span>
+<span class="sd">    counted movement in the source file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">up_node</span> <span class="o">=</span> <span class="n">_get_up_node_from_edge_id</span><span class="p">(</span><span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">],</span> <span class="n">intersection_id</span><span class="p">)</span>
+    <span class="n">dest_node</span> <span class="o">=</span> <span class="n">_get_dest_node_from_edge_id</span><span class="p">(</span><span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;toEdge&quot;</span><span class="p">],</span> <span class="n">intersection_id</span><span class="p">)</span>
+    <span class="n">movement_names</span> <span class="o">=</span> <span class="n">movement_names_by_node_pair</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">up_node</span><span class="p">,</span> <span class="n">dest_node</span><span class="p">),</span> <span class="p">[])</span>
+    <span class="n">fallback_turn</span> <span class="o">=</span> <span class="n">_sumo_dir_to_utdf_turn</span><span class="p">(</span><span class="n">sumo_movement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dir&quot;</span><span class="p">))</span>
+    <span class="n">fallback_movement_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fallback_bound</span><span class="si">}{</span><span class="n">fallback_turn</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">movement_names</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fallback_movement_name</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">movement_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">movement_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">fallback_movement_name</span> <span class="ow">in</span> <span class="n">movement_names</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fallback_movement_name</span>
+
+    <span class="n">matching_turn_names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">movement_name</span> <span class="k">for</span> <span class="n">movement_name</span> <span class="ow">in</span> <span class="n">movement_names</span>
+        <span class="k">if</span> <span class="n">fallback_turn</span> <span class="ow">in</span> <span class="n">movement_name</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">matching_turn_names</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matching_turn_names</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">movement_names</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_movement_info</span><span class="p">(</span>
+        <span class="n">network_lanes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">movement_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return one UTDF movement record from the converted lane dictionary.&quot;&quot;&quot;</span>
+    <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="n">movement_lanes</span> <span class="o">=</span> <span class="n">network_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">intersection_id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">movement_lanes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">movement_lanes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">movement_name</span><span class="p">,</span> <span class="p">{})</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_movement_is_uncontrolled</span><span class="p">(</span><span class="n">movement_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when UTDF marks a movement phase as uncontrolled with -1.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">phase_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">phase_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase</span><span class="si">{</span><span class="n">phase_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">permitted_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PermPhase</span><span class="si">{</span><span class="n">phase_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">phase_value</span> <span class="o">==</span> <span class="s2">&quot;-1&quot;</span> <span class="ow">or</span> <span class="n">permitted_value</span> <span class="o">==</span> <span class="s2">&quot;-1&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_right_turn_has_channelized_control</span><span class="p">(</span><span class="n">movement_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">movement_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when a right turn is channelized outside the main signal head.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;R&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">movement_name</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># UTDF values: 0=no, 1=yield, 2=free, 3=stop, 4=signal.</span>
+    <span class="n">right_channeled</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Right Channeled&quot;</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">right_channeled</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_right_turn_allows_rtor</span><span class="p">(</span><span class="n">movement_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">movement_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when UTDF allows right-turn-on-red for this lane group.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;R&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">movement_name</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Allow RTOR&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_movement_is_inactive</span><span class="p">(</span><span class="n">movement_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True for placeholder movements with no lanes and no demand.&quot;&quot;&quot;</span>
+    <span class="n">lane_count</span> <span class="o">=</span> <span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">))</span>
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Volume&quot;</span><span class="p">))</span>
+    <span class="n">lane_group_flow</span> <span class="o">=</span> <span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lane Group Flow&quot;</span><span class="p">))</span>
+    <span class="n">normalized_lane_group_flow</span> <span class="o">=</span> <span class="n">_extract_float</span><span class="p">(</span><span class="n">movement_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lane_Group_Flow&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">lane_count</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">lane_group_flow</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">normalized_lane_group_flow</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_inbound_direction_mapping_from_utdf</span><span class="p">(</span>
+        <span class="n">utdf_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">intersection_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">inbound_edges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build exact inbound mapping directly from a UTDF dictionary.&quot;&quot;&quot;</span>
+    <span class="n">lane_df</span> <span class="o">=</span> <span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lane_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_build_inbound_direction_mapping_from_lanes</span><span class="p">(</span>
+        <span class="n">cvt_lane_df_to_dict</span><span class="p">(</span><span class="n">lane_df</span><span class="p">),</span>
+        <span class="n">intersection_id</span><span class="p">,</span>
+        <span class="n">inbound_edges</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="update_sumo_signal_from_utdf">
@@ -138,28 +433,38 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">sumo_net_xml</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.net.xml&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sumo_net_xml must end with .net.xml&quot;</span><span class="p">)</span>
 
-    <span class="c1"># get signal intersection ids from UTDF</span>
-    <span class="n">signalized_int_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
-
     <span class="c1"># read sumo network</span>
     <span class="n">sumo_net</span> <span class="o">=</span> <span class="n">ReadSUMO</span><span class="p">(</span><span class="n">sumo_net_xml</span><span class="p">)</span>
 
+    <span class="n">timeplans</span> <span class="o">=</span> <span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)</span>
+    <span class="n">signal_controller_by_node</span> <span class="o">=</span> <span class="n">_build_signal_controller_mapping</span><span class="p">(</span>
+        <span class="n">timeplans</span><span class="p">,</span>
+        <span class="nb">set</span><span class="p">(</span><span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+    <span class="p">)</span>
+    <span class="n">signalized_int_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">node_id</span> <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">signal_controller_by_node</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">_node_sort_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span>
+    <span class="p">]</span>
+
     <span class="c1"># parse signal intersection information</span>
     <span class="n">utdf_signal</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">network_lanes</span> <span class="o">=</span> <span class="n">cvt_lane_df_to_dict</span><span class="p">(</span><span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">signalized_int_ids</span><span class="p">:</span>
 
         <span class="c1"># in this case sumo id equal to UTDF signal intersection id</span>
         <span class="n">int_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">)</span>
+        <span class="n">controller_id</span> <span class="o">=</span> <span class="n">signal_controller_by_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span>
 
         <span class="n">utdf_signal</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_signal_control</span><span class="p">(</span><span class="n">df_phase</span><span class="o">=</span><span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Phases&quot;</span><span class="p">),</span>
                                                    <span class="n">df_lane</span><span class="o">=</span><span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lanes&quot;</span><span class="p">),</span>
-                                                   <span class="n">int_id</span><span class="o">=</span><span class="n">int_id</span><span class="p">)</span>
-        <span class="n">UTDF_DIRS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extract_dir_info</span><span class="p">(</span><span class="n">utdf_signal</span><span class="p">[</span><span class="n">int_id</span><span class="p">]))</span>
-        <span class="n">traffic_directions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">UTDF_DIRS</span><span class="p">))</span>
+                                                   <span class="n">int_id</span><span class="o">=</span><span class="n">controller_id</span><span class="p">,</span>
+                                                   <span class="n">lane_int_id</span><span class="o">=</span><span class="n">int_id</span><span class="p">)</span>
+        <span class="n">phase_directions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">extract_dir_info</span><span class="p">(</span><span class="n">utdf_signal</span><span class="p">[</span><span class="n">int_id</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Intersection id: </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Directions: </span><span class="si">{</span><span class="n">UTDF_DIRS</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Intersection id: </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;(UTDF controller </span><span class="si">{</span><span class="n">controller_id</span><span class="si">}</span><span class="s2">) </span><span class="se">\n</span><span class="s2">Directions: </span><span class="si">{</span><span class="n">phase_directions</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">unique_inbound_edges</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">connection_index</span> <span class="ow">in</span> <span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -167,16 +472,38 @@
             <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_inbound_edges</span><span class="p">:</span>
                 <span class="n">unique_inbound_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">])</span>
 
+        <span class="n">exact_mapping</span><span class="p">,</span> <span class="n">lane_directions</span> <span class="o">=</span> <span class="n">_build_inbound_direction_mapping_from_lanes</span><span class="p">(</span>
+            <span class="n">network_lanes</span><span class="p">,</span>
+            <span class="n">int_id</span><span class="p">,</span>
+            <span class="n">unique_inbound_edges</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">movement_names_by_node_pair</span> <span class="o">=</span> <span class="n">_build_movement_lookup_from_lanes</span><span class="p">(</span>
+            <span class="n">network_lanes</span><span class="p">,</span>
+            <span class="n">int_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">UTDF_DIRS</span> <span class="o">=</span> <span class="n">phase_directions</span> <span class="o">|</span> <span class="n">lane_directions</span>
+        <span class="n">traffic_directions</span> <span class="o">=</span> <span class="p">{</span><span class="n">direction</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">UTDF_DIRS</span><span class="p">}</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_inbound_edges</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">traffic_directions</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :UTDF node </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> does not have the same &quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;number of inbounds with SUMO </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">flag</span><span class="p">,</span> <span class="n">inbound_direction_mapping</span> <span class="o">=</span> <span class="n">direction_mapping</span><span class="p">(</span><span class="n">sumo_net</span><span class="p">,</span>
-                                                            <span class="n">int_id</span><span class="p">,</span>
-                                                            <span class="n">unique_inbound_edges</span><span class="p">,</span>
-                                                            <span class="n">traffic_directions</span><span class="p">,</span>
-                                                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">inbound_direction_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">exact_mapping</span><span class="p">)</span>
+        <span class="n">unmapped_inbound_edges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">inbound_edge</span> <span class="k">for</span> <span class="n">inbound_edge</span> <span class="ow">in</span> <span class="n">unique_inbound_edges</span>
+            <span class="k">if</span> <span class="n">inbound_edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inbound_direction_mapping</span>
+        <span class="p">]</span>
+        <span class="n">remaining_directions</span> <span class="o">=</span> <span class="n">traffic_directions</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">inbound_direction_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">unmapped_inbound_edges</span>
+
+        <span class="k">if</span> <span class="n">unmapped_inbound_edges</span> <span class="ow">and</span> <span class="n">remaining_directions</span><span class="p">:</span>
+            <span class="n">flag</span><span class="p">,</span> <span class="n">fallback_mapping</span> <span class="o">=</span> <span class="n">direction_mapping</span><span class="p">(</span><span class="n">sumo_net</span><span class="p">,</span>
+                                                       <span class="n">int_id</span><span class="p">,</span>
+                                                       <span class="n">unmapped_inbound_edges</span><span class="p">,</span>
+                                                       <span class="n">remaining_directions</span><span class="p">,</span>
+                                                       <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="n">inbound_direction_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fallback_mapping</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">flag</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
@@ -189,29 +516,90 @@
                 <span class="k">if</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inbound_direction_mapping</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :UTDF node </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2"> match inbound failed&quot;</span><span class="p">)</span>
-                    <span class="k">break</span>
-                <span class="k">if</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
-                    <span class="n">synchro_dir</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">synchro_dir</span> <span class="o">=</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-                <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inbound_direction_mapping</span><span class="p">[</span><span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="n">synchro_dir</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;synchro_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;STOP&quot;</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;signal_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;STOP&quot;</span>
+                    <span class="k">continue</span>
+
+                <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;sumo_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span>
+                <span class="n">movement_name</span> <span class="o">=</span> <span class="n">_select_movement_name_for_sumo_connection</span><span class="p">(</span>
+                    <span class="n">movement_names_by_node_pair</span><span class="p">,</span>
+                    <span class="n">int_id</span><span class="p">,</span>
+                    <span class="n">sumo_movement</span><span class="p">,</span>
+                    <span class="n">inbound_direction_mapping</span><span class="p">[</span><span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;fromEdge&quot;</span><span class="p">]],</span>
+                <span class="p">)</span>
+                <span class="n">movement_info</span> <span class="o">=</span> <span class="n">_get_movement_info</span><span class="p">(</span>
+                    <span class="n">network_lanes</span><span class="p">,</span>
+                    <span class="n">int_id</span><span class="p">,</span>
+                    <span class="n">movement_name</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">_movement_is_inactive</span><span class="p">(</span><span class="n">movement_info</span><span class="p">):</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;synchro_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;STOP&quot;</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;signal_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;STOP&quot;</span>
+                    <span class="k">continue</span>
+
+                <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;synchro_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">movement_name</span>
+                <span class="k">if</span> <span class="n">_movement_is_uncontrolled</span><span class="p">(</span><span class="n">movement_info</span><span class="p">):</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;uncontrolled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">_right_turn_has_channelized_control</span><span class="p">(</span><span class="n">movement_name</span><span class="p">,</span> <span class="n">movement_info</span><span class="p">):</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;uncontrolled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">_right_turn_allows_rtor</span><span class="p">(</span><span class="n">movement_name</span><span class="p">,</span> <span class="n">movement_info</span><span class="p">):</span>
+                    <span class="n">sumo_movement</span><span class="p">[</span><span class="s2">&quot;rtor_allowed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">process_pedestrian_crossing</span><span class="p">(</span><span class="n">int_id</span><span class="p">,</span> <span class="n">sumo_net</span><span class="p">,</span> <span class="n">sumo_movement</span><span class="p">,</span> <span class="n">UTDF_DIRS</span><span class="p">)</span>
 
-    <span class="n">control_type</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;actuated&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;actuated&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;actuated&quot;</span><span class="p">}</span>
+    <span class="c1"># UTDF coordinated/actuated control types include timing splits, but this</span>
+    <span class="c1"># exporter does not build SUMO traffic-light detector calls for actuated</span>
+    <span class="c1"># phase extension. Writing SUMO ``actuated`` programs would therefore run</span>
+    <span class="c1"># most phases at MinGreen and severely under-serve high-volume movements.</span>
+    <span class="c1"># Use fixed programs from the UTDF split timings unless detector-actuated</span>
+    <span class="c1"># TLS logic is implemented explicitly.</span>
+    <span class="n">control_type</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;static&quot;</span><span class="p">}</span>
 
     <span class="n">valid_ids</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">valid</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_timeplan_value</span><span class="p">(</span><span class="n">controller_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">record_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read one Timeplans value for a controller, with a safe default.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">timeplans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+
+        <span class="n">matching_values</span> <span class="o">=</span> <span class="n">timeplans</span><span class="p">[</span><span class="s2">&quot;DATA&quot;</span><span class="p">][</span>
+            <span class="p">(</span><span class="n">timeplans</span><span class="p">[</span><span class="s2">&quot;INTID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_normalize_utdf_node_id</span><span class="p">)</span> <span class="o">==</span> <span class="n">controller_id</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">timeplans</span><span class="p">[</span><span class="s2">&quot;RECORDNAME&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">record_name</span><span class="p">)</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">matching_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">_is_blank</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal_type</span><span class="p">(</span><span class="n">controller_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a UTDF Control Type value into a SUMO tlLogic type.&quot;&quot;&quot;</span>
+        <span class="n">raw_control_type</span> <span class="o">=</span> <span class="n">get_timeplan_value</span><span class="p">(</span><span class="n">controller_id</span><span class="p">,</span> <span class="s2">&quot;Control Type&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">control_type_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">raw_control_type</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">control_type_id</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="k">return</span> <span class="n">control_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control_type_id</span><span class="p">,</span> <span class="s2">&quot;static&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">int_id</span> <span class="ow">in</span> <span class="n">signalized_int_ids</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :processing signal @ id: </span><span class="si">{</span><span class="n">int_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="n">controller_id</span> <span class="o">=</span> <span class="n">signal_controller_by_node</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span>
+        <span class="n">cycle_length_text</span> <span class="o">=</span> <span class="n">get_timeplan_value</span><span class="p">(</span><span class="n">controller_id</span><span class="p">,</span> <span class="s2">&quot;Cycle Length&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cycle_length</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cycle_length_text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">cycle_length</span> <span class="o">=</span> <span class="mf">0.0</span>
+
         <span class="n">ret</span> <span class="o">=</span> <span class="n">create_SignalTimingPlan</span><span class="p">(</span>
             <span class="n">utdf_signal</span><span class="p">[</span><span class="n">int_id</span><span class="p">],</span>
             <span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="p">[</span><span class="n">int_id</span><span class="p">],</span>
-            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">cycle_length</span><span class="o">=</span><span class="n">cycle_length</span><span class="p">)</span>
         <span class="n">linkDur</span> <span class="o">=</span> <span class="n">build_linkDuration</span><span class="p">(</span>
             <span class="n">utdf_signal</span><span class="p">[</span><span class="n">int_id</span><span class="p">],</span>
             <span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="p">[</span><span class="n">int_id</span><span class="p">])</span>
@@ -220,13 +608,15 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="p">[</span><span class="n">int_id</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">sumo_net</span><span class="o">.</span><span class="n">sumo_signal_info</span><span class="p">[</span><span class="n">int_id</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">timeplans</span> <span class="o">=</span> <span class="n">utdf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Timeplans&quot;</span><span class="p">)</span>
-            <span class="n">types</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">control_type</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;DATA&#39;</span><span class="p">][(</span><span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;INTID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span>
-                <span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;RECORDNAME&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Control Type&#39;</span><span class="p">)])[</span><span class="mi">0</span><span class="p">]])</span>
-            <span class="n">offsets</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;DATA&#39;</span><span class="p">][(</span><span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;INTID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">int_id</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span>
-                <span class="n">timeplans</span><span class="p">[</span><span class="s1">&#39;RECORDNAME&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Offset&#39;</span><span class="p">)])[</span><span class="mi">0</span><span class="p">])</span>
 
-            <span class="n">sumo_net</span><span class="o">.</span><span class="n">replace_tl_logic_xml</span><span class="p">(</span><span class="n">int_id</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">linkDur</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">offsets</span><span class="p">)))</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="n">get_signal_type</span><span class="p">(</span><span class="n">controller_id</span><span class="p">)</span>
+            <span class="n">offsets</span> <span class="o">=</span> <span class="n">get_timeplan_value</span><span class="p">(</span><span class="n">controller_id</span><span class="p">,</span> <span class="s2">&quot;Offset&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">offset_seconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">offset_seconds</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="n">sumo_net</span><span class="o">.</span><span class="n">replace_tl_logic_xml</span><span class="p">(</span><span class="n">int_id</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">linkDur</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">offset_seconds</span><span class="p">)</span>
             <span class="n">valid_ids</span><span class="p">[</span><span class="n">int_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">int_id</span>
             <span class="n">valid</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total signal intersections: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">signalized_int_ids</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -246,7 +636,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023 - 2025 Xiangyong Luo.</p>
+    <p>&#169; Copyright 2022 - 2026 Xiangyong Luo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
