@@ -26,3 +26,16 @@ def test_readthedocs_keplergl_constrains_setuptools():
 
     assert "keplergl" in requirements
     assert "setuptools<82" in requirements
+
+
+def test_setuptools_discovers_source_packages():
+    """Keep Python source packages in built distributions."""
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    setuptools_config = pyproject.split("[tool.setuptools]", maxsplit=1)[1].split(
+        "[[tool.uv.index]]", maxsplit=1
+    )[0]
+
+    assert "py-modules = []" not in setuptools_config
+    assert "[tool.setuptools.packages.find]" in setuptools_config
+    assert 'where = ["."]' in setuptools_config
+    assert 'include = ["utdf2gmns*"]' in setuptools_config
