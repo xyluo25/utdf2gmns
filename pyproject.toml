@@ -53,14 +53,14 @@ dependencies = {file = ["requirements.txt"]}
 # optional-dependencies = {file = ["requirements_dev.txt"]}
 
 [tool.setuptools]
-package-data = {'utdf2gmns' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_data" = ['*.xls']}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["utdf2gmns*"]
+include = ["utdf2gmns", "utdf2gmns.*"]
+namespaces = false
 
-# [tool.setuptools.package-data]
-# utdf2gmns = ['*.txt', '*.xls', '*.xlsx', '*.csv']
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.xls", "*.xlsx", "*.xlsm", "*.csv"]
 
 [[tool.uv.index]]
 name = "testpypi"
