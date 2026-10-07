@@ -6,16 +6,17 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sigma-x Engine Visualize Intersections &mdash; utdf2gmns</title>
+  <title>Sigma-X Engine Visualize Intersections &mdash; utdf2gmns</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=8d35e3f8" />
 
   
     <link rel="shortcut icon" href="../_static/utdf2gmns.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../_static/documentation_options.js?v=928db92d"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_gmns2sumo.html">GMNS To SUMO Format</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Sigma-x Engine Visualize Intersections</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sigma-X Engine Visualize Intersections</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#signalized-intersection-overview-chart">Signalized Intersection Overview Chart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#phasing-chart-table">Phasing Chart / Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#turning-volumes-vph-chart">Turning Volumes (VPH) Chart</a></li>
@@ -91,7 +92,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Sigma-x Engine Visualize Intersections</li>
+      <li class="breadcrumb-item active">Sigma-X Engine Visualize Intersections</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/pages/_sigma_x.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,22 +103,27 @@
            <div itemprop="articleBody">
              
   <section id="sigma-x-engine-visualize-intersections">
-<h1>Sigma-x Engine Visualize Intersections<a class="headerlink" href="#sigma-x-engine-visualize-intersections" title="Link to this heading"></a></h1>
-<p><cite>utdf2gmns</cite> package provides a method to visualize intersections using the Sigma-x engine. This is an optional step and can be used to generate a visual representation of the intersections.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span>    <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos"> 5</span>
-<span class="hll"><span class="linenos"> 6</span>        <span class="n">path_utdf</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;datasets\data_bullhead_seg4\UTDF.csv&quot;</span>
-</span><span class="linenos"> 7</span>
-<span class="linenos"> 8</span>        <span class="c1"># Step 1: Initialize the UTDF2GMNS</span>
-<span class="hll"><span class="linenos"> 9</span>        <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span class="linenos">10</span>
-<span class="linenos">11</span>        <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>  <span class="c1"># This will generate the Sigma-x engine visualization for intersections</span>
+<h1>Sigma-X Engine Visualize Intersections<a class="headerlink" href="#sigma-x-engine-visualize-intersections" title="Link to this heading"></a></h1>
+<p>utdf2gmns provides an optional method to generate Sigma-X visualizations for
+signalized intersections. The workflow requires desktop Microsoft Excel and
+is supported only on Windows and macOS.</p>
+<p>Install the optional dependency before running the workflow:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m pip install &quot;utdf2gmns[sigma-x]&quot;</span>
 </pre></div>
 </div>
-<p>This will save visualization file for each intersection in the current working directory. You can open these files to perform additional analysis.</p>
+<p>Then run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">utdf2gmns</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">4</span>    <span class="n">path_utdf</span> <span class="o">=</span> <span class="s2">&quot;datasets/data_bullhead_seg4/UTDF.csv&quot;</span>
+<span class="linenos">5</span>
+<span class="linenos">6</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">UTDF2GMNS</span><span class="p">(</span><span class="n">utdf_filename</span><span class="o">=</span><span class="n">path_utdf</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">7</span>    <span class="n">success</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">utdf_to_gmns_signal_ints</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>By default, generated files are saved in an utdf_to_gmns_signal_ints
+subdirectory beside the input UTDF file. On unsupported platforms, the method
+does not launch Excel and returns False.</p>
 <section id="signalized-intersection-overview-chart">
 <h2>Signalized Intersection Overview Chart<a class="headerlink" href="#signalized-intersection-overview-chart" title="Link to this heading"></a></h2>
 <a class="reference internal image-reference" href="../_images/int_overview.png"><img alt="Signalized Intersection Overview Chart" src="../_images/int_overview.png" width="600" />

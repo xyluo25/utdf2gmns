@@ -22,7 +22,7 @@
 
 ## Introduction
 
-An AMS(Analysis, Modeling and Simulation) tool to convert utdf file to different formats, including GMNS, SUMO etc.
+An AMS (Analysis, Modeling and Simulation) tool to convert utdf file to different formats, including GMNS, SUMO etc.
 
 utdf2gmns explored an automatic process of network coordinating, traffic signal integration, traffic flow conversion from Synchro to SUMO, identifying both the feasibility and challenges involved. The approach began with a comparative analysis of traffic network features, data formats, and signal timing schemas between the two platforms. Key challenges in converting Synchro UTDF data into microsimulation-ready networks focusing on signal integration, spatial conversion, and turning flow accuracy. Signal conversion remains a critical bottleneck, requiring precise alignment of phasing, timing, and coordination data to ensure reliable simulation outcomes. Network conversion also presents difficulties, particularly in translating Synchro’s relative coordinate system into georeferenced formats compatible with GIS tools. Additionally, accurately transforming turning movement data is essential for modeling realistic intersection behavior but often involves tedious manual preprocessing.
 
@@ -70,7 +70,7 @@ net = ug.UTDF2GMNS(utdf_filename=path_utdf, region_name=region_name, verbose=Fal
 
 ### Signalized Intersection Calculation and Visualization (Optional)
 
-This is the optional step to generate each signalized intersections and visualize them using Sigma-X engine. For large networks, this step may take a long time. (The code will print out total time taken for this step)
+This optional step generates and visualizes each signalized intersection using the Sigma-X engine. It requires desktop Microsoft Excel and is supported only on Windows and macOS. Install its dependency with `python -m pip install "utdf2gmns[sigma-x]"`. For large networks, this step may take a long time. (The code will print out total time taken for this step.)
 
 ```python
 # Generate signalized intersections and visualize them using Sigma-X engine

@@ -42,7 +42,7 @@ Create Link Line
 
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 12
+    :emphasize-lines: 13
 
     import utdf2gmns as ug
 
@@ -62,7 +62,7 @@ Create Link Polygon
 ~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 12
+    :emphasize-lines: 13
 
     import utdf2gmns as ug
 
@@ -82,7 +82,7 @@ UTDF To GMNS
 ============
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 14
+    :emphasize-lines: 15
 
     import utdf2gmns as ug
 

@@ -10,12 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=8d35e3f8" />
 
   
     <link rel="shortcut icon" href="../../_static/utdf2gmns.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6f037312"></script>
+      <script src="../../_static/documentation_options.js?v=928db92d"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../_signal_conversion.html">Signal Conversation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_utdf2gmns.html">UTDF To GMNS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_gmns2sumo.html">GMNS To SUMO Format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_sigma_x.html">Sigma-x Engine Visualize Intersections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_sigma_x.html">Sigma-X Engine Visualize Intersections</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#utdf2gmns-class">UTDF2GMNS class</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">utdf2gmns.UTDF2GMNS</a><ul>
@@ -109,18 +110,16 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="utdf2gmns.UTDF2GMNS">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">utdf2gmns.</span></span><span class="sig-name descname"><span class="pre">UTDF2GMNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utdf_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utdf2gmns/_utdf2gmns.html#UTDF2GMNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.UTDF2GMNS" title="Link to this definition"></a></dt>
-<dd><p>UTDF2GMNS performs the data conversion from UTDF to different formats.
-The class includes functions such as:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>geocode_utdf_intersections: geocode intersections</p></li>
-<li><p>create_signal_control: signalize intersections</p></li>
-<li><p>create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases</p></li>
-<li><p>utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory</p></li>
-<li><p>utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory</p></li>
-<li><p>and more…</p></li>
+<dd><p>UTDF2GMNS performs the data conversion from UTDF to different formats.</p>
+<p>The class includes functions such as:</p>
+<ul class="simple">
+<li><p>geocode_utdf_intersections: Geocode intersections.</p></li>
+<li><p>create_signal_control: Signalize intersections.</p></li>
+<li><p>create_gmns_links: Create a network from UTDF nodes, links, lanes,
+and phases.</p></li>
+<li><p>utdf_to_gmns: Convert UTDF data to GMNS data and save it.</p></li>
+<li><p>utdf_to_sumo: Convert UTDF data to SUMO data and save it.</p></li>
 </ul>
-</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="utdf2gmns.UTDF2GMNS.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utdf_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/utdf2gmns/_utdf2gmns.html#UTDF2GMNS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utdf2gmns.UTDF2GMNS.__init__" title="Link to this definition"></a></dt>

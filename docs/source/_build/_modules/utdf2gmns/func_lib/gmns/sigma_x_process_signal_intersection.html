@@ -95,21 +95,19 @@
 <span class="sd">##############################################################</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyufunc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pf</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">xlwings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xw</span>
 
 
 <div class="viewcode-block" id="cvt_utdf_to_signal_intersection">
 <a class="viewcode-back" href="../../../../pages/api/utdf2gmns.func_lib.cvt_utdf_to_signal_intersection.html#utdf2gmns.func_lib.cvt_utdf_to_signal_intersection">[docs]</a>
-<span class="nd">@pf</span><span class="o">.</span><span class="n">requires</span><span class="p">(</span><span class="s2">&quot;xlwings&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">cvt_utdf_to_signal_intersection</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cvt_utdf_to_signal_intersection</span><span class="p">(</span>
+    <span class="n">utdf_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utilize sigma-X engine to process each signal intersection from Synchro UTDF file</span>
 <span class="sd">    And save each signal intersection into a separate GMNS file.</span>
 
@@ -128,14 +126,12 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the input file is not a string or Path</span>
-<span class="sd">        FileNotFoundError: If the input file does not exist</span>
+<span class="sd">        FileNotFoundError: If the input file does not exist.</span>
+<span class="sd">        ImportError: If xlwings is unavailable on a supported platform.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if success, False otherwise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pf</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;xlwings&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># ensure xlwings is imported</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">xlwings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xw</span>  <span class="c1"># ensure xlwings is imported</span>
-
     <span class="c1"># TDD Test-Driven Development</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :utdf_filename should be str or Path, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -145,6 +141,21 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :</span><span class="si">{</span><span class="n">utdf_filename</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
     <span class="n">input_utdf_dir</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">utdf_filename</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;win32&quot;</span><span class="p">,</span> <span class="s2">&quot;darwin&quot;</span><span class="p">}:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;  :Sigma-X visualization requires desktop Microsoft Excel and is &quot;</span>
+            <span class="s2">&quot;supported only on Windows and macOS; skipping this optional step.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">xlwings</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xw</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;xlwings&gt;=0.33.9 is required for Sigma-X visualization. &quot;</span>
+            <span class="s2">&quot;Install it with &#39;python -m pip install </span><span class="se">\&quot;</span><span class="s2">utdf2gmns[sigma-x]</span><span class="se">\&quot;</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="c1"># Step2 crate output directory to store the results</span>
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">input_utdf_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;utdf_to_gmns_signal_ints&quot;</span><span class="p">)</span>
@@ -169,13 +180,13 @@
     <span class="n">output_sigma_utdf2gmns</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;UTDF2GMNS.xlsm&quot;</span><span class="p">)</span>
     <span class="n">output_sigma</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">path2linux</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;Sigma-X_UTDF.xlsm&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Close all existing open Excel instances</span>
-    <span class="k">for</span> <span class="n">app</span> <span class="ow">in</span> <span class="n">xw</span><span class="o">.</span><span class="n">apps</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-            <span class="n">app</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
-
     <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Close all existing open Excel instances</span>
+        <span class="k">for</span> <span class="n">app</span> <span class="ow">in</span> <span class="n">xw</span><span class="o">.</span><span class="n">apps</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <span class="n">app</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :Running Sigma-X engine to generate each signal intersection...&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">xw</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">app</span><span class="p">:</span>
             <span class="n">wb</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">output_sigma_utdf2gmns</span><span class="p">)</span>

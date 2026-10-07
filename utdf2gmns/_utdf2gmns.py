@@ -56,18 +56,15 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 class UTDF2GMNS:
     """UTDF2GMNS performs the data conversion from UTDF to different formats.
+
     The class includes functions such as:
-        - geocode_utdf_intersections: geocode intersections
 
-        - create_signal_control: signalize intersections
-
-        - create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases
-
-        - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory
-
-        - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory
-
-        - and more...
+    - geocode_utdf_intersections: Geocode intersections.
+    - create_signal_control: Signalize intersections.
+    - create_gmns_links: Create a network from UTDF nodes, links, lanes,
+      and phases.
+    - utdf_to_gmns: Convert UTDF data to GMNS data and save it.
+    - utdf_to_sumo: Convert UTDF data to SUMO data and save it.
     """
     def __init__(
         self,
@@ -304,9 +301,11 @@ class UTDF2GMNS:
         print("  :Processing each signal intersection, please wait...")
         print(f"  :Total time for {len(self.network_int_ids_signalized)} intersections"
               f" might be: {time_unit_converter(total_seconds, 's', 'm', False):.2f} minutes...")
-        cvt_utdf_to_signal_intersection(
-            self._utdf_filename, verbose=self._verbose)
-        return True
+        return cvt_utdf_to_signal_intersection(
+            self._utdf_filename,
+            output_dir=output_dir,
+            verbose=self._verbose,
+        )
 
     def utdf_to_gmns(self, *, output_dir: str = "", incl_utdf: bool = True, is_link_polygon: bool = False) -> bool:
         """Convert UTDF data to GMNS data and save to the output directory
@@ -429,6 +428,11 @@ class UTDF2GMNS:
             bool: whether the conversion is successful.
         """
         print("\nConverting UTDF to SUMO using GMNS standard...")
+        print(
+            "  :SUMO must be installed and its bin directory (which contains "
+            "netconvert) must be available on the system PATH. See "
+            "https://sumo.dlr.de/docs/Installing/index.html."
+        )
         flow_mode_lookup = {
             "intersection": "intersection",
             "intersection-level": "intersection",

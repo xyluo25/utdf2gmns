@@ -4,9 +4,15 @@ GMNS To SUMO Format
 
 Convert GMNS format files (from :ref:`UTDF To GMNS Format`) to SUMO format.
 
+.. important::
+
+    SUMO is an external application and is not installed by pip. Install SUMO
+    and add its bin directory, containing the netconvert executable, to the
+    system PATH before running this workflow.
+
 .. code-block:: python
     :linenos:
-    :emphasize-lines: 14
+    :emphasize-lines: 15
 
     import utdf2gmns as ug
 
@@ -25,7 +31,9 @@ Convert GMNS format files (from :ref:`UTDF To GMNS Format`) to SUMO format.
         net.utdf_to_sumo(sim_name="", show_warning_message=True, remove_U_turn=True)
 
 
-The generated SUMO network files are saved in the same directory as the input UTDF file. Simulation in SUMO (Example Below):
+By default, the generated SUMO network files are saved in an utdf_to_sumo
+subdirectory beside the input UTDF file. The resulting configuration can be
+opened with sumo-gui.
 
 .. image:: ../_static/sumo_network_sim.gif
     :width: 100%

@@ -147,18 +147,15 @@
 <a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UTDF2GMNS</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;UTDF2GMNS performs the data conversion from UTDF to different formats.</span>
+
 <span class="sd">    The class includes functions such as:</span>
-<span class="sd">        - geocode_utdf_intersections: geocode intersections</span>
 
-<span class="sd">        - create_signal_control: signalize intersections</span>
-
-<span class="sd">        - create_gmns_links: create network from UTDF data by combining Nodes, Links, Lanes, and Phases</span>
-
-<span class="sd">        - utdf_to_gmns: convert UTDF data to GMNS data and save to the output directory</span>
-
-<span class="sd">        - utdf_to_sumo: convert UTDF data to SUMO data and save to the output directory</span>
-
-<span class="sd">        - and more...</span>
+<span class="sd">    - geocode_utdf_intersections: Geocode intersections.</span>
+<span class="sd">    - create_signal_control: Signalize intersections.</span>
+<span class="sd">    - create_gmns_links: Create a network from UTDF nodes, links, lanes,</span>
+<span class="sd">      and phases.</span>
+<span class="sd">    - utdf_to_gmns: Convert UTDF data to GMNS data and save it.</span>
+<span class="sd">    - utdf_to_sumo: Convert UTDF data to SUMO data and save it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="UTDF2GMNS.__init__">
 <a class="viewcode-back" href="../../pages/api/utdf2gmns.UTDF2GMNS.html#utdf2gmns.UTDF2GMNS.__init__">[docs]</a>
@@ -398,9 +395,11 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  :Processing each signal intersection, please wait...&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  :Total time for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_int_ids_signalized</span><span class="p">)</span><span class="si">}</span><span class="s2"> intersections&quot;</span>
               <span class="sa">f</span><span class="s2">&quot; might be: </span><span class="si">{</span><span class="n">time_unit_converter</span><span class="p">(</span><span class="n">total_seconds</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;s&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;m&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> minutes...&quot;</span><span class="p">)</span>
-        <span class="n">cvt_utdf_to_signal_intersection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">cvt_utdf_to_signal_intersection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utdf_filename</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">utdf_to_gmns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">incl_utdf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">is_link_polygon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert UTDF data to GMNS data and save to the output directory</span>
@@ -523,6 +522,11 @@
 <span class="sd">            bool: whether the conversion is successful.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Converting UTDF to SUMO using GMNS standard...&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;  :SUMO must be installed and its bin directory (which contains &quot;</span>
+            <span class="s2">&quot;netconvert) must be available on the system PATH. See &quot;</span>
+            <span class="s2">&quot;https://sumo.dlr.de/docs/Installing/index.html.&quot;</span>
+        <span class="p">)</span>
         <span class="n">flow_mode_lookup</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;intersection&quot;</span><span class="p">:</span> <span class="s2">&quot;intersection&quot;</span><span class="p">,</span>
             <span class="s2">&quot;intersection-level&quot;</span><span class="p">:</span> <span class="s2">&quot;intersection&quot;</span><span class="p">,</span>

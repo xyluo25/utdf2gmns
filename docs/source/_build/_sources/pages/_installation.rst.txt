@@ -2,40 +2,102 @@
 Installation
 ============
 
-You can install the latest stable release of the package at `PyPI`_ using `pip`_:
+Requirements
+============
 
-.. code-block:: python
-    :linenos:
+utdf2gmns supports Python 3.10 through 3.13.
 
-    pip install utdf2gmns
+Default installation
+====================
 
-By running the command above, the utdf2gmns package along with required dependency packages
-(`pandas`_, `pyufunc`_) will be installed to your computer (if they have not been installed yet).
+Install the latest stable release from PyPI_ with pip_:
 
-.. note::
-    You can also choose to install packages based on your needs. Below are the optional dependencies that can be included during installation.
+.. code-block:: console
 
-.. code-block:: python
-    :linenos:
+    python -m pip install utdf2gmns
 
-    pip install utdf2gmns[base]
+The default installation includes the runtime dependencies declared in
+requirements.txt: geocoder, GeoPandas, geopy, pandas, pyproj, pyufunc,
+Shapely, and sumolib.
 
-.. code-block:: python
-    :linenos:
+Optional dependency groups
+==========================
 
-    pip install utdf2gmns[test]  # including test dependencies (pytest, coverage)
+Quote package specifications containing square brackets so the command works
+consistently across shells.
 
-.. code-block:: python
-    :linenos:
+Extended data and visualization dependencies
+--------------------------------------------
 
-    pip install utdf2gmns[all]  # including all optional dependencies, including test dependencies and visualization dependencies (matplotlib, keplergl)
+The base extra installs the complete optional data and visualization stack,
+including Matplotlib and Kepler.gl:
 
-⚡⚡If you don't know what's best for your, the default :ref:`Installation` should work for most users.
+.. code-block:: console
 
-⚡⚡By the way, the utdf2gmns package will also install the required dependencies automatically when you run functions that require them.
+    python -m pip install "utdf2gmns[base]"
 
+The latest stable Kepler.gl release still imports pkg_resources, which
+Setuptools 82 removed. The base extra therefore applies a temporary
+Setuptools version constraint automatically; no separate compatibility
+command is required.
 
-.. _`PyPI`: https://pypi.org/project/utdf2gmns
-.. _`pip`: https://packaging.python.org/key_projects/#pip
-.. _`pyufunc`: https://github.com/xyluo25/pyufunc
-.. _`pandas`: https://pandas.pydata.org/
+Sigma-X intersection visualization
+----------------------------------
+
+Install the Sigma-X Python dependency with:
+
+.. code-block:: console
+
+    python -m pip install "utdf2gmns[sigma-x]"
+
+Sigma-X requires desktop Microsoft Excel and is supported only on Windows and
+macOS. The platform marker intentionally skips xlwings on Linux. Calling the
+Sigma-X workflow on an unsupported platform prints an explanatory message and
+returns False.
+
+Testing and documentation
+-------------------------
+
+Install the test and documentation tools with:
+
+.. code-block:: console
+
+    python -m pip install "utdf2gmns[test]"
+
+All optional dependencies
+-------------------------
+
+Install all package extras with:
+
+.. code-block:: console
+
+    python -m pip install "utdf2gmns[all]"
+
+The all extra combines base, sigma-x, and test. Platform markers still apply,
+so Linux does not install the desktop Excel integration.
+
+Editable source installation
+============================
+
+From a repository checkout, install the project and the desired extras in
+editable mode:
+
+.. code-block:: console
+
+    python -m pip install -e .
+    python -m pip install -e ".[base]"
+    python -m pip install -e ".[sigma-x]"
+
+External applications
+=====================
+
+Some optional workflows require applications that pip does not install:
+
+* **SUMO conversion:** Install SUMO separately and add its bin directory,
+  containing the netconvert executable, to the system PATH before calling
+  the SUMO conversion workflow.
+* **Sigma-X visualization:** Install desktop Microsoft Excel and use Windows
+  or macOS.
+
+.. _PyPI: https://pypi.org/project/utdf2gmns
+.. _pip: https://packaging.python.org/key_projects/#pip

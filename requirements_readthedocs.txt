@@ -13,9 +13,9 @@ shapely
 pyproj
 geopandas
 geopy
-xlwings
 sumolib
 matplotlib
-# keplergl
+keplergl
 sumolib
+setuptools<82  # Kepler.gl 0.3.7 imports pkg_resources.
 

@@ -34,7 +34,7 @@ sys.setrecursionlimit(5000)
 project = "utdf2gmns"  # Name of the project to document, e.g. 'utdf2gmns'
 author = 'Xiangyong Luo'
 copyright = f'2022 - {datetime.datetime.now().year} Xiangyong Luo'
-version = "1.1.2"
+version = "1.2.4"
 release = version
 language = "en"
 
@@ -43,6 +43,7 @@ source_suffix = {'.rst': 'restructuredtext',
                  '.md': 'markdown'}  # allow .md files to be processed as rst, if markdown is installed
 source_encoding = "utf-8"
 master_doc = "index"
+exclude_patterns = ["_build", "_build/**"]
 
 # -- General configuration -----------------------------------------------
 extensions = [
@@ -84,6 +85,7 @@ html_short_title = "utdf2gmns"
 html_logo = "./_static/utdf2gmns.ico"
 html_favicon = "./_static/utdf2gmns.ico"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "utdf2gmns"
