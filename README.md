@@ -1,5 +1,23 @@
-[![PyPI version](https://badge.fury.io/py/utdf2gmns.svg)](https://badge.fury.io/py/utdf2gmns)[![Downloads](https://static.pepy.tech/badge/utdf2gmns)](https://pepy.tech/project/utdf2gmns)[![](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.org/project/utdf2gmns/)[![](https://img.shields.io/pypi/pyversions/utdf2gmns.svg)](https://www.python.org/)[![](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)[![](https://readthedocs.org/projects/utdf2gmns/badge/?version=latest)](https://utdf2gmns.readthedocs.io/en/latest/?badge=latest)[![](https://img.shields.io/github/contributors/xyluo25/utdf2gmns)](https://github.com/xyluo25/utdf2gmns/graphs/contributors)[![](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)
+# utdf2gmns
 
+[![PyPI version](https://badge.fury.io/py/utdf2gmns.svg)](https://badge.fury.io/py/utdf2gmns)[![Downloads](https://static.pepy.tech/badge/utdf2gmns)](https://pepy.tech/project/utdf2gmns)[![](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.org/project/utdf2gmns/)[![](https://img.shields.io/pypi/pyversions/utdf2gmns.svg)](https://www.python.org/)[![](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)[![](https://readthedocs.org/projects/utdf2gmns/badge/?version=latest)](https://utdf2gmns.readthedocs.io/en/latest/?badge=latest)[![](https://img.shields.io/github/contributors/xyluo25/utdf2gmns)](https://github.com/xyluo25/utdf2gmns/graphs/contributors)[![](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)![visitors](https://visitor-badge.laobi.icu/badge?page_id=xyluo25.utdf2gmns&style=flat)
+
+<div align="center">
+
+<p align="center">
+  <img src="docs/image/ReadMe/framework_r2_0.png" alt="UTDF2GMNS Framework" width="92%">
+</p>
+
+[Introduction](#introduction) ·
+[Required Input Data](#required-input-data) ·
+[Installation](#installation) ·
+[Quick Python Example](#quick-python-example) ·
+[Call for Contributions](#call-for-contributions) ·
+[How to Cite](#how-to-cite)
+
+</div>
+
+<!--
 - [utdf2gmns](#utdf2gmns)
   - [Introduction](#introduction)
   - [Required Input Data](#required-input-data)
@@ -16,9 +34,7 @@
     - [Visualize the Network](#visualize-the-network)
     - [Quick Example (Full Code)](#quick-example-full-code)
   - [Call for Contributions](#call-for-contributions)
-  - [How to Cite](#how-to-cite)
-
-# utdf2gmns
+  - [How to Cite](#how-to-cite) -->
 
 ## Introduction
 
@@ -200,6 +216,8 @@ if __name__ == "__main__":
 ## Call for Contributions
 
 The utdf2gmns project welcomes your expertise and enthusiasm!
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and pull request guidance. Use the [project issue forms](https://github.com/xyluo25/utdf2gmns/issues/new/choose) to report problems, request features, or ask usage questions. For larger changes, open an issue to discuss the scope with the maintainer.
 
 Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email:
 
