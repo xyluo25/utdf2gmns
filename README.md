@@ -8,12 +8,12 @@
   <img src="docs/image/ReadMe/framework_r2_0.png" alt="UTDF2GMNS Framework" width="92%">
 </p>
 
-[Introduction](#introduction) ·
-[Required Input Data](#required-input-data) ·
-[Installation](#installation) ·
-[Quick Python Example](#quick-python-example) ·
-[Call for Contributions](#call-for-contributions) ·
-[How to Cite](#how-to-cite)
+[**Introduction**](#introduction) ·
+[**Required Input Data**](#required-input-data) ·
+[**Installation**](#installation) ·
+[**Quick Python Example**](#quick-python-example) ·
+[**Call for Contributions**](#call-for-contributions) ·
+[**How to Cite**](#how-to-cite)
 
 </div>
 
