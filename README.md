@@ -201,6 +201,8 @@ if __name__ == "__main__":
 
 The utdf2gmns project welcomes your expertise and enthusiasm!
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and pull request guidance. Use the [project issue forms](https://github.com/xyluo25/utdf2gmns/issues/new/choose) to report problems, request features, or ask usage questions. For larger changes, open an issue to discuss the scope with the maintainer.
+
 Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email:
 
     Dr. Xiangyong Luo:  luoxiangyong01@gmail.com

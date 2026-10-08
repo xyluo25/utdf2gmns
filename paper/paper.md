@@ -72,11 +72,15 @@ This modular design ensures extensibility, allowing users to customize or extend
 
 # Research impact statement
 
-The `utdf2gmns` package has demonstrated impact in traffic microsimulation by facilitating the conversion of Synchro UTDF data into SUMO-compatible networks. A peer-reviewed Winter Simulation Conference paper presents `utdf2gmns` as an automated workflow for converting UTDF network representation, signalized intersections, and turning volumes into GMNS-compliant SUMO inputs, and reports case-study validation for complex urban corridors [@luo2025automating]. The same workflow directly addresses the manual Synchro-to-SUMO preparation steps identified in earlier traffic simulation studies [@singh2017impact; @udomsilp2017traffic; @zhang2024integration].
+The `utdf2gmns` package has demonstrated impact in traffic microsimulation by facilitating the conversion of Synchro UTDF data into SUMO-compatible networks. A peer-reviewed Winter Simulation Conference paper presents `utdf2gmns` as an automated workflow for converting UTDF network representation, signalized intersections, and turning volumes into GMNS-compliant SUMO inputs, and reports case-study validation for complex urban corridors [@luo2025automating]. The same workflow directly addresses the manual Synchro-to-SUMO preparation steps identified in earlier traffic simulation studies [@singh2017impact; @udomsilp2017traffic; @zhang2024integration]. The subsequent Sim2Signal preprint cites this UTDF-to-SUMO work when describing the construction of its Tempe and Bullhead City benchmark networks from real UTDF signal-plan data [@rafi2026sim2signal], providing evidence of scholarly uptake in traffic signal control research.
 
 Furthermore, the integration of `utdf2gmns` with the Sigma-X engine supports visualization and auditing of signalized intersections, including phasing diagrams, turning volumes, volume-to-capacity ratios, and control delays [@luo2025automating]. These capabilities provide practical tools for urban planners, traffic engineers, and researchers who need reproducible network preparation rather than project-specific scripts.
 
-`utdf2gmns` has been downloaded more than 36,000 times from PyPI as of June 16, 2026 [@pepy_utdf2gmns], indicating sustained use within the transportation modeling and microsimulation community. This adoption highlights `utdf2gmns` as a community-facing tool that lowers barriers to data preparation and reproducible simulation workflows.
+The DOE-supported Real-Twin project uses `utdf2gmns` for file conversion in its transportation simulation workflow. Real-Twin is supported by the U.S. Department of Energy, Vehicle Technologies Office, Energy Efficient Mobility Systems program under project EEMS114 [@realtwin_project]. This application provides a concrete example of research use. The package also recorded more than 36,000 PyPI downloads as of June 16, 2026 [@pepy_utdf2gmns], reflecting distribution through the public package index.
+
+The project combines contributions to its conception, implementation, and testing. Xuesong Zhou proposed the initial project concept and supported project funding, while Xiangyong Luo maintains the software implementation. In February 2025, contributor `Yiran6` submitted four commits through a public pull request that Luo merged [@utdf2gmns_pr1]. These changes corrected signal-direction mapping, replaced SUMO traffic-light logic directly in the network XML, and added simulation configuration and route files for testing. This development record documents substantive participation by another developer in signal conversion and test preparation.
+
+The software has also been refined through independent testing during JOSS review. Public issue reports prompted clearer geocoding dependency errors, complete default runtime dependencies, explicit platform requirements for Sigma-X, and a compatible Setuptools constraint for optional Kepler.gl visualization [@utdf2gmns_issue15; @utdf2gmns_issue17; @utdf2gmns_issue18]. These examples show how external feedback has influenced implementation and installation guidance. The repository provides [contribution instructions](https://github.com/xyluo25/utdf2gmns/blob/joss/CONTRIBUTING.md) and [public issue forms](https://github.com/xyluo25/utdf2gmns/issues/new/choose) for reporting problems, requesting support, and proposing improvements.
 
 # Hands-On tutorial
 
@@ -115,12 +119,11 @@ if __name__ == "__main__":
 
     # Step 6: Sigma-X visualize signalized intersection
     # net.utdf_to_gmns_signal_ints()
-
 ```
 
 # AI usage disclosure
 
-No generative AI tools were used in the development of this software, ChatGPT-5.2 was used to improve the clarity and readability of the manuscript.
+GitHub Copilot assisted selected repository maintenance changes, including continuous-integration fixes. ChatGPT-5.2 assisted earlier manuscript polishing. The authors are responsible for reviewing the revised text, verifying the reported evidence, and approving the final submission.
 
 # Acknowledgements
 
