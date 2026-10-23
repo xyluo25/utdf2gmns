@@ -68,7 +68,9 @@ The `utdf2gmns` package is designed with a modular architecture to facilitate th
 - **Utility Libraries (`util_lib/`)**: Includes helper functions for tasks such as distance calculations, time conversions, and package settings.
 - **Engine (`engine/`)**: Integrates the Sigma-X engine for advanced signalized intersection analysis, enabling the extraction of phasing diagrams, turning volumes, and control delays.
 
-This modular design ensures extensibility, allowing users to customize or extend functionalities for other microsimulation platforms. The package leverages external libraries like Pandas for data manipulation and pyufunc for utility functions, promoting code reusability and maintainability.
+The modules are grouped by conversion stage rather than by a strict separation of input/output and computation. Some helpers in `func_lib/` both transform data and write files; this keeps the staged workflow accessible through the high-level class, but couples those helpers to file formats and makes isolated testing more difficult. The architecture therefore provides stage-level organization, rather than complete independence between processing and I/O.
+
+Using GMNS as an intermediate representation exposes node, link, lane, and movement tables for inspection and reuse outside SUMO, at the cost of maintaining mappings between UTDF records, GMNS tables, and SUMO XML. SUMO-specific signal and connection handling is implemented in the SUMO modules; GMNS lane generation also reuses geometry helpers from those modules, so these stages are not fully decoupled. A caller-supplied reference intersection coordinate avoids reliance on address-geocoding services for reproducible examples; automatic address lookup remains available when a reference coordinate is unavailable. Sigma-X is optional because its Excel automation requires desktop Microsoft Excel on Windows or macOS, while the core conversion workflow can run without it. These boundaries let users inspect intermediate artifacts and run the core workflow without the optional visualization and spreadsheet dependencies.
 
 # Research impact statement
 
@@ -108,22 +110,24 @@ if __name__ == "__main__":
     # Step 3: convert UTDF network to GMNS format (csv)
     net.utdf_to_gmns(incl_utdf=True)
 
-    # Step 4: convert UTDF network to SUMO
-    net.utdf_to_sumo(sim_name="", remove_U_turn=True, sim_duration=7200)
+    # Step 4 (optional): install SUMO and put netconvert on PATH first.
+    # net.utdf_to_sumo(sim_name="", remove_U_turn=True, sim_duration=7200)
 
     # Step 5 (optional): visualize the network
-    net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
-    net_map = ug.plot_net_keplergl(net,
-                                   save_fig=True,
-                                   fig_name="Bullhead_City.html")
+    # Install the base extra before enabling optional visualizations.
+    # net_map = ug.plot_net_mpl(net, save_fig=True, fig_name="Bullhead_City.png")
+    # net_map = ug.plot_net_keplergl(net,
+    #                                save_fig=True,
+    #                                fig_name="Bullhead_City.html")
 
-    # Step 6: Sigma-X visualize signalized intersection
+    # Step 6 (optional): Sigma-X requires desktop Excel on Windows/macOS
+    # and the sigma-x extra.
     # net.utdf_to_gmns_signal_ints()
 ```
 
 # AI usage disclosure
 
-GitHub Copilot assisted selected repository maintenance changes, including continuous-integration fixes. ChatGPT-5.2 assisted earlier manuscript polishing. The authors are responsible for reviewing the revised text, verifying the reported evidence, and approving the final submission.
+GitHub Copilot assisted selected repository maintenance changes, including continuous-integration fixes. ChatGPT-5.2 assisted earlier manuscript polishing. OpenAI Codex assisted a subsequent evidence audit and revisions to the design discussion, tutorial, API documentation, and test workflows. The authors are responsible for reviewing the revised text, verifying the reported evidence, and approving the final submission.
 
 # Acknowledgements
 
