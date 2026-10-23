@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased - 2026-10-23
+
+### Documentation and validation
+
+- Explain conversion-stage architecture, I/O coupling, shared helpers, and dependency trade-offs in the existing Software design section; preserve the Research impact statement and October 14 collaboration response.
+- Render detailed public conversion method docstrings from the API reference source page.
+- Align manuscript tutorial optional steps with the standalone tutorial prerequisites.
+- Run both test workflows on `joss`, install the checked-out package, and propagate pytest failures while preserving result artifacts.
+- Local Python 3.12 validation: 53 tests passed; Sphinx HTML build completed. Bullhead GMNS export and a 300-second SUMO 1.28.0 run completed, with unsafe-green warnings at intersections 78, 84, and 98 requiring further signal validation.
+
 ## Unreleased - 2026-10-08
 
 ### Documentation
