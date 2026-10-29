@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased - 2026-10-29
+
+### Fixed
+
+- Remove obsolete Python 3.10.12, 3.11.8, and 3.12.2 matrix entries that fail interpreter setup on the Ubuntu 26.04 runner; retain Python 3.10, 3.11, 3.12, and 3.13 coverage.
+- Add the missing `.gitmodules` path and repository URL for the existing `utdf2gmns_datasets` gitlink so Git can resolve the submodule during checkout cleanup.
+
+### Validation
+
+- Parse the workflow YAML, confirm that only the Python version matrix changes, validate submodule metadata and traversal without changing the dataset commit, and pass `git diff --check`. GitHub Actions execution remains pending publication of these fixes.
+
 ## Unreleased - 2026-10-23
 
 ### Documentation and validation
