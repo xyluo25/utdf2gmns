@@ -51,3 +51,23 @@ Utility Functions
    util_lib.calculate_point2point_distance_in_km
    util_lib.time_unit_converter
    util_lib.time_str_to_seconds
+
+Detailed conversion methods
+===========================
+
+The workflow starts with initialization and geocoding, then exports GMNS or
+SUMO artifacts. The methods below document parameters and return values.
+SUMO conversion requires the external SUMO installation; Sigma-X is optional
+and requires desktop Microsoft Excel on Windows or macOS.
+
+.. automethod:: UTDF2GMNS.geocode_utdf_intersections
+
+.. automethod:: UTDF2GMNS.create_gmns_links
+
+.. automethod:: UTDF2GMNS.create_signal_control
+
+.. automethod:: UTDF2GMNS.utdf_to_gmns
+
+.. automethod:: UTDF2GMNS.utdf_to_sumo
+
+.. automethod:: UTDF2GMNS.utdf_to_gmns_signal_ints

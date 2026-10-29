@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased - 2026-10-29
+
+### Fixed
+
+- Remove obsolete Python 3.10.12, 3.11.8, and 3.12.2 matrix entries that fail interpreter setup on the Ubuntu 26.04 runner; retain Python 3.10, 3.11, 3.12, and 3.13 coverage.
+- Add the missing `.gitmodules` path and repository URL for the existing `utdf2gmns_datasets` gitlink so Git can resolve the submodule during checkout cleanup.
+
+### Validation
+
+- Parse the workflow YAML, confirm that only the Python version matrix changes, validate submodule metadata and traversal without changing the dataset commit, and pass `git diff --check`. GitHub Actions execution remains pending publication of these fixes.
+
+## Unreleased - 2026-10-23
+
+### Documentation and validation
+
+- Explain conversion-stage architecture, I/O coupling, shared helpers, and dependency trade-offs in the existing Software design section; preserve the Research impact statement and October 14 collaboration response.
+- Render detailed public conversion method docstrings from the API reference source page.
+- Align manuscript tutorial optional steps with the standalone tutorial prerequisites.
+- Run both test workflows on `joss`, install the checked-out package, and propagate pytest failures while preserving result artifacts.
+- Local Python 3.12 validation: 53 tests passed; Sphinx HTML build completed. Bullhead GMNS export and a 300-second SUMO 1.28.0 run completed, with unsafe-green warnings at intersections 78, 84, and 98 requiring further signal validation.
+
 ## Unreleased - 2026-10-08
 
 ### Documentation

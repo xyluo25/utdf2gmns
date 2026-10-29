@@ -5,9 +5,9 @@ name: Python Pytest
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "joss" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "joss" ]
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.10.12", "3.11", "3.11.8", "3.12", "3.12.2", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +28,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest pyufunc grid2demand utdf2gmns
+        python -m pip install flake8
+        python -m pip install -e ".[test]"
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
 
@@ -41,9 +42,10 @@ jobs:
     - name: Test with pytest
       run: |
         set -o pipefail
-        pytest > ${{ matrix.python-version }}_pytest-results.txt || true
+        python -m pytest > ${{ matrix.python-version }}_pytest-results.txt
 
     - name: Upload Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.python-version }}_pytest-results
