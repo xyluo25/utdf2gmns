@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2.6 - 2026-10-30
+
+### Documentation and release metadata
+
+- Address the final JOSS editorial corrections: define acronyms and Synchro at first use, introduce and consistently name Sigma-X, correct citation spacing and documentation link text, and preserve removal of the manuscript's self-citation.
+- Move review-driven improvements and funding/public-access text into Acknowledgements; replace the fragment thanking Milan Zlatkovic with a complete sentence. Retain the scientific impact and collaboration evidence and move GitHub issue/PR citations to footnotes.
+- Complete the Ban and Coogan technical reports from National Transportation Library records; correct the Berg meeting reference, SUMO authors and proceedings fields, Smith report authors/institution, thesis school field, and Real-Twin software DOI. Remove four issue/PR bibliography entries now represented by footnotes.
+- Correct the Bullhead region name in the manuscript and standalone tutorial. State the repository checkout/install requirements, reference-coordinate convention, and generated output location without claiming the dataset is installed by package distributions.
+- Prepare version 1.2.6 consistently in `pyproject.toml`, `utdf2gmns/__init__.py`, and `docs/source/conf.py`. Add `.zenodo.json` with the manuscript title, MIT license, and author order, names, affiliations, and ORCIDs confirmed by the submitting author on October 30, 2026. Preserve the distinct conference-paper preferred citation in `CITATION.cff`.
+- Record the response to all 14 editorial requests in `paper/editor_response_20261030.md`.
+
+### Validation
+
+- Python 3.13.11: all 53 existing tests pass with one existing pandas warning about non-unique columns. Workspace temporary directories avoid a Windows sandbox temporary-directory permission error.
+- Execute the exact manuscript Python block in an isolated copy: 22 nodes, 42 links, 95 lanes, 72 movements, and all 8 signalized intersections exported; the tracked input CSV remains byte-for-byte unchanged.
+- Build a wheel and source distribution without changing the existing distribution directory; inspect both archive contents for the tutorial dataset and Python sources.
+- Resolve all 17 citation keys against 17 unique bibliography entries, verify all 12 supplied DOIs through Crossref/DataCite, and match Zenodo title, author order, ORCIDs, and affiliations to the manuscript metadata. Verify report details against the original National Transportation Library and Transportation Research Board records.
+- Ruff lint passes for the standalone tutorial. Its formatting check reports pre-existing formatting; leave unrelated formatting unchanged. Optional SUMO, interactive plotting, and desktop Excel/Sigma-X execution are not part of the default tutorial validation.
+
 ## Unreleased - 2026-10-29
 
 ### Fixed
