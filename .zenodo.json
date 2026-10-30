@@ -1,0 +1,33 @@
+{
+  "title": "utdf2gmns: A Python Package for Mobility Simulation from UTDF to SUMO",
+  "upload_type": "software",
+  "description": "utdf2gmns converts Synchro Universal Traffic Data Format (UTDF) files into General Modeling Network Specification (GMNS) networks and Simulation of Urban Mobility (SUMO) inputs. This release incorporates corrections and validation completed during JOSS review.",
+  "creators": [
+    {
+      "name": "Luo, Xiangyong",
+      "affiliation": "Oak Ridge National Laboratory, United States",
+      "orcid": "0009-0003-1290-9983"
+    },
+    {
+      "name": "Zhang, Yiran",
+      "affiliation": "University of Washington, Seattle, WA, United States",
+      "orcid": "0000-0002-7392-8841"
+    },
+    {
+      "name": "Zhou, Xuesong (Simon)",
+      "affiliation": "Arizona State University, Tempe, AZ, United States",
+      "orcid": "0000-0002-9963-5369"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "version": "1.2.6",
+  "keywords": ["transportation", "traffic microsimulation", "UTDF", "GMNS", "SUMO"],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/xyluo25/utdf2gmns",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import utdf2gmns as ug
 
 if __name__ == "__main__":
 
-    region_name = " bullhead, AZ"
+    region_name = "Bullhead City, AZ"
     path_utdf = "./datasets/data_bullhead_seg4/UTDF.csv"
 
     # Step 1: Initialize the UTDF2GMNS
