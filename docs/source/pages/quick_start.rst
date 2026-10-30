@@ -7,7 +7,7 @@ Quick Python Example
 
 .. note::
     - This quick start guide assumes you have a valid UTDF file and the required dependencies installed.
-    - The following example uses a sample UTDF file from the Bullhead City, AZ dataset. You can replace it with your own UTDF file as needed.
+    - The following example uses ``datasets/data_bullhead_seg4/UTDF.csv``, which is tracked in the repository. Run from the repository root after ``python -m pip install -e .``, or download the `dataset <https://github.com/xyluo25/utdf2gmns/blob/joss/datasets/data_bullhead_seg4/UTDF.csv>`_ and update the input path. The Python source distribution and wheel do not include this example dataset. You can replace it with your own UTDF file as needed.
     - The example below uses manual geocoding with one known intersection coordinate so it is reproducible without depending on an online geocoding service.
     - See :ref:`Installation` for optional visualization dependencies and external application requirements.
 
@@ -22,7 +22,7 @@ Please note that file name does not need to be UTDF.csv, it can be any name.
 
     import utdf2gmns as ug
 
-    region_name = " Bullhead City, AZ"  # Name of the region the UTDF file represents
+    region_name = "Bullhead City, AZ"  # Name of the region the UTDF file represents
     path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"  # Path to the UTDF file
 
 
@@ -164,7 +164,7 @@ Quick Example (Full Code)
 
     if __name__ == "__main__":
 
-        region_name = " Bullhead City, AZ"
+        region_name = "Bullhead City, AZ"
         path_utdf = "datasets/data_bullhead_seg4/UTDF.csv"
 
         # Step 1: Initialize the UTDF2GMNS
