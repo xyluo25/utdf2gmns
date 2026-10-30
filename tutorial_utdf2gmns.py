@@ -5,6 +5,8 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
+# Run from the repository root after: python -m pip install -e .
+# The example CSV is tracked in the repository; it is not in the wheel/sdist.
 import utdf2gmns as ug
 
 

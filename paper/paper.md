@@ -86,7 +86,7 @@ The repository provides [contribution instructions](https://github.com/xyluo25/u
 
 # Hands-On tutorial
 
-Run this example from the root of a checkout of the repository's `joss` branch after installing the package with `python -m pip install -e .`. The input file, [`datasets/data_bullhead_seg4/UTDF.csv`](https://github.com/xyluo25/utdf2gmns/blob/joss/datasets/data_bullhead_seg4/UTDF.csv), is tracked in the repository; this example requires that checkout and does not rely on the dataset being installed by a wheel or source package. The supplied reference coordinate uses longitude for `x_coord` and latitude for `y_coord` and avoids an external address lookup. The default steps write GMNS outputs beside the input file in `datasets/data_bullhead_seg4/utdf_to_gmns/`; the SUMO, visualization, and Sigma-X steps are optional.
+Run this example from the root of a checkout of the repository's `joss` branch after installing the package with `python -m pip install -e .`. The input file, [`datasets/data_bullhead_seg4/UTDF.csv`](https://github.com/xyluo25/utdf2gmns/blob/joss/datasets/data_bullhead_seg4/UTDF.csv), is tracked in the repository. The Python source distribution and wheel do not include this example dataset; use the repository checkout or download the CSV separately and adjust the input path. The supplied reference coordinate uses longitude for `x_coord` and latitude for `y_coord` and avoids an external address lookup. The default steps write GMNS comma-separated value (CSV) tables and signal data beside the input file in `datasets/data_bullhead_seg4/utdf_to_gmns/`; the SUMO, visualization, and Sigma-X steps are optional.
 
 ```python
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     #                                fig_name="Bullhead_City.html")
 
     # Step 6 (optional): Sigma-X requires desktop Excel on Windows/macOS
-    # and the sigma-x extra.
+    # and its optional Excel-automation dependency.
     # net.utdf_to_gmns_signal_ints()
 ```
 
