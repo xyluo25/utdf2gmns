@@ -2,12 +2,19 @@
 
 ## Unreleased - 2026-10-31
 
+### Branch synchronization
+
+- Merge `dev` at `ce550d8` into `main`, excluding every file under `paper/` and leaving the `joss` branch unchanged. Keep the current README and published Zenodo DOI badge.
+- Bring in the Chattanooga and additional Tempe datasets, generated examples, documentation assets, GitHub documentation context, geocoding return documentation, and geographic utility functions from `dev`.
+- Resolve overlapping older SUMO changes in favor of `main`'s current conversion APIs, signal/turn-bay implementation, reproducible tutorial, Bullhead map, and newer `utdf2gmns_datasets` submodule revision. Preserve the existing `point_on_line` utility name and correct the imported documentation link URL.
+
 ### Documentation
 
 - Add the published, version-specific Zenodo DOI `10.5281/zenodo.23817796` and its DOI badge to the README for the final JOSS archive check.
 
 ### Validation
 
+- Branch synchronization: 56 tests pass with one existing pandas warning; the Sphinx HTML build succeeds; 24 incoming XML/configuration files parse successfully, and both imported UTDF inputs load with nonempty intersection lists (26 Chattanooga and 756 Tempe intersections). The Tempe input also emits formatting warnings from the existing parser. Ruff passes for the changed utility, geocoding, and test modules. The documentation configuration retains its four pre-existing Ruff findings, and imported datasets retain their original whitespace warnings.
 - Confirm that the DOI resolves publicly, DataCite lists it as findable for version 1.2.6, and the badge returns SVG successfully. Match the archive title, author order, ORCIDs, affiliations, and MIT license to the manuscript.
 - Confirm that all 38 archived runtime source files match release v1.2.6, allowing line-ending differences. The archive ZIP contains the runtime package only; it does not include the tutorial dataset, manuscript, or repository installation files. No runtime code changed, so application tests were not rerun.
 
