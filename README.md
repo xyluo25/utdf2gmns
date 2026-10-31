@@ -2,4 +2,8 @@
 
 [![PyPI version](https://badge.fury.io/py/utdf2gmns.svg)](https://badge.fury.io/py/utdf2gmns)[![Downloads](https://static.pepy.tech/badge/utdf2gmns)](https://pepy.tech/project/utdf2gmns)[![](https://img.shields.io/pypi/wheel/gensim.svg)](https://pypi.org/project/utdf2gmns/)[![](https://img.shields.io/pypi/pyversions/utdf2gmns.svg)](https://www.python.org/)[![](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)](https://img.shields.io/github/release-date/xyluo25/utdf2gmns.svg)[![](https://readthedocs.org/projects/utdf2gmns/badge/?version=latest)](https://utdf2gmns.readthedocs.io/en/latest/?badge=latest)[![](https://img.shields.io/github/contributors/xyluo25/utdf2gmns)](https://github.com/xyluo25/utdf2gmns/graphs/contributors)[![](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)![visitors](https://visitor-badge.laobi.icu/badge?page_id=xyluo25.utdf2gmns&style=flat)[![status](https://joss.theoj.org/papers/ed47e565bfe4df0420f1665d75a22a18/status.svg)](https://joss.theoj.org/papers/ed47e565bfe4df0420f1665d75a22a18)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23817796.svg)](https://doi.org/10.5281/zenodo.23817796)
+
+Archived software (**v1.2.6**): [10.5281/zenodo.23817796](https://doi.org/10.5281/zenodo.23817796).
+
 <div align="center">

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased - 2026-10-31
+
+### Documentation
+
+- Add the published, version-specific Zenodo DOI `10.5281/zenodo.23817796` and its DOI badge to the README for the final JOSS archive check.
+
+### Validation
+
+- Confirm that the DOI resolves publicly, DataCite lists it as findable for version 1.2.6, and the badge returns SVG successfully. Match the archive title, author order, ORCIDs, affiliations, and MIT license to the manuscript.
+- Confirm that all 38 archived runtime source files match release v1.2.6, allowing line-ending differences. The archive ZIP contains the runtime package only; it does not include the tutorial dataset, manuscript, or repository installation files. No runtime code changed, so application tests were not rerun.
+
 ## 1.2.6 - 2026-10-30
 
 ### Documentation and release metadata
